@@ -163,7 +163,7 @@ export function CourtForm({
   const [step, setStep] = useState<"FORM" | "SLOT">("FORM")
   const [courtImages, setCourtImages] = useState<CourtImage[]>([])
   const [allOwnersList, setAllOwnersList] = useState<any>([])
-  const [editCourtForm, setEditCourtForm] = useState<Boolean>(false)
+  const [editCourtForm, setEditCourtForm] = useState<boolean>(false)
   const [courtImgChangeStatus, setCourtImgChangeStatus] = useState<
     "nothing" | "uploaded" | "deleted"
   >("nothing")

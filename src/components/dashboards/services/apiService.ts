@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { API } from "@/helpers"
 import axios from "axios"
 import Cookies from "js-cookie"

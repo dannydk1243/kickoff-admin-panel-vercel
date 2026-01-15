@@ -44,7 +44,7 @@ export function ProfileInfoForm({ onClose }: ProfileInfoFormProps) {
     email: "",
     phoneNumber: "",
   })
-
+const pathname = usePathname()
 
   const [errors, setErrors] = useState<ErrorsState>({})
 
@@ -142,7 +142,7 @@ export function ProfileInfoForm({ onClose }: ProfileInfoFormProps) {
 
 
     try {
-      const pathname = usePathname()
+      
       let pathUrl: any = pathname?.split("/").pop()
       const success = await registerAdminOrOwner(formState as any, pathUrl)
       if (!success) {
