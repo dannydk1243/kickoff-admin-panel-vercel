@@ -10,6 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import Cookies from "js-cookie"
 
 import type {
   ColumnFiltersState,
@@ -103,13 +104,17 @@ export function CourtDataTable() {
 
   // Fetch data
   useEffect(() => {
+    const value = Cookies.get("adminProfile") ?? ""
+    const adminData = JSON.parse(value)
+
+    console.log("User Role:", adminData.role)
     const fetchData = async () => {
       setLoading(true)
 
       const page = pagination.pageIndex + 1
       const limit = pagination.pageSize
 
-      const res = await getAllCourts(page, limit, searchTerm)
+      const res = await getAllCourts(page, limit, searchTerm, adminData.role)
 
       if (res?.courts) {
         setData(res?.courts)

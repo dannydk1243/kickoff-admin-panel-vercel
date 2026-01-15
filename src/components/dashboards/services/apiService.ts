@@ -778,11 +778,16 @@ export async function courtCreation(
 export async function getAllCourts(
   page: number = 1,
   limit: number = 15,
-  searchTerm: string = ""
+  searchTerm: string = "",
+  role: string = ""
 ) {
   try {
+    let mine = false
+    if (role == "OWNER") {
+      mine = true
+    }
     const res = await API.post(
-      `/courts/all?search=${searchTerm}&page=${page}&limit=${limit}`,
+      `/courts/all?search=${searchTerm}&page=${page}&limit=${limit}&mine=${mine}`,
       {}
     )
 
@@ -817,7 +822,7 @@ export async function getAllCourts(
 export async function deleteCourtById(id: string, status: boolean) {
   const body = {
     courtId: id,
-    isDeleted: status
+    isDeleted: status,
   }
 
   // console.log("vb122", data.blockId);
@@ -932,7 +937,10 @@ export async function getCourtUnavailability(id: string) {
   }
   try {
     if (!id) return
-    const res = await API.post(`/courts/unavailability/list?page=1&limit=1`, body)
+    const res = await API.post(
+      `/courts/unavailability/list?page=1&limit=1`,
+      body
+    )
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({
@@ -1046,8 +1054,8 @@ export async function createCourtUnvalaibility(
   }
 }
 
-export async function updateCourtStatus(body : {}){
- try {
+export async function updateCourtStatus(body: {}) {
+  try {
     const res = await API.post(`/courts/status/update`, body)
 
     if (res?.status !== 200 && res?.status !== 201) {
@@ -1118,12 +1126,9 @@ export async function getAllAnnouncements(
   }
 }
 
-export async function getAnnouncementCount(){
+export async function getAnnouncementCount() {
   try {
-    const res = await API.post(
-      `/announcements/count`,
-      {}
-    )
+    const res = await API.post(`/announcements/count`, {})
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({
@@ -1153,12 +1158,9 @@ export async function getAnnouncementCount(){
   }
 }
 
-export async function readAllAnnouncements(){
+export async function readAllAnnouncements() {
   try {
-    const res = await API.post(
-      `/announcements/read-all`,
-      {}
-    )
+    const res = await API.post(`/announcements/read-all`, {})
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({
@@ -1188,7 +1190,7 @@ export async function readAllAnnouncements(){
   }
 }
 
-export async function sendAnnouncements(body: {}){
+export async function sendAnnouncements(body: {}) {
   try {
     const res = await API.post(`/announcements/send`, body)
 
