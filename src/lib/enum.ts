@@ -1,0 +1,15 @@
+export const STATUS_CODE = {
+   BAD_REQUEST: 400,
+   UNAUTHORIZED_USER: 401,
+   FORBIDDEN: 403,
+   NOT_FOUND: 404,
+   INTERNAL_SERVER_ERROR: 500,
+};
+
+export const ROLES = {
+   USER: 'USER',
+   SUPERADMIN: 'SUPERADMIN',
+   ADMIN: 'ADMIN',
+   OWNER: 'OWNER',
+   GUEST: 'GUEST'
+};
