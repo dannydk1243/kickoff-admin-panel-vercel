@@ -1,6 +1,6 @@
 import type { NavigationType } from "@/types"
 
-export const sidebarNavigationData: NavigationType[] = [
+export const sidebarNavigationData: any[] = [
   {
     title: "Overview",
     items: [
@@ -8,6 +8,7 @@ export const sidebarNavigationData: NavigationType[] = [
         title: "Introduction",
         href: "/docs/overview/introduction",
         iconName: "Play",
+        
       },
       {
         title: "Kits",

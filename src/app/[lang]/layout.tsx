@@ -44,19 +44,18 @@ const cairoFont = Cairo({
 
 export default async function RootLayout(props: {
   children: ReactNode
-  params: Promise<{ lang: LocaleType }>
+  params: Promise<{ lang: string }>
 }) {
   const params = await props.params
-
+  const { lang } = await props.params
+  const locale = lang as "en" | "ar"
   const { children } = props
 
   const session = await getServerSession(authOptions)
-  const direction = i18n.localeDirection[params.lang]
+  const direction = i18n.localeDirection[locale]
 
   return (
-    <html lang={params.lang} dir={direction} suppressHydrationWarning>
-
-
+    <html lang={locale} dir={direction} suppressHydrationWarning>
       <body
         className={cn(
           "[&:lang(en)]:font-lato [&:lang(ar)]:font-cairo", // Set font styles based on the language
@@ -65,7 +64,7 @@ export default async function RootLayout(props: {
           cairoFont.variable // Include Cairo font variable
         )}
       >
-        <Providers locale={params.lang} direction={direction} session={session}>
+        <Providers locale={locale} direction={direction} session={session}>
           {children}
           <Toaster />
           <Sonner />

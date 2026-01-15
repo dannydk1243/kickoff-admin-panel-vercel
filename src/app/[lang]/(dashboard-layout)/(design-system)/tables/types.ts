@@ -1,5 +1,6 @@
 export type InvoiceType = {
   _id: string
+  id: string
   name: string
   description: string
   sport: string
@@ -16,6 +17,9 @@ export type InvoiceType = {
   offersTraining: boolean
   createdAt: string
   updatedAt: string
+  method: string
+  amount: string
+  phone: string
 
   location: {
     _id: string
@@ -38,7 +42,6 @@ export type InvoiceType = {
   amenities: string[]
 }
 
-
 // export interface InvoiceType {
 //   _id: string
 //   status: string
@@ -46,4 +49,3 @@ export type InvoiceType = {
 //   amount: `$${string}`
 //   phone: string
 // }
-

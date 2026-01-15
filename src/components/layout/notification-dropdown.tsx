@@ -35,10 +35,10 @@ interface Announcement {
 
 export function NotificationDropdown({
   dictionary,
-  initialData,
+  initialData = { announcements: [], unreadCount: 0, pages: 0 },
 }: {
   dictionary: DictionaryType
-  initialData: {
+  initialData?: {
     announcements: Announcement[]
     unreadCount: number
     pages: number

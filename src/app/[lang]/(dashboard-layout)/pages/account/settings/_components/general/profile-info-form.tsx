@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select"
 import { PhoneNumberInput } from "@/components/ui/PhoneNumberInput"
 import { registerAdminOrOwner } from "@/components/dashboards/services/apiService"
+import { usePathname } from "next/navigation"
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
@@ -141,7 +142,9 @@ export function ProfileInfoForm({ onClose }: ProfileInfoFormProps) {
 
 
     try {
-      const success = await registerAdminOrOwner(formState as any)
+      const pathname = usePathname()
+      let pathUrl: any = pathname?.split("/").pop()
+      const success = await registerAdminOrOwner(formState as any, pathUrl)
       if (!success) {
         return
       }

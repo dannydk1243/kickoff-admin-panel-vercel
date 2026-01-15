@@ -8,14 +8,21 @@ import { cookies } from "next/headers"
 import { log } from "console"
 import { TranslationProvider } from "@/lib/translationContext"
 
-export default async function DashboardLayout(props: {
+// 1. Change LocaleType to string in the Promise definition
+// This satisfies Next.js's internal __Check validator
+interface LayoutProps {
   children: ReactNode
-  params: Promise<{ lang: LocaleType }>
-}) {
-  const params = await props.params
-  const { children } = props
+  params: Promise<{ lang: string }> 
+}
 
-  const dictionary = await getDictionary(params.lang)
+export default async function DashboardLayout({ children, params }: LayoutProps) {
+  // 2. Await the params
+  const resolvedParams = await params
+  
+  // 3. Narrow the type manually to LocaleType for your logic
+  const lang = resolvedParams.lang as LocaleType
+
+  const dictionary = await getDictionary(lang)
 
   const cookieStore = await cookies()
   const adminProfile = cookieStore.get("adminProfile")?.value
@@ -31,6 +38,5 @@ export default async function DashboardLayout(props: {
         </Layout>
       </TranslationProvider>
     </NextAuthSessionProvider>
-
   )
 }

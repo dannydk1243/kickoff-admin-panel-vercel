@@ -38,14 +38,14 @@ export function BottomBarHeader({
           width={24}
           className="dark:invert"
         />
-        <span>Shadboard</span>
+        <span>Kick Off</span>
       </Link>
       <div className="flex gap-2">
         <NotificationDropdown dictionary={dictionary} />
         <FullscreenToggle />
         <ModeDropdown dictionary={dictionary} />
         <LanguageDropdown dictionary={dictionary} />
-        <UserDropdown dictionary={dictionary} locale={locale} />
+        <UserDropdown dictionary={dictionary} locale={locale} adminData={null}/>
       </div>
     </div>
   )

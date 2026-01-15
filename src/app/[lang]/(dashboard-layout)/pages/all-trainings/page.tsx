@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 import type { Metadata } from "next"
-import { DataTable } from "../../(design-system)/tables/_components/tables/admin-data-table"
+// import { DataTable } from "../../(design-system)/tables/_components/tables/admin-data-table"
 
 // Define metadata for the page
 export const metadata: Metadata = {
