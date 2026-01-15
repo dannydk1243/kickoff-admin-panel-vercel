@@ -22,7 +22,7 @@ const nextConfig = {
       },
       {
         source: "/:lang",
-        destination: process.env.HOME_PATHNAME,
+        destination: process.env.HOME_PATHNAME || "/en/pages/courts",
         permanent: true,
         has: [
           {
@@ -33,7 +33,7 @@ const nextConfig = {
       },
       {
         source: "/:lang",
-        destination: process.env.HOME_PATHNAME,
+        destination: process.env.HOME_PATHNAME || "/en/pages/courts",
         permanent: true,
         has: [
           {
