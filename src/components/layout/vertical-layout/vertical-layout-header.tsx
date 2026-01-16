@@ -66,7 +66,7 @@ export function VerticalLayoutHeader({
           />
           <FullscreenToggle />
           <ModeDropdown dictionary={dictionary} />
-          <LanguageDropdown dictionary={dictionary} />
+          {/* <LanguageDropdown dictionary={dictionary} /> */}
           <Button
             size="icon"
             variant="ghost"
