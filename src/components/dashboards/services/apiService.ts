@@ -630,7 +630,6 @@ export async function courtCreation(
   const courtSize = `${data.size}${data.unitSize}`
   const formData = new FormData()
 
-  console.log("Changed fields:", changedFields, "Training:", data.training)
 
   // Helper to append only if field was changed (used only when courtId exists)
   const appendIfChanged = (fieldName: string, value: any) => {

@@ -49,7 +49,6 @@ export function NotificationObjectForm({ onClose }: NotificationObjectFormProps)
   // 3. Simplified Submit Handler
   async function onSubmit(data: NotificationFormValues) {
     try {
-      console.log(data)
       // data contains title, description, and recipient
       const success = await sendAnnouncements(data)
       if (success) {

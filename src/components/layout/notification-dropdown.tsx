@@ -65,7 +65,6 @@ export function NotificationDropdown({
       if (readResponse) {
         setUnreadCount(0)
       }
-      console.log("read all")
       // You can call an actual API here to mark items as read if needed
     }
   }
@@ -94,8 +93,6 @@ export function NotificationDropdown({
 
   useEffect(() => {
     const value = Cookies.get("accessToken") ?? ""
-    console.log(value)
-
     // If no token is present, don't attempt connection
     if (!value) return
 
@@ -111,11 +108,11 @@ export function NotificationDropdown({
     //   secure: true,
     // });
 
-    const socket = io("https://kickoff.narsunprojects.com/realtime", {
+    const socket = io( `${process.env.NEXT_PUBLIC_SOCKET_FORM_URL}`, {
       autoConnect: true, // manually connect
       extraHeaders: {
         Authorization: `Bearer ${value}`,
-        "x-api-key": "LOC74LJ@qG3sBkSNWXMa0^&7Mvb3Ahg!ZQh3pEOg",
+        "x-api-key": `${process.env.NEXT_PUBLIC_API_FORM_x_API_KEY}`,
       },
       secure: true,
     })
@@ -126,7 +123,6 @@ export function NotificationDropdown({
     })
 
     socket.on("broadcast-message", (data) => {
-      console.log("New announcement received:", data)
       setUnreadCount((prev) => prev + 1)
     })
 

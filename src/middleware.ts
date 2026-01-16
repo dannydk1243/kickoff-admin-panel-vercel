@@ -42,6 +42,17 @@ export async function middleware(request: NextRequest) {
   const pathnameWithoutLocale = ensureWithoutPrefix(pathname, `/${locale}`)
   const isNotPublic = !isPublicRoute(pathnameWithoutLocale)
 
+
+
+  const token = request.cookies.get('token')?.value;
+
+  // If trying to access dashboard without a token, redirect to login
+  if (!token && pathname.includes('/(dashboard-layout)')) {
+    const lang = pathname.split('/')[1] || 'en';
+    return NextResponse.redirect(new URL(`/${lang}/auth/login`, request.url));
+  }
+
+
   if (isNotPublic) {
     const accessToken = request.cookies.get("accessToken")?.value
     const adminProfileCookie = request.cookies.get("adminProfile")?.value

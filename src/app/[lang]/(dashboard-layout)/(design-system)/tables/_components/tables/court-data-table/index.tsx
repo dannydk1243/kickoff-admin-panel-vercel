@@ -89,11 +89,9 @@ export function CourtDataTable() {
 
   useEffect(() => {
     let val = searchParams.get("id")
-    console.log("useEffect", val)
     setParamId(val ?? "")
     const timer = setTimeout(() => {
       if (val) {
-        console.log("open")
         setTimeout(() => setOpen(true), 0)
       }
     }, 2000)
@@ -107,7 +105,6 @@ export function CourtDataTable() {
     const value = Cookies.get("adminProfile") ?? ""
     const adminData = JSON.parse(value)
 
-    console.log("User Role:", adminData.role)
     const fetchData = async () => {
       setLoading(true)
 

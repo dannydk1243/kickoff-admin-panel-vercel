@@ -129,7 +129,6 @@ export function InvoiceTableRowActions({
   const [paramId, setParamId] = useState<string | null>(null)
   useEffect(() => {
     let val = searchParams.get("id")
-    console.log("useEffect", val)
     setParamId(val)
   }, [])
 
@@ -141,8 +140,6 @@ export function InvoiceTableRowActions({
   const handleEdit = () => {
     setParamId("")
     setTimeout(() => setOpen(true), 0)
-    // Implement edit action (e.g. open edit modal or redirect)
-    console.log("Edit action for id:", id)
   }
 
   return (

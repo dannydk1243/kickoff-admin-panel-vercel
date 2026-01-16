@@ -20,7 +20,6 @@ export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
   const dictionary: any = useTranslation()
-  console.log("zxcasdz2", table.getPageCount())
 
   return (
     <div className="flex flex-col items-center  gap-2 py-4 md:flex-row">

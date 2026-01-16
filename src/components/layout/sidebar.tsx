@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 "use client"
 
 import Image from "next/image"
@@ -51,14 +50,13 @@ import {
 } from "@/components/ui/sidebar"
 import { DynamicIcon } from "@/components/dynamic-icon"
 import { CommandMenu } from "./command-menu"
+
 // import { cookies } from "next/headers"
 
 interface SidebarProps {
   dictionary: DictionaryType
   adminData: AdminProfile | null // New prop
 }
-
-
 
 export function Sidebar({ dictionary, adminData }: SidebarProps) {
   type WithRoles =
@@ -69,9 +67,7 @@ export function Sidebar({ dictionary, adminData }: SidebarProps) {
   const params = useParams()
   const { openMobile, setOpenMobile, isMobile } = useSidebar()
   const { settings } = useSettings()
-
-  console.log("cookiasdeData", adminData?.role);
-
+ 
 
   const locale = params.lang as LocaleType
   const direction = i18n.localeDirection[locale]
@@ -79,8 +75,6 @@ export function Sidebar({ dictionary, adminData }: SidebarProps) {
   const isHoizontalAndDesktop = settings.layout === "horizontal" && !isMobile
 
   // const { data: session } = useSession()
-
-
 
   // const role = getCookieStore().toString();
 

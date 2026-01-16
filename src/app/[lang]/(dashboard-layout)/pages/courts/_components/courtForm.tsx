@@ -257,7 +257,6 @@ export function CourtForm({
     const value = Cookies.get("adminProfile") ?? ""
     const adminData = JSON.parse(value)
 
-    console.log("User Role:", adminData.role)
 
     // 3. Update your state
     setUserRole(adminData.role)
@@ -293,7 +292,6 @@ export function CourtForm({
     }
 
     try {
-      console.log(courtResponceId, "id")
       // 3. Construct the body dynamically
       const body = {
         courtId: courtId,
@@ -615,12 +613,7 @@ export function CourtForm({
         const offStartMins = parseTimeToMinutes(offDayStartTime)
         const offEndMins = parseTimeToMinutes(offDayEndTime)
 
-        console.log("DEBUG:", {
-          offDayStartTime,
-          offDayEndTime,
-          offStartMins,
-          offEndMins,
-        })
+        
         // BUG RESOLUTION: Check if parsing failed (-1) before comparing
         if (offStartMins === -1 || offEndMins === -1) {
           return triggerError(
@@ -673,7 +666,6 @@ export function CourtForm({
       })),
       offDayPayloadData: offDayPayload,
     }
-    console.log(finalPayload, data, courtResponceId)
     try {
       if (isOffDay) {
         const [availabilityRes, offDayRes] = await Promise.all([
@@ -1158,7 +1150,6 @@ export function CourtForm({
                         onValueChange={(val) => {
                           // setCourtStatus(val)
                           setStatusDropDown(val)
-                          console.log(val)
                         }}
                         value={statusDropdown}
                       >
