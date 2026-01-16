@@ -51,9 +51,9 @@ export function Auth({
               width={24}
               className="dark:invert"
             />
-            <span>Shadboard</span>
+            <span>KickOFF</span>
           </Link>
-          <LanguageDropdown dictionary={dictionary} />
+          {/* <LanguageDropdown dictionary={dictionary} /> */}
         </div>
         <div className="max-w-[28rem] w-full m-auto px-6 py-12 space-y-6">
           {children}
