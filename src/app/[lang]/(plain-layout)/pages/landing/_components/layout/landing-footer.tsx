@@ -64,25 +64,30 @@ export function LandingFooter() {
         <div className="container flex justify-between items-center p-4 md:px-6">
           <p className="text-xs text-muted-foreground md:text-sm">
             © {currentYear}{" "}
-            <a
+            {/* <a
               href="/"
               target="_blank"
               rel="noopener noreferrer"
               className={cn(buttonVariants({ variant: "link" }), "inline p-0")}
             >
-              Shadboard
-            </a>
+              KickOff
+            </a> */}
+            <p
+              className={cn(buttonVariants({ variant: "link" }), "inline p-0")}
+            >
+              KickOff
+            </p>{" "}
             .
           </p>
           <p className="text-xs text-muted-foreground md:text-sm">
             Designed & Developed by{" "}
             <a
-              href="https://github.com/Qualiora"
+              href="https://narsunstudios.com/en/"
               target="_blank"
               rel="noopener noreferrer"
               className={cn(buttonVariants({ variant: "link" }), "inline p-0")}
             >
-              Qualiora
+              Narsun Studios
             </a>
             .
           </p>

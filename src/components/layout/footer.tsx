@@ -10,25 +10,28 @@ export function Footer() {
       <div className="container flex justify-between items-center p-4 md:px-6">
         <p className="text-xs text-muted-foreground md:text-sm">
           © {currentYear}{" "}
-          <a
+          {/* <a
             href="/"
             target="_blank"
             rel="noopener noreferrer"
             className={cn(buttonVariants({ variant: "link" }), "inline p-0")}
           >
             Shadboard
-          </a>
+          </a> */}
+          <span className={cn(buttonVariants({ variant: "link" }), "inline p-0")}>
+            KickOFF
+          </span>{" "}
           .
         </p>
         <p className="text-xs text-muted-foreground md:text-sm">
           Designed & Developed by{" "}
           <a
-            href="https://github.com/Qualiora"
+            href="https://narsunstudios.com/en/"
             target="_blank"
             rel="noopener noreferrer"
             className={cn(buttonVariants({ variant: "link" }), "inline p-0")}
           >
-            Qualiora
+            Narsun Studios
           </a>
           .
         </p>
