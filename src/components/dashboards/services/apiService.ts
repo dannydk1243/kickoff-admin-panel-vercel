@@ -7,6 +7,38 @@ import { ProfileInfoFormType } from "@/app/[lang]/(dashboard-layout)/pages/accou
 
 import { toast } from "@/hooks/use-toast"
 
+export async function sendReinviteMail(email: string) {
+  const body = {
+    email: email
+  }
+  try {
+     const res = await API.post(`/auth/admin/activation/email/send`, body)
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Activation failed",
+        description: "Unable to send email ",
+      })
+      return false
+    } 
+    toast({
+      title: "Sent",
+      description: "Re-Invitation email sent successfully.",
+    })
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return false
+  }
+}
+
 export async function registerAdminOrOwner(
   data: { email: string; name: string; phoneNumber: string },
   pathUrl: string
@@ -630,7 +662,6 @@ export async function courtCreation(
   const courtSize = `${data.size}${data.unitSize}`
   const formData = new FormData()
 
-
   // Helper to append only if field was changed (used only when courtId exists)
   const appendIfChanged = (fieldName: string, value: any) => {
     if (changedFields.includes(fieldName)) {
@@ -664,7 +695,7 @@ export async function courtCreation(
 
     // These empty fields always appended
     appendIfChanged("locationId", "")
-    appendIfChanged("mapId", "")
+    appendIfChanged("mapUrl", data.mapUrl)
     appendIfChanged("latitude", "")
     appendIfChanged("longitude", "")
 
@@ -692,7 +723,7 @@ export async function courtCreation(
     formData.append("address", data.address)
 
     formData.append("locationId", "")
-    formData.append("mapId", "")
+    formData.append("mapUrl", data.mapUrl)
     formData.append("latitude", "")
     formData.append("longitude", "")
 

@@ -7,8 +7,9 @@ export const routeMap = new Map<string, RouteType>([
   ["/forgot-password", { type: "guest" }],
   ["/auth-admin-activate", { type: "guest" }],
   ["/auth-reset-password", { type: "guest" }],
+  ["/pages/maintenance", {type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]}],
   ["/", { type: "public" }],
-  ["/docs", { type: "public" }],
+  // ["/docs", { type: "public" }],
 
   // PROTECTED ROUTES WITH ROLES
   ["/", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],

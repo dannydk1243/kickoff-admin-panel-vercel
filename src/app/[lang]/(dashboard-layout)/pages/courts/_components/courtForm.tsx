@@ -57,6 +57,7 @@ type ProfileInfoFormType = {
   district: string
   area: string
   address: string
+  mapUrl: string
   amenities: string[]
   courtImages: File[]
   description: string
@@ -257,7 +258,6 @@ export function CourtForm({
     const value = Cookies.get("adminProfile") ?? ""
     const adminData = JSON.parse(value)
 
-
     // 3. Update your state
     setUserRole(adminData.role)
   }, [])
@@ -384,6 +384,7 @@ export function CourtForm({
           district: court.location.district,
           area: court.location.area,
           address: court.location.address,
+          mapUrl: court.location.mapUrl,
           amenities: court.amenities,
           description: court.description,
           bufferMinutes: court.bufferMinutes,
@@ -613,7 +614,6 @@ export function CourtForm({
         const offStartMins = parseTimeToMinutes(offDayStartTime)
         const offEndMins = parseTimeToMinutes(offDayEndTime)
 
-        
         // BUG RESOLUTION: Check if parsing failed (-1) before comparing
         if (offStartMins === -1 || offEndMins === -1) {
           return triggerError(
@@ -911,17 +911,36 @@ export function CourtForm({
               {/* Capacity, Slot Duration, Buffer, Price (Apply disabled={view} to all) */}
               {/* ... (Apply similar logic to Capacity, SlotDuration, Buffer, Price inputs) ... */}
 
+              <div className="h-[8.5vh]">
+                <FormField
+                  control={control}
+                  name="capacity"
+                   rules={{ required: "Capacity is required" }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Capacity*</FormLabel>
+                      <FormControl>
+                        <Input {...field} disabled={view} placeholder="Capacity" />
+                      </FormControl>
+                      <FormMessage>{errors.size?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               {/* Example for Price */}
               <div className="h-[8.5vh]">
                 <FormField
                   control={control}
                   name="price"
+                  rules={{ required: "Price is required" }}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Price*</FormLabel>
                       <FormControl>
                         <Input {...field} disabled={view} placeholder="Price" />
                       </FormControl>
+                      <FormMessage>{errors.price?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -932,12 +951,56 @@ export function CourtForm({
               <div className="h-[8.5vh]">
                 <FormField
                   control={control}
+                  name="mapUrl"
+                  rules={{ required: "Map URL is required" }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Map URL*</FormLabel>
+                      <FormControl>
+                        <Input {...field} disabled={view} placeholder="Map Url" />
+                      </FormControl>
+                      <FormMessage>{errors.mapUrl?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="h-[8.5vh]">
+                <FormField
+                  control={control}
                   name="city"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>City</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="City" disabled={view} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="h-[8.5vh]">
+                <FormField
+                  control={control}
+                  name="area"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Area</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Area" disabled={view} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="h-[8.5vh]">
+                <FormField
+                  control={control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Address" disabled={view} />
                       </FormControl>
                     </FormItem>
                   )}

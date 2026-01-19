@@ -66,24 +66,24 @@ export const navigationsData: NavigationType[] = [
         iconName: "Users",
         roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]
       },
-      {
-        title: "All Bookings",
-        href: "/pages/all-bookings",
-        iconName: "Users",
-        roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
-      },
-      {
-        title: "All Trainings",
-        href: "/pages/all-trainings",
-        iconName: "Users",
-        roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
-      },
-      {
-        title: "Reports",
-        href: "/pages/reports",
-        iconName: "Users",
-        roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
-      },
+      // {
+      //   title: "All Bookings",
+      //   href: "/pages/all-bookings",
+      //   iconName: "Users",
+      //   roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
+      // },
+      // {
+      //   title: "All Trainings",
+      //   href: "/pages/all-trainings",
+      //   iconName: "Users",
+      //   roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
+      // },
+      // {
+      //   title: "Reports",
+      //   href: "/pages/reports",
+      //   iconName: "Users",
+      //   roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
+      // },
       {
         title: "Announcement",
         href: "/pages/announcement",
@@ -91,12 +91,12 @@ export const navigationsData: NavigationType[] = [
         roles: [ROLES.SUPERADMIN]
       },
 
-      {
-        title: "Setting",
-        href: "/pages/setting",
-        iconName: "Users",
-        roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
-      },
+      // {
+      //   title: "Setting",
+      //   href: "/pages/setting",
+      //   iconName: "Users",
+      //   roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
+      // },
       // {
       //   title: "Settings",
       //   href: "/pages/account/settings",

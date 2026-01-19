@@ -9,6 +9,7 @@ import { InvoiceTableRowActions } from "./data-table-row-actions"
 type InvoiceTableRow = InvoiceType & {
   isBlocked: boolean
   isDeleted: boolean
+  isVerified: boolean
   deletedByAdmin?: boolean
 }
 
@@ -77,16 +78,16 @@ export const getColumns = (
         return <span>{new Date(createdAt).toLocaleDateString() || "N/A"}</span>
       },
     },
-    {
-      accessorKey: "created",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Total bookings" />
-      ),
-      cell: ({ row }) => {
-        const createdAt = row.getValue<string>("createdAt")
-        return <span>{createdAt?.split("-")[0] || "N/A"}</span>
-      },
-    },
+    // {
+    //   accessorKey: "created",
+    //   header: ({ column }) => (
+    //     <DataTableColumnHeader column={column} title="Total bookings" />
+    //   ),
+    //   cell: ({ row }) => {
+    //     const createdAt = row.getValue<string>("createdAt")
+    //     return <span>{createdAt?.split("-")[0] || "N/A"}</span>
+    //   },
+    // },
 
 
     {
@@ -114,6 +115,29 @@ export const getColumns = (
             {status}
           </span>
         )
+      },
+    },
+    {
+      id: 'isVerified',
+       header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Verification" />
+      ),
+      cell: ({ row }) => {
+        const { isVerified } = row.original
+
+        let status = "Verified"
+        let className = "text-green-600"
+
+        if (!isVerified) {
+          status = "Unverified"
+          className = "text-red-600"
+        }
+
+        return <span
+          className={`${className}  inline-block min-w-[3vw]`}
+        >
+          {status}
+        </span>
       },
     },
     {
