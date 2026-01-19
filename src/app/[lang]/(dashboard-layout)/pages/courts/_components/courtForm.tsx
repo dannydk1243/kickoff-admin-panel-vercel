@@ -253,14 +253,7 @@ export function CourtForm({
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate()
 
-  useEffect(() => {
-    // Read the cookie only after the component mounts to avoid Hydration errors
-    const value = Cookies.get("adminProfile") ?? ""
-    const adminData = JSON.parse(value)
-
-    // 3. Update your state
-    setUserRole(adminData.role)
-  }, [])
+  let adminData = { role: "", _id: "" }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -467,7 +460,12 @@ export function CourtForm({
   }, [selectedOwner, reset, courtId])
 
   useEffect(() => {
-    if (courtId) return
+    const value = Cookies.get("adminProfile") ?? ""
+    adminData = JSON.parse(value)
+
+    // 3. Update your state
+    setUserRole(adminData.role)
+
     const fetchData = async () => {
       // setLoading(true);
       const res = await getOnlyOwners()
@@ -478,9 +476,17 @@ export function CourtForm({
         setAllOwnersList([])
       }
     }
-
-    fetchData()
-  }, [])
+    console.log(selectedOwner, "fetchData", userRole, adminData)
+    if (adminData.role === "OWNER") {
+      if (adminData._id) {
+        setSelectedOwner?.(adminData._id)
+      }
+    }
+    // 3. Otherwise, if they are an ADMIN, they need to see the list to pick one
+    else {
+      fetchData()
+    }
+  }, [courtId, userRole, adminData._id, setSelectedOwner])
 
   // Sync owner field changes to external setSelectedOwner
   const ownerValue = watch("owner")
@@ -749,7 +755,7 @@ export function CourtForm({
                 />
               </div>
 
-              {!courtId && (
+              {!courtId && userRole !== "OWNER" && (
                 <div className="h-[8.5vh]">
                   {/* Owner */}
                   <FormField
@@ -915,12 +921,23 @@ export function CourtForm({
                 <FormField
                   control={control}
                   name="capacity"
-                   rules={{ required: "Capacity is required" }}
+                  rules={{ required: "Capacity is required" }}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Capacity*</FormLabel>
                       <FormControl>
-                        <Input {...field} disabled={view} placeholder="Capacity" />
+                        <Input
+                          {...field}
+                          onInput={(e) => {
+                            if (view) return
+                            const input = e.currentTarget
+                            let val = input.value.replace(/[^0-9.]/g, "")
+                            input.value = val
+                            field.onChange(val)
+                          }}
+                          disabled={view}
+                          placeholder="Capacity"
+                        />
                       </FormControl>
                       <FormMessage>{errors.size?.message}</FormMessage>
                     </FormItem>
@@ -938,7 +955,18 @@ export function CourtForm({
                     <FormItem>
                       <FormLabel>Price*</FormLabel>
                       <FormControl>
-                        <Input {...field} disabled={view} placeholder="Price" />
+                        <Input
+                          {...field}
+                          onInput={(e) => {
+                            if (view) return
+                            const input = e.currentTarget
+                            let val = input.value.replace(/[^0-9.]/g, "")
+                            input.value = val
+                            field.onChange(val)
+                          }}
+                          disabled={view}
+                          placeholder="Price"
+                        />
                       </FormControl>
                       <FormMessage>{errors.price?.message}</FormMessage>
                     </FormItem>
@@ -957,7 +985,11 @@ export function CourtForm({
                     <FormItem>
                       <FormLabel>Map URL*</FormLabel>
                       <FormControl>
-                        <Input {...field} disabled={view} placeholder="Map Url" />
+                        <Input
+                          {...field}
+                          disabled={view}
+                          placeholder="Map Url"
+                        />
                       </FormControl>
                       <FormMessage>{errors.mapUrl?.message}</FormMessage>
                     </FormItem>
@@ -1000,7 +1032,11 @@ export function CourtForm({
                     <FormItem>
                       <FormLabel>Address</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Address" disabled={view} />
+                        <Input
+                          {...field}
+                          placeholder="Address"
+                          disabled={view}
+                        />
                       </FormControl>
                     </FormItem>
                   )}

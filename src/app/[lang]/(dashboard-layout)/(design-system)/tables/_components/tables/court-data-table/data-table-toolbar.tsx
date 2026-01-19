@@ -1,22 +1,22 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import type { Table } from "@tanstack/react-table"
-
-import { Input } from "@/components/ui/input"
-import { Button, ButtonLoading } from "@/components/ui/button"
+import Cookies from "js-cookie"
 import { DiamondPlus } from "lucide-react"
 
+import type { Table } from "@tanstack/react-table"
+
+import { Button, ButtonLoading } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-
+import { Input } from "@/components/ui/input"
+import { CourtCustomModal } from "@/app/[lang]/(dashboard-layout)/pages/courts/_components/courtCustomModal"
 import { CourtForm } from "@/app/[lang]/(dashboard-layout)/pages/courts/_components/courtForm"
 import { getOnlyOwners } from "@/components/dashboards/services/apiService"
-import { CourtCustomModal } from "@/app/[lang]/(dashboard-layout)/pages/courts/_components/courtCustomModal"
 
 interface InvoiceTableToolbarProps<TTable> {
   table: Table<TTable>
@@ -36,7 +36,7 @@ export function InvoiceTableToolbar<TTable>({
   const [open, setOpen] = useState(false)
 
   const [inputValue, setInputValue] = useState(searchTerm)
-
+  const [selectedOwner, setSelectedOwner] = useState("");
   // const [selectedRole, setSelectedRole] = useState<string | undefined>(undefined)
 
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null)
@@ -70,24 +70,23 @@ export function InvoiceTableToolbar<TTable>({
   }, [])
 
   useEffect(() => {
-    
-  //   const fetchData = async () => {
-  //     // setLoading(true);
-  //     const res = await getOnlyOwners();
-
-  //     if (res?.admins) {
-  //       setAllOwnersList(res.admins);
-  //       // setTotalCount(res.pagination.total); // ✅ TOTAL ROWS
-  //     } else {
-  //       setAllOwnersList([]);
-  //       // setTotalCount(0);
-  //     }
-
-  //   };
-
-  //   fetchData();
-  }, []);
-
+    //   const fetchData = async () => {
+    //     // setLoading(true);
+    //     const res = await getOnlyOwners();
+    //     if (res?.admins) {
+    //       setAllOwnersList(res.admins);
+    //       // setTotalCount(res.pagination.total); // ✅ TOTAL ROWS
+    //     } else {
+    //       setAllOwnersList([]);
+    //       // setTotalCount(0);
+    //     }
+    //   };
+    //   fetchData();
+    const value = Cookies.get("adminProfile") ?? ""
+    let adminData = JSON.parse(value)
+    setSelectedOwner(adminData._id);
+  console.log(adminData, selectedOwner, 'data')
+  }, [])
 
   return (
     <>
@@ -114,12 +113,10 @@ export function InvoiceTableToolbar<TTable>({
         />
       </div>
 
-
-
       {/* Keep modal if needed or remove if not used */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg sm:max-w-[65vw] max-h-[98vh] overflow-visible">
-          <CourtForm onClose={() => setOpen(false)} courtId={""} view={false}/>
+          <CourtForm onClose={() => setOpen(false)} selectedOwner={selectedOwner} setSelectedOwner={setSelectedOwner} courtId={""} view={false} />
         </DialogContent>
       </Dialog>
 
