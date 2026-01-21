@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
+
 import type { NextRequest } from "next/server"
+
 
 import { canAccessRoute, isGuestRoute, isPublicRoute } from "@/lib/auth-routes"
 import {
@@ -9,6 +11,7 @@ import {
   isPathnameMissingLocale,
 } from "@/lib/i18n"
 import { ensureRedirectPathname, ensureWithoutPrefix } from "@/lib/utils"
+import { checkIfRouteExists } from "./configs/auth-routes"
 
 /* ✅ Define profile type */
 type AdminProfile = {
@@ -17,8 +20,6 @@ type AdminProfile = {
   email?: string
   name?: string
 }
-
-
 
 function redirect(pathname: string, request: NextRequest) {
   const { search, hash } = request.nextUrl
@@ -40,71 +41,86 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const locale = getLocaleFromPathname(pathname)
   const pathnameWithoutLocale = ensureWithoutPrefix(pathname, `/${locale}`)
-  const isNotPublic = !isPublicRoute(pathnameWithoutLocale)
+  
+  // 1. Unified Token Retrieval
+  // Using 'accessToken' as the primary source of truth since your role check depends on it
+  const accessToken = request.cookies.get("accessToken")?.value
+  const token = request.cookies.get("token")?.value
+  const isAuthenticated = !!accessToken || !!token 
+  
+  const lang = locale || getPreferredLocale(request) || "en"
 
+  // 2. Handle the Root "/" Redirect
+  if (pathname === "/") {
+    const homePath = process.env.HOME_PATHNAME ?? "/pages/courts"
+    const loginPath = `/${lang}/sign-in`
+    
+    // Ensure the homePath has a locale prefix so it doesn't trigger "missing locale" redirect later
+    const destination = isAuthenticated 
+      ? ensureLocalizedPathname(homePath, lang) 
+      : loginPath
 
-
-  const token = request.cookies.get('token')?.value;
-
-  // If trying to access dashboard without a token, redirect to login
-  if (!token && pathname.includes('/(dashboard-layout)')) {
-    const lang = pathname.split('/')[1] || 'en';
-    return NextResponse.redirect(new URL(`/${lang}/auth/login`, request.url));
+    return NextResponse.redirect(new URL(destination, request.url))
   }
 
+  // 3. Public/Guest Logic
+  const isNotPublic = !isPublicRoute(pathnameWithoutLocale)
+  const isGuest = isGuestRoute(pathnameWithoutLocale)
 
   if (isNotPublic) {
-    const accessToken = request.cookies.get("accessToken")?.value
     const adminProfileCookie = request.cookies.get("adminProfile")?.value
-
-    /* ✅ Parse profile safely */
     let adminProfile: AdminProfile | null = null
 
     if (adminProfileCookie) {
       try {
-        adminProfile = JSON.parse(adminProfileCookie) as AdminProfile
+        // Decode URI component in case Vercel encoded the cookie string
+        adminProfile = JSON.parse(decodeURIComponent(adminProfileCookie)) as AdminProfile
       } catch {
         adminProfile = null
       }
     }
 
-    const isAuthenticated = !!accessToken
-    const isGuest = isGuestRoute(pathnameWithoutLocale)
     const isProtected = !isGuest
 
     // 🔐 Redirect unauthenticated users
     if (!isAuthenticated && isProtected) {
-      let redirectPathname = "/sign-in"
-
-      if (pathnameWithoutLocale !== "") {
-        redirectPathname = ensureRedirectPathname(redirectPathname, pathname)
+      // Avoid redirecting if already on login
+      if (!pathname.includes("/sign-in")) {
+        return redirect("/en/sign-in", request) // Use your login path
       }
-
-      return redirect(redirectPathname, request)
     }
 
-    // 🚫 Redirect authenticated users away from guest routes
+    // 🚫 Redirect authenticated users away from guest routes (like login page)
     if (isAuthenticated && isGuest) {
-      return redirect(process.env.HOME_PATHNAME || "/", request)
+      return redirect(process.env.HOME_PATHNAME || "/pages/courts", request)
     }
-
-    /* ✅ FIXED: role access (NO TS ERROR) */
-    const role = adminProfile?.role ?? ""
-
-
 
     // 🛑 Role-based access control
-    if (
-      isAuthenticated &&
-      !canAccessRoute(pathnameWithoutLocale, role) &&
-      pathnameWithoutLocale !== "/pages/unauthorized-401"
-    ) {
-      return redirect("/pages/unauthorized-401", request)
-    }
+    const role = adminProfile?.role ?? ""
+    if (pathnameWithoutLocale.startsWith('/pages')) {
+  
+  // Logic to determine if the route is "known"
+  // If canAccessRoute (or a new helper) returns false because the route isn't found
+  const isKnownRoute = checkIfRouteExists(pathnameWithoutLocale); 
+
+  if (!isKnownRoute) {
+    return redirect("/pages/not-found-404", request);
   }
 
-  // 🌍 Locale enforcement
-  if (!locale) {
+  // 2. Existing Role-based access control
+  if (
+    isAuthenticated &&
+    !canAccessRoute(pathnameWithoutLocale, role) &&
+    pathnameWithoutLocale !== "/pages/unauthorized-401" &&
+    pathnameWithoutLocale !== "/pages/not-found-404"
+  ) {
+    return redirect("/pages/unauthorized-401", request);
+  }
+}
+  }
+
+  // 🌍 Locale enforcement (Move to end)
+  if (!locale && pathname !== '/') {
     return redirect(pathname, request)
   }
 

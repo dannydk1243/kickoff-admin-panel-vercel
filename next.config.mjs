@@ -1,9 +1,13 @@
 import createMDX from "@next/mdx"
 
 /** @type {import('next').NextConfig} */
+
+const isProd = process.env.NODE_ENV === 'production';
+const sessionCookie = isProd ? '__Secure-next-auth.session-token' : 'next-auth.session-token';
+
 const nextConfig = {
   eslint: {
-    // Warning: This allows production builds to successfully complete 
+    // Warning: This allows production builds to successfully complete
     // even if your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
@@ -31,18 +35,18 @@ const nextConfig = {
       // },
       {
         source: '/',
-        destination: process.env.HOME_PATHNAME ||'/pages/courts',
-        permanent: true, // Use true for 301 (SEO) or false for 307 (temporary)
+        destination: process.env.HOME_PATHNAME || '/pages/courts',
+        permanent: false, // Use false (307) while testing to avoid browser caching issues
         has: [
           {
-            type: "cookie",
-            key: "next-auth.session-token",
+            type: 'cookie',
+            key: sessionCookie,
           },
         ],
       },
       {
-        source: '/:lang/pages',
-        destination: process.env.HOME_PATHNAME ||'/pages/courts',
+        source: "/:lang/pages",
+        destination: process.env.HOME_PATHNAME || "/pages/courts",
         permanent: true, // Use true for 301 (SEO) or false for 307 (temporary)
         has: [
           {
@@ -53,7 +57,7 @@ const nextConfig = {
       },
       {
         source: "/:lang",
-        destination: process.env.HOME_PATHNAME || "/en/pages/courts",
+        destination: process.env.HOME_PATHNAME || "/pages/courts",
         permanent: true,
         has: [
           {

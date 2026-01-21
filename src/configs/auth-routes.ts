@@ -26,3 +26,23 @@ export const routeMap = new Map<string, RouteType>([
   ["/pages/account/settings/security", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
 
 ])
+
+export function checkIfRouteExists(pathname: string): boolean {
+  const routes = [
+    "/pages/users", 
+    "/pages/admins", 
+    "/pages/court-owners", 
+    "/pages/courts",
+    "/pages/all-bookings",
+    "/pages/all-trainings",
+    "/pages/reports",
+    "/pages/announcement",
+    "/pages/setting",
+    "/pages/account/settings",
+    "/pages/account/settings/security",
+    "/pages/unauthorized-401",
+    "/pages/not-found-404"
+  ];
+
+  return routes.includes(pathname);
+}
