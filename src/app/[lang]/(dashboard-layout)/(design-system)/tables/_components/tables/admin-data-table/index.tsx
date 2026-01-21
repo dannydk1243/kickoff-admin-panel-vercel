@@ -1,6 +1,7 @@
-"use client";
+"use client"
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react"
+import { usePathname } from "next/navigation"
 import {
   flexRender,
   getCoreRowModel,
@@ -8,13 +9,15 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
 
 import type {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
+
+import { useTranslation } from "@/lib/translationContext"
 
 import {
   Card,
@@ -22,9 +25,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "@/components/ui/card"
+import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Table,
   TableBody,
@@ -32,34 +35,30 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-
-import { getColumns } from "./columns";
-import { InvoiceTableToolbar } from "./data-table-toolbar";
-import { getAllAdminsOwners } from "@/components/dashboards/services/apiService";
-import { usePathname } from "next/navigation";
-import { useTranslation } from "@/lib/translationContext";
+} from "@/components/ui/table"
+import { getAllAdminsOwners } from "@/components/dashboards/services/apiService"
+import { getColumns } from "./columns"
+import { InvoiceTableToolbar } from "./data-table-toolbar"
 
 export function AdminDataTable() {
-  const dictionary: any = useTranslation();
+  const dictionary: any = useTranslation()
   // Table state
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 15,
-  });
+  })
 
   // Data state
-  const [data, setData] = useState<any[]>([]);
-  const [totalCount, setTotalCount] = useState(0); // ✅ IMPORTANT
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<any[]>([])
+  const [totalCount, setTotalCount] = useState(0) // ✅ IMPORTANT
+  const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
 
   const pathname = usePathname()
-
 
   // Local status update
   const handleStatusUpdate = (
@@ -70,40 +69,52 @@ export function AdminDataTable() {
       prev.map((item) =>
         item._id === adminId ? { ...item, ...updates } : item
       )
-    );
-  };
+    )
+  }
 
   const columns = useMemo(
     () => getColumns(handleStatusUpdate),
     [handleStatusUpdate]
-  );
+  )
 
   let pathUrl: any = pathname?.split("/").pop()
 
+  const updateAdminsList = async () => {
+    const res = await getAllAdminsOwners(
+      pagination.pageIndex + 1,
+      pagination.pageSize,
+      searchTerm,
+      pathUrl
+    )
+    if (res?.admins) {
+      setData(res.admins)
+      setTotalCount(res.pagination.total) // ✅ TOTAL ROWS
+    }
+  }
 
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      setLoading(true)
 
-      const page = pagination.pageIndex + 1;
-      const limit = pagination.pageSize;
+      const page = pagination.pageIndex + 1
+      const limit = pagination.pageSize
 
-      const res = await getAllAdminsOwners(page, limit, searchTerm, pathUrl);
+      const res = await getAllAdminsOwners(page, limit, searchTerm, pathUrl)
 
       if (res?.admins) {
-        setData(res.admins);
-        setTotalCount(res.pagination.total); // ✅ TOTAL ROWS
+        setData(res.admins)
+        setTotalCount(res.pagination.total) // ✅ TOTAL ROWS
       } else {
-        setData([]);
-        setTotalCount(0);
+        setData([])
+        setTotalCount(0)
       }
 
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    fetchData();
-  }, [pagination.pageIndex, pagination.pageSize, searchTerm]);
+    fetchData()
+  }, [pagination.pageIndex, pagination.pageSize, searchTerm])
 
   // React Table
   const table = useReactTable({
@@ -111,7 +122,7 @@ export function AdminDataTable() {
     columns,
 
     manualPagination: true, // ✅ SERVER SIDE PAGINATION
-    rowCount: totalCount,   // ✅ TOTAL FROM API
+    rowCount: totalCount, // ✅ TOTAL FROM API
 
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -131,13 +142,18 @@ export function AdminDataTable() {
       rowSelection,
       pagination,
     },
-  });
+  })
 
   return (
     <Card>
       <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
         <CardTitle>{dictionary.tableLabels.adminsDataTable}</CardTitle>
-        <InvoiceTableToolbar table={table} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <InvoiceTableToolbar
+          table={table}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          callback={updateAdminsList}
+        />
       </CardHeader>
 
       <CardContent className="p-0">
@@ -154,9 +170,9 @@ export function AdminDataTable() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -166,7 +182,10 @@ export function AdminDataTable() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     Loading...
                   </TableCell>
                 </TableRow>
@@ -185,7 +204,10 @@ export function AdminDataTable() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     {dictionary.tableLabels.noResults}
                   </TableCell>
                 </TableRow>
@@ -199,5 +221,5 @@ export function AdminDataTable() {
         <DataTablePagination table={table} />
       </CardFooter>
     </Card>
-  );
+  )
 }

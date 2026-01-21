@@ -24,15 +24,26 @@ const nextConfig = {
       // Always list more specific static paths before dynamic ones like "/:lang"
       // to prevent Next.js from incorrectly matching static routes as dynamic parameters.
       // For example, if "/:lang" comes before "/docs", Next.js may treat "docs" as a language.
+      // {
+      //   source: "/docs",
+      //   destination: "/docs/overview/introduction",
+      //   permanent: true,
+      // },
       {
-        source: "/docs",
-        destination: "/docs/overview/introduction",
-        permanent: true,
+        source: '/',
+        destination: process.env.HOME_PATHNAME ||'/pages/courts',
+        permanent: true, // Use true for 301 (SEO) or false for 307 (temporary)
+        has: [
+          {
+            type: "cookie",
+            key: "next-auth.session-token",
+          },
+        ],
       },
       {
-        source: "/:lang",
-        destination: process.env.HOME_PATHNAME || "/en/pages/courts",
-        permanent: true,
+        source: '/:lang/pages',
+        destination: process.env.HOME_PATHNAME ||'/pages/courts',
+        permanent: true, // Use true for 301 (SEO) or false for 307 (temporary)
         has: [
           {
             type: "cookie",
@@ -47,15 +58,26 @@ const nextConfig = {
         has: [
           {
             type: "cookie",
-            key: "__Secure-next-auth.session-token",
+            key: "next-auth.session-token",
           },
         ],
       },
-      {
-        source: "/:lang/apps/email",
-        destination: "/:lang/apps/email/inbox",
-        permanent: true,
-      },
+      // {
+      //   source: "/:lang",
+      //   destination: process.env.HOME_PATHNAME || "/en/pages/courts",
+      //   permanent: true,
+      //   has: [
+      //     {
+      //       type: "cookie",
+      //       key: "__Secure-next-auth.session-token",
+      //     },
+      //   ],
+      // },
+      // {
+      //   source: "/:lang/apps/email",
+      //   destination: "/:lang/apps/email/inbox",
+      //   permanent: true,
+      // },
     ]
   },
 }

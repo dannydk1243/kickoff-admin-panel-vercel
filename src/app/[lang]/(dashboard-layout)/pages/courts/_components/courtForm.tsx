@@ -39,7 +39,7 @@ import {
   getCourtAvailability,
   getCourtById,
   getCourtUnavailability,
-  getOnlyOwners,
+  getOnlyAllowedOwners,
   updateCourtStatus,
 } from "@/components/dashboards/services/apiService"
 import { CourtImagesUpload } from "./courtImagesUpload"
@@ -120,6 +120,7 @@ type ProfileInfoFormProps = {
   allOwnersList?: string[]
   courtId: string
   view: boolean
+  callback?: () => void
   // setAllOwnersList?: (owner: string) => void
 }
 
@@ -154,7 +155,9 @@ export function CourtForm({
   setSelectedOwner,
   courtId,
   view,
+  callback,
 }: ProfileInfoFormProps) {
+  console.log(callback)
   const [userRole, setUserRole] = useState<string | undefined>()
   const [courtStatus, setCourtStatus] = useState<string>("APPROVED")
   const [statusDropdown, setStatusDropDown] = useState<string>("")
@@ -468,7 +471,7 @@ export function CourtForm({
 
     const fetchData = async () => {
       // setLoading(true);
-      const res = await getOnlyOwners()
+      const res = await getOnlyAllowedOwners()
 
       if (res?.admins) {
         setAllOwnersList(res.admins)
@@ -518,6 +521,10 @@ export function CourtForm({
         setCourtResponceId(success?._id)
       } else {
         setCourtResponceId(success?.court?._id)
+      }
+      console.log(success)
+      if (callback) {
+          callback()
       }
 
       if (!success) {

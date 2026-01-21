@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -8,13 +8,13 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
 
 import type {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
 
 import {
   Card,
@@ -22,9 +22,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "@/components/ui/card"
+import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Table,
   TableBody,
@@ -32,29 +32,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-
-import { getColumns } from "./columns";
-import { InvoiceTableToolbar } from "./data-table-toolbar";
-import { getAllAdminsOwners } from "@/components/dashboards/services/apiService";
+} from "@/components/ui/table"
+import { getAllAdminsOwners } from "@/components/dashboards/services/apiService"
+import { getColumns } from "./columns"
+import { InvoiceTableToolbar } from "./data-table-toolbar"
 
 export function OwnerDataTable() {
   // Table state
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 15,
-  });
+  })
 
   // Data state
-  const [data, setData] = useState<any[]>([]);
-  const [totalCount, setTotalCount] = useState(0); // ✅ IMPORTANT
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<any[]>([])
+  const [totalCount, setTotalCount] = useState(0) // ✅ IMPORTANT
+  const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
-
 
   // Local status update
   const handleStatusUpdate = (
@@ -65,37 +63,49 @@ export function OwnerDataTable() {
       prev.map((item) =>
         item._id === ownerId ? { ...item, ...updates } : item
       )
-    );
-  };
+    )
+  }
 
   const columns = useMemo(
     () => getColumns(handleStatusUpdate),
     [handleStatusUpdate]
-  );
+  )
+
+  const updateOwnersList = async () => {
+    const res = await getAllAdminsOwners(
+      pagination.pageIndex + 1,
+      pagination.pageSize,
+      searchTerm
+    )
+    if (res?.admins) {
+      setData(res.admins)
+      setTotalCount(res.pagination.total) // ✅ TOTAL ROWS
+    }
+  }
 
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      setLoading(true)
 
-      const page = pagination.pageIndex + 1;
-      const limit = pagination.pageSize;
+      const page = pagination.pageIndex + 1
+      const limit = pagination.pageSize
 
-      const res = await getAllAdminsOwners(page, limit, searchTerm);
+      const res = await getAllAdminsOwners(page, limit, searchTerm)
 
       if (res?.admins) {
-        setData(res.admins);
-        setTotalCount(res.pagination.total); // ✅ TOTAL ROWS
+        setData(res.admins)
+        setTotalCount(res.pagination.total) // ✅ TOTAL ROWS
       } else {
-        setData([]);
-        setTotalCount(0);
+        setData([])
+        setTotalCount(0)
       }
 
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    fetchData();
-  }, [pagination.pageIndex, pagination.pageSize, searchTerm]);
+    fetchData()
+  }, [pagination.pageIndex, pagination.pageSize, searchTerm])
 
   // React Table
   const table = useReactTable({
@@ -103,7 +113,7 @@ export function OwnerDataTable() {
     columns,
 
     manualPagination: true, // ✅ SERVER SIDE PAGINATION
-    rowCount: totalCount,   // ✅ TOTAL FROM API
+    rowCount: totalCount, // ✅ TOTAL FROM API
 
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -123,13 +133,18 @@ export function OwnerDataTable() {
       rowSelection,
       pagination,
     },
-  });
+  })
 
   return (
     <Card>
       <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
         <CardTitle>Owners Data Table</CardTitle>
-        <InvoiceTableToolbar table={table} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <InvoiceTableToolbar
+          table={table}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          callback={updateOwnersList}
+        />
       </CardHeader>
 
       <CardContent className="p-0">
@@ -146,9 +161,9 @@ export function OwnerDataTable() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -158,7 +173,10 @@ export function OwnerDataTable() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     Loading...
                   </TableCell>
                 </TableRow>
@@ -177,7 +195,10 @@ export function OwnerDataTable() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     No results.
                   </TableCell>
                 </TableRow>
@@ -191,5 +212,5 @@ export function OwnerDataTable() {
         <DataTablePagination table={table} />
       </CardFooter>
     </Card>
-  );
+  )
 }

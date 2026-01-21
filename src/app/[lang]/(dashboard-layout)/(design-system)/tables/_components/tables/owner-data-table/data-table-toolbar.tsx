@@ -20,6 +20,7 @@ interface InvoiceTableToolbarProps<TTable> {
   table: Table<TTable>
   searchTerm: string
   setSearchTerm: (term: string) => void
+  callback: () => void
 }
 
 
@@ -27,6 +28,7 @@ export function InvoiceTableToolbar<TTable>({
   table,
   searchTerm,
   setSearchTerm,
+  callback
 }: InvoiceTableToolbarProps<TTable>) {
   const [open, setOpen] = useState(false)
 
@@ -97,7 +99,7 @@ export function InvoiceTableToolbar<TTable>({
             <DialogTitle>Create Owner</DialogTitle>
           </DialogHeader>
 
-          <OwnerForm onClose={() => setOpen(false)} />
+          <OwnerForm onClose={() => setOpen(false)} callback={callback}/>
         </DialogContent>
       </Dialog>
     </>

@@ -100,6 +100,20 @@ export function CourtDataTable() {
     return () => clearTimeout(timer)
   }, [])
 
+  const updateCourtsList = async () => {
+    const value = Cookies.get("adminProfile") ?? ""
+    const adminData = JSON.parse(value)
+    const res = await getAllCourts(
+      pagination.pageIndex + 1,
+      pagination.pageSize,
+      searchTerm,
+      adminData.role
+    )
+    if (res?.courts) {
+      setData(res?.courts)
+      setTotalCount(res?.total) // ✅ TOTAL ROWS
+    }
+  }
   // Fetch data
   useEffect(() => {
     const value = Cookies.get("adminProfile") ?? ""
@@ -164,6 +178,7 @@ export function CourtDataTable() {
             table={table}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
+            callback={updateCourtsList}
           />
         </CardHeader>
 

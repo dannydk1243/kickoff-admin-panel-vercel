@@ -21,9 +21,10 @@ type ErrorsState = Partial<Record<keyof ProfileInfoState, string>>
 
 type ProfileInfoFormProps = {
   onClose?: () => void
+  callback?: () => void
 }
 
-export function AdminForm({ onClose }: ProfileInfoFormProps) {
+export function AdminForm({ onClose, callback }: ProfileInfoFormProps) {
   const [formState, setFormState] = useState<ProfileInfoState>({
     avatar: undefined,
     avatarPreview: undefined,
@@ -136,6 +137,7 @@ export function AdminForm({ onClose }: ProfileInfoFormProps) {
       if (!success) {
         return
       }
+      callback?.()
       onClose?.()
     } catch (err: any) {
       console.error(err)

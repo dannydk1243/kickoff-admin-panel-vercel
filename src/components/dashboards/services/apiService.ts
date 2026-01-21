@@ -9,10 +9,10 @@ import { toast } from "@/hooks/use-toast"
 
 export async function sendReinviteMail(email: string) {
   const body = {
-    email: email
+    email: email,
   }
   try {
-     const res = await API.post(`/auth/admin/activation/email/send`, body)
+    const res = await API.post(`/auth/admin/activation/email/send`, body)
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({
@@ -21,7 +21,7 @@ export async function sendReinviteMail(email: string) {
         description: "Unable to send email ",
       })
       return false
-    } 
+    }
     toast({
       title: "Sent",
       description: "Re-Invitation email sent successfully.",
@@ -179,6 +179,45 @@ export async function getOnlyOwners(
   try {
     const res = await API.post(
       `admins/all?search=${searchTerm}&page=${page}&limit=${limit}&role=${"OWNER"}`,
+      {}
+    )
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load admins",
+        description: "Unable to fetch admins list",
+      })
+      return null
+    }
+
+    // toast({
+    //    title: "Admins loaded",
+    //    description: "Admins list fetched successfully",
+    // });
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return null
+  }
+}
+
+export async function getOnlyAllowedOwners(
+  page: number = 1,
+  limit: number = 100,
+  searchTerm: string = ""
+) {
+  try {
+    const res = await API.post(
+      `admins/all?search=${searchTerm}&page=${page}&limit=${limit}&role=${"OWNER"}&isVerified=true&isBlocked=false&isDeleted=false&isActive=true`,
       {}
     )
 

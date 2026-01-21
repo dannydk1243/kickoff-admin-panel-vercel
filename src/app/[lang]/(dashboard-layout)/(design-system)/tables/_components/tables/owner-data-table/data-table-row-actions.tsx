@@ -1,9 +1,13 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
+import Cookies from "js-cookie"
 import { EllipsisVertical } from "lucide-react"
+
 import type { Row } from "@tanstack/react-table"
 import type { InvoiceType } from "../../../types"
+
+import { getStatusHandler } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -13,19 +17,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { updateAdminStatus } from "@/components/dashboards/services/apiService"
-import { getStatusHandler } from "@/lib/utils"
-
+import { sendReinviteMail, updateAdminStatus } from "@/components/dashboards/services/apiService"
 import { CustomModal } from "@/components/layout/CustomModal" // Adjust path if needed
 
 type InvoiceTableRow = InvoiceType & {
   isBlocked: boolean
   isDeleted: boolean
+  isVerified: boolean
+  email: string
 }
 
 interface InvoiceTableRowActionsProps {
   row: Row<InvoiceTableRow>
-  onStatusUpdate: (id: string, updates: { isBlocked: boolean; isDeleted: boolean }) => void
+  onStatusUpdate: (
+    id: string,
+    updates: { isBlocked: boolean; isDeleted: boolean }
+  ) => void
 }
 
 export function InvoiceTableRowActions({
@@ -39,6 +46,7 @@ export function InvoiceTableRowActions({
     "block" | "unblock" | "delete" | "restore" | null
   >(null)
   const [loading, setLoading] = useState(false)
+  const [validReinvite, setValidReinvite] = useState(false)
 
   const openModalFor = (action: "block" | "unblock" | "delete" | "restore") => {
     setPendingAction(action)
@@ -69,7 +77,11 @@ export function InvoiceTableRowActions({
     }
 
     try {
-      const success = await updateAdminStatus({ adminId: id, isBlocked, isDeleted })
+      const success = await updateAdminStatus({
+        adminId: id,
+        isBlocked,
+        isDeleted,
+      })
       if (success) {
         onStatusUpdate(id, { isBlocked, isDeleted })
         setModalOpen(false)
@@ -80,8 +92,26 @@ export function InvoiceTableRowActions({
     } finally {
       setLoading(false)
     }
-  }, [id, onStatusUpdate, pendingAction, row.original.isBlocked, row.original.isDeleted])
+  }, [
+    id,
+    onStatusUpdate,
+    pendingAction,
+    row.original.isBlocked,
+    row.original.isDeleted,
+  ])
 
+   const sendReinviteEmail = async function () {
+      const success = await sendReinviteMail(row.original.email)
+    }
+    
+  useEffect(() => {
+    const value = Cookies.get("adminProfile") ?? ""
+    const adminData = JSON.parse(value)
+    if (adminData.role == "SUPERADMIN" && !row.original.isVerified) {
+      setValidReinvite(true)
+    }
+    // console.log(row.original.email, "row data")
+  }, [])
   // Modal texts dynamically
   const modalTitle =
     pendingAction === "block"
@@ -121,6 +151,15 @@ export function InvoiceTableRowActions({
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-[160px]">
+            {validReinvite && (
+              <>
+                <DropdownMenuItem onClick={() => sendReinviteEmail()}>
+                  Re-invite Email
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+              </>
+            )}
             <DropdownMenuItem
               onClick={() =>
                 openModalFor(row.original.isBlocked ? "unblock" : "block")

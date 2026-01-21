@@ -22,6 +22,7 @@ interface InvoiceTableToolbarProps<TTable> {
   table: Table<TTable>
   searchTerm: string
   setSearchTerm: (term: string) => void
+  callback:() => void
 }
 
 interface ProfileInfoFormType {
@@ -32,6 +33,7 @@ export function InvoiceTableToolbar<TTable>({
   table,
   searchTerm,
   setSearchTerm,
+  callback
 }: InvoiceTableToolbarProps<TTable>) {
   const [open, setOpen] = useState(false)
 
@@ -116,7 +118,7 @@ export function InvoiceTableToolbar<TTable>({
       {/* Keep modal if needed or remove if not used */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg sm:max-w-[65vw] max-h-[98vh] overflow-visible">
-          <CourtForm onClose={() => setOpen(false)} selectedOwner={selectedOwner} setSelectedOwner={setSelectedOwner} courtId={""} view={false} />
+          <CourtForm onClose={() => setOpen(false)} selectedOwner={selectedOwner} setSelectedOwner={setSelectedOwner} courtId={""} view={false} callback={callback}/>
         </DialogContent>
       </Dialog>
 
