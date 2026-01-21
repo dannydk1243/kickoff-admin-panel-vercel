@@ -39,6 +39,7 @@ interface InvoiceTableToolbarProps<TTable> {
   setSearchTerm: (term: string) => void
   selectedRole?: string
   setSelectedRole?: (role: string | undefined) => void
+  callback?: () => void
 }
 
 interface ProfileInfoFormType {
@@ -50,7 +51,8 @@ export function InvoiceTableToolbar<TTable>({
   searchTerm,
   setSearchTerm,
   selectedRole,
-  setSelectedRole
+  setSelectedRole,
+  callback
 }: InvoiceTableToolbarProps<TTable>) {
   const [open, setOpen] = useState(false)
 
@@ -190,7 +192,7 @@ export function InvoiceTableToolbar<TTable>({
             <DialogTitle>Send Announcement</DialogTitle>
           </DialogHeader>
 
-          <NotificationObjectForm onClose={() => setOpen(false)} />
+          <NotificationObjectForm onClose={() => setOpen(false)} callback={callback}/>
         </DialogContent>
       </Dialog>
     </>

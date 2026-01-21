@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -8,13 +8,15 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
 
 import type {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-} from "@tanstack/react-table";
+} from "@tanstack/react-table"
+
+import { useTranslation } from "@/lib/translationContext"
 
 import {
   Card,
@@ -22,9 +24,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "@/components/ui/card"
+import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Table,
   TableBody,
@@ -32,33 +34,30 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-
-import { getColumns } from "./columns";
-import { InvoiceTableToolbar } from "./data-table-toolbar";
-import { getAllAnnouncements } from "@/components/dashboards/services/apiService";
-import { useTranslation } from "@/lib/translationContext";
+} from "@/components/ui/table"
+import { getAllAnnouncements } from "@/components/dashboards/services/apiService"
+import { getColumns } from "./columns"
+import { InvoiceTableToolbar } from "./data-table-toolbar"
 
 export function AnnouncementDataTable() {
-  const dictionary: any = useTranslation();
-  
+  const dictionary: any = useTranslation()
+
   // Table state
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 15,
-  });
+  })
 
   // Data state
-  const [data, setData] = useState<any[]>([]);
-  const [totalCount, setTotalCount] = useState(0); // ✅ IMPORTANT
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<any[]>([])
+  const [totalCount, setTotalCount] = useState(0) // ✅ IMPORTANT
+  const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedRole, setSelectedRole] = useState<string | undefined>("")
-
 
   // Local status update
   const handleStatusUpdate = (
@@ -69,37 +68,55 @@ export function AnnouncementDataTable() {
       prev.map((item) =>
         item._id === adminId ? { ...item, ...updates } : item
       )
-    );
-  };
+    )
+  }
 
   const columns = useMemo(
     () => getColumns(handleStatusUpdate),
     [handleStatusUpdate]
-  );
+  )
+
+  const updateAnnouncementsList = async () => {
+    const res = await getAllAnnouncements(
+      pagination.pageIndex + 1,
+      pagination.pageSize,
+      searchTerm,
+      selectedRole
+    )
+    if (res?.announcements) {
+      setData(res.announcements)
+      setTotalCount(res.total) // ✅ TOTAL ROWS
+    }
+  }
 
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      setLoading(true)
 
-      const page = pagination.pageIndex + 1;
-      const limit = pagination.pageSize;
+      const page = pagination.pageIndex + 1
+      const limit = pagination.pageSize
 
-      const res = await getAllAnnouncements(page, limit, searchTerm, selectedRole);
+      const res = await getAllAnnouncements(
+        page,
+        limit,
+        searchTerm,
+        selectedRole
+      )
 
       if (res?.announcements) {
-        setData(res.announcements);
-        setTotalCount(res.total); // ✅ TOTAL ROWS
+        setData(res.announcements)
+        setTotalCount(res.total) // ✅ TOTAL ROWS
       } else {
-        setData([]);
-        setTotalCount(0);
+        setData([])
+        setTotalCount(0)
       }
 
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    fetchData();
-  }, [pagination.pageIndex, pagination.pageSize]);
+    fetchData()
+  }, [pagination.pageIndex, pagination.pageSize])
 
   // React Table
   const table = useReactTable({
@@ -107,7 +124,7 @@ export function AnnouncementDataTable() {
     columns,
 
     manualPagination: true, // ✅ SERVER SIDE PAGINATION
-    rowCount: totalCount,   // ✅ TOTAL FROM API
+    rowCount: totalCount, // ✅ TOTAL FROM API
 
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -127,13 +144,20 @@ export function AnnouncementDataTable() {
       rowSelection,
       pagination,
     },
-  });
+  })
 
   return (
     <Card>
       <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
         <CardTitle>{dictionary.tableLabels.announcementDataTable}</CardTitle>
-        <InvoiceTableToolbar table={table} searchTerm={searchTerm} setSearchTerm={setSearchTerm} selectedRole={selectedRole} setSelectedRole={setSelectedRole} />
+        <InvoiceTableToolbar
+          table={table}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedRole={selectedRole}
+          setSelectedRole={setSelectedRole}
+          callback={updateAnnouncementsList}
+        />
       </CardHeader>
 
       <CardContent className="p-0">
@@ -150,9 +174,9 @@ export function AnnouncementDataTable() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -162,7 +186,10 @@ export function AnnouncementDataTable() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     Loading...
                   </TableCell>
                 </TableRow>
@@ -181,7 +208,10 @@ export function AnnouncementDataTable() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     {dictionary.tableLabels.noResults}
                   </TableCell>
                 </TableRow>
@@ -195,5 +225,5 @@ export function AnnouncementDataTable() {
         <DataTablePagination table={table} />
       </CardFooter>
     </Card>
-  );
+  )
 }

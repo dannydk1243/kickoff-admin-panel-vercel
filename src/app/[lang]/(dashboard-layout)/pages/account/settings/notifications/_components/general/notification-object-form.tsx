@@ -32,9 +32,10 @@ import { sendAnnouncements } from "@/components/dashboards/services/apiService"
 
 type NotificationObjectFormProps = {
   onClose?: () => void
+  callback?: () => void
 }
 
-export function NotificationObjectForm({ onClose }: NotificationObjectFormProps) {
+export function NotificationObjectForm({ onClose, callback }: NotificationObjectFormProps) {
 
 
   // 2. Initialize Form with correct default values
@@ -53,6 +54,7 @@ export function NotificationObjectForm({ onClose }: NotificationObjectFormProps)
       const success = await sendAnnouncements(data)
       if (success) {
         form.reset()
+        callback?.()
         onClose?.()
       }
     } catch (err: any) {
