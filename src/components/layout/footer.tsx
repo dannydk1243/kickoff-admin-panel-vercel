@@ -16,7 +16,7 @@ export function Footer() {
             rel="noopener noreferrer"
             className={cn(buttonVariants({ variant: "link" }), "inline p-0")}
           >
-            Shadboard
+            KickOFF
           </a> */}
           <span className={cn(buttonVariants({ variant: "link" }), "inline p-0")}>
             KickOFF

@@ -17,7 +17,7 @@ export function DocsHeader() {
             width={24}
             className="dark:invert"
           />
-          <span>Shadboard</span>
+          <span>KickOFF</span>
         </Link>
         <DocsCommandMenu buttonClassName="ms-auto" />
         <DocsModeDropdown />

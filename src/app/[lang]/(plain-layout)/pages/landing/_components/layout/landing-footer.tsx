@@ -23,7 +23,7 @@ export function LandingFooter() {
               width={24}
               className="dark:invert"
             />
-            <span>Shadboard</span>
+            <span>KickOFF</span>
           </Link>
           <h3 className="font-semibold leading-none tracking-tight">
             Subscribe to our newsletter
