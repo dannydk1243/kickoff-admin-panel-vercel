@@ -66,12 +66,12 @@ export const navigationsData: NavigationType[] = [
         iconName: "SquareMenu",
         roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]
       },
-      {
-        title: "Bookings",
-        href: "/pages/bookings",
-        iconName: "Album",
-        roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]
-      },
+      // {
+      //   title: "Bookings",
+      //   href: "/pages/bookings",
+      //   iconName: "Album",
+      //   roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]
+      // },
       // {
       //   title: "All Trainings",
       //   href: "/pages/trainings",
