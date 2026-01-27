@@ -46,12 +46,12 @@ export const getColumns = (
       },
     },
     {
-      accessorKey: "type",
+      accessorKey: "audience",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Recipients" />
       ),
       cell: ({ row }) => {
-        const phone = row.getValue<string>("type")
+        const phone = row.getValue<string>("audience")
         return <span>{phone}</span>
       },
     },

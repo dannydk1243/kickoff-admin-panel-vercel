@@ -1455,7 +1455,7 @@ export async function readAllNotifications() {
 
 export async function sendAnnouncements(body: {}) {
   try {
-    const res = await API.post(`/announcements/send`, body)
+    const res = await API.post(`/notifications/announcement`, body)
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({

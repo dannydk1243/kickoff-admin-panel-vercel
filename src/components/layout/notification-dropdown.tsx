@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { CustomLoader } from "@/app/[lang]/(dashboard-layout)/(design-system)/ui/loader/page"
 import Cookies from "js-cookie"
-import { Bell } from "lucide-react"
+import { Bell, Megaphone, MessageCircle } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 
@@ -36,6 +36,13 @@ interface Notification {
   createdAt: string
   updatedAt: string
 }
+
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  ANNOUNCEMENT: <Megaphone className="h-4 w-4 text-red-500" />,
+  NOTIFICATION: <MessageCircle className="h-4 w-4 text-green-500" />,
+  // Add more here easily:
+  // ALERT: <AlertCircle className="h-4 w-4 text-red-500" />
+};
 
 export function NotificationDropdown({
   dictionary,
@@ -190,7 +197,18 @@ export function NotificationDropdown({
                     <div className="flex items-start gap-3 py-4 px-4 hover:bg-accent transition-colors">
                       <Avatar className="h-9 w-9">
                         <AvatarFallback>
-                          {item.sender?.charAt(0).toUpperCase() || "U"}
+                          {/* {item.sender?.charAt(0).toUpperCase() || "U"} */}
+                          {/* {item.category === 'ANNOUNCEMENT' && (
+                            <>
+                            <Megaphone></Megaphone>
+                            </>
+                          )}
+                          {item.category === 'NOTIFICATION' && (
+                            <>
+                            <MessageCircle></MessageCircle>
+                            </>
+                          )} */}
+                          {CATEGORY_ICONS[item.category] || <Bell className="h-4 w-4" />}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 space-y-1">

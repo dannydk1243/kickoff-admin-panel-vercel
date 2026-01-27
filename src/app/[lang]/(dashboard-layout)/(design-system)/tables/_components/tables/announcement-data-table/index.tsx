@@ -80,11 +80,9 @@ export function AnnouncementDataTable() {
     const res = await getAllAnnouncements(
       pagination.pageIndex + 1,
       pagination.pageSize,
-      searchTerm,
-      selectedRole
     )
-    if (res?.announcements) {
-      setData(res.announcements)
+    if (res?.notifications) {
+      setData(res.notifications)
       setTotalCount(res.total) // ✅ TOTAL ROWS
     }
   }
@@ -100,12 +98,10 @@ export function AnnouncementDataTable() {
       const res = await getAllAnnouncements(
         page,
         limit,
-        searchTerm,
-        selectedRole
       )
 
-      if (res?.announcements) {
-        setData(res.announcements)
+      if (res?.notifications) {
+        setData(res.notifications)
         setTotalCount(res.total) // ✅ TOTAL ROWS
       } else {
         setData([])
