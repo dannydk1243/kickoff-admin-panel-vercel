@@ -10,13 +10,14 @@ import type { AdminProfile, LocaleType } from "@/types"
 import { logout } from "@/lib/auth"
 
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { getAnnouncementCount } from "@/components/dashboards/services/apiService"
+import { getNotificationCount } from "@/components/dashboards/services/apiService"
 import { LanguageDropdown } from "@/components/language-dropdown"
 import { FullscreenToggle } from "@/components/layout/full-screen-toggle"
 import { NotificationDropdown } from "@/components/layout/notification-dropdown"
 import { UserDropdown } from "@/components/layout/user-dropdown"
 import { ModeDropdown } from "@/components/mode-dropdown"
 import { Button } from "../../ui/button"
+import { ActionNotificationDropdown } from "../action-notification-dropdown"
 import { ToggleMobileSidebar } from "../toggle-mobile-sidebar"
 
 export function VerticalLayoutHeader({
@@ -31,19 +32,20 @@ export function VerticalLayoutHeader({
   // const locale = params.lang as LocaleType
   const lang = (params?.lang as string) || "en"
   const [notifications, setNotification] = useState({
-    announcements: [],
+    notifications: [],
     unreadCount: 0,
     pages: 0,
   })
-
+  
   useEffect(() => {
     // Define the async function inside
-    const fetchAnnouncements = async () => {
+    const fetchNotifications = async () => {
       try {
-        const response = await getAnnouncementCount()
+        const response = await getNotificationCount()
+        console.log('unreadResponse', response)
         setNotification({
-          announcements: [],
-          unreadCount: response?.unreadCount ?? 0,
+          notifications: [],
+          unreadCount: (response.generalNotification ?? 0) + (response.announcementNotification ?? 0),
           pages: 0,
         })
       } catch (error) {
@@ -51,7 +53,7 @@ export function VerticalLayoutHeader({
       }
     }
 
-    fetchAnnouncements()
+    fetchNotifications()
   }, []) // Empty array ensures this runs once on mount
 
   return (
@@ -60,6 +62,10 @@ export function VerticalLayoutHeader({
         <ToggleMobileSidebar />
         <div className="grow flex justify-end gap-2">
           <SidebarTrigger className="hidden lg:flex lg:me-auto" />
+          {/* {adminData?.role !== "OWNER" && (
+            <ActionNotificationDropdown dictionary={dictionary} adminData={adminData}/>
+          )} */}
+
           <NotificationDropdown
             dictionary={dictionary}
             initialData={notifications}

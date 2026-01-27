@@ -37,10 +37,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { CourtForm } from "@/app/[lang]/(dashboard-layout)/pages/courts/_components/courtForm"
-import {
-  getAllAdminsOwners,
-  getAllCourts,
-} from "@/components/dashboards/services/apiService"
+import { getAllCourts } from "@/components/dashboards/services/apiService"
 import { getColumns } from "./columns"
 import { InvoiceTableToolbar } from "./data-table-toolbar"
 
@@ -77,10 +74,7 @@ export function CourtDataTable() {
     )
   }
 
-  const columns = useMemo(
-    () => getColumns(handleStatusUpdate),
-    [handleStatusUpdate]
-  )
+  
 
   let pathUrl: any = pathname?.split("/").pop()
 
@@ -98,7 +92,7 @@ export function CourtDataTable() {
 
     // CLEANUP: This kills the timer if the component unmounts
     return () => clearTimeout(timer)
-  }, [])
+  }, [searchParams])
 
   const updateCourtsList = async () => {
     const value = Cookies.get("adminProfile") ?? ""
@@ -114,6 +108,11 @@ export function CourtDataTable() {
       setTotalCount(res?.total) // ✅ TOTAL ROWS
     }
   }
+
+  const columns = useMemo(
+    () => getColumns(handleStatusUpdate, updateCourtsList), 
+    [handleStatusUpdate]
+  )
   // Fetch data
   useEffect(() => {
     const value = Cookies.get("adminProfile") ?? ""
@@ -254,6 +253,7 @@ export function CourtDataTable() {
             onClose={() => setOpen(false)}
             courtId={paramId}
             view={paramId != null && paramId != ""}
+            callback={updateCourtsList}
           />
         </DialogContent>
       </Dialog>

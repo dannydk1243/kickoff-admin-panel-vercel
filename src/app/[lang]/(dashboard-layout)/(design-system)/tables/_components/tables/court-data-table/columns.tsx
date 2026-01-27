@@ -13,7 +13,8 @@ type InvoiceTableRow = InvoiceType & {
 
 export const getColumns = (onStatusUpdate: (
   id: string,
-  updates: { isBlocked: boolean; isDeleted: boolean }) => void
+  updates: { isBlocked: boolean; isDeleted: boolean }) => void,
+  callback: any
 ): ColumnDef<InvoiceTableRow>[] => [
     {
       accessorKey: "name",
@@ -130,6 +131,7 @@ export const getColumns = (onStatusUpdate: (
         <InvoiceTableRowActions
           row={row}
           onStatusUpdate={onStatusUpdate}
+          callback={callback}
         />
       ),
     },

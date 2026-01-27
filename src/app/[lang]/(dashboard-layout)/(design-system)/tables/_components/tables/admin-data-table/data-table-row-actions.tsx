@@ -119,7 +119,6 @@ export function InvoiceTableRowActions({
     if (adminData.role == "SUPERADMIN" && !row.original.isVerified) {
       setValidReinvite(true)
     }
-    // console.log(row.original.email, "row data")
   }, [])
 
   // Modal texts dynamically

@@ -87,7 +87,6 @@ export function InvoiceTableToolbar<TTable>({
     const value = Cookies.get("adminProfile") ?? ""
     let adminData = JSON.parse(value)
     setSelectedOwner(adminData._id);
-  console.log(adminData, selectedOwner, 'data')
   }, [])
 
   return (

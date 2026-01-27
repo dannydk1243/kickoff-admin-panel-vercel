@@ -7,6 +7,8 @@ import { ProfileInfoFormType } from "@/app/[lang]/(dashboard-layout)/pages/accou
 
 import { toast } from "@/hooks/use-toast"
 
+const getCurrentDateUTCZero = () => new Date().toISOString().split('T')[0] + 'T00:00:00.000Z';
+
 export async function sendReinviteMail(email: string) {
   const body = {
     email: email,
@@ -330,6 +332,44 @@ export async function getAllUsers(
   }
 }
 
+export async function getUserDetails(id: string){
+  const body = {
+    userId : id
+  }
+  try {
+    const res = await API.post(
+      `/users/details`,
+      body
+    )
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load users",
+        description: "Unable to fetch user details.",
+      })
+      return null
+    }
+
+    // toast({
+    //    title: "Admins loaded",
+    //    description: "Admins list fetched successfully",
+    // });
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return null
+  }
+}
+
 export async function updateUserStatus(data: {
   userId: string
   isBlocked: boolean
@@ -374,7 +414,7 @@ export async function updateUserStatus(data: {
 
 // export async function courtCreation(data: any) {
 
-//    console.log("dsffttv66", data?.titleImage);
+//    
 
 //    let courtSize = `${data.size}${data.unitSize}`
 //    const formData = new FormData();
@@ -406,9 +446,7 @@ export async function updateUserStatus(data: {
 //    });
 //    for (const [key, value] of formData.entries()) {
 //       if (value instanceof File) {
-//          console.log(key, value.name, value.size, value.type);
 //       } else {
-//          console.log(key, value);
 //       }
 //    }
 //    // 🖼 Avatar (single file)
@@ -451,7 +489,6 @@ export async function updateUserStatus(data: {
 // }
 
 // export async function courtCreation(data: any) {
-//    console.log("dsffttv66", data?.titleImage);
 
 //    let courtSize = `${data.size}${data.unitSize}`;
 //    const formData = new FormData();
@@ -844,6 +881,37 @@ export async function courtCreation(
   }
 }
 
+export async function getAllPendingCourts(page: number = 1, limit: number = 15) {
+  try {
+    const res = await API.post(
+      `/courts/all?status=PENDING&page=${page}&limit=${limit}`,
+      {}, { 
+      _noLoader: true 
+    } as any)
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load Courts",
+        description: "Unable to fetch Court list",
+      })
+      return null
+    }
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return null
+  }
+}
+
 export async function getAllCourts(
   page: number = 1,
   limit: number = 15,
@@ -1000,14 +1068,15 @@ export async function getCourtAvailability(id: string) {
   }
 }
 
-export async function getCourtUnavailability(id: string) {
+export async function getCourtUnavailability(id: string, page: number) {
   const body = {
     courtId: id,
   }
   try {
     if (!id) return
+
     const res = await API.post(
-      `/courts/unavailability/list?page=1&limit=1`,
+      `/courts/unavailability/list?startTime=${getCurrentDateUTCZero()}&isActive=true&${page}=1&limit=15`,
       body
     )
 
@@ -1123,6 +1192,89 @@ export async function createCourtUnvalaibility(
   }
 }
 
+export async function updateCourtUnvalaibility(
+  payload: {
+    _id?: string
+    startDatetime: string
+    endDatetime: string
+    scope: string
+  } | null
+) {
+  const body = {
+    unavailabilityId: payload?._id,
+    startDatetime: payload?.startDatetime,
+    endDatetime: payload?.endDatetime,
+    exceptionType: "MAINTENANCE",
+    reason: "other",
+    scope: payload?.scope,
+  }
+
+  try {
+    const res = await API.post(`/courts/unavailability/update`, body)
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Update failed",
+        description: "Unable to Update court Unavailability",
+      })
+      return null
+    }
+
+    // toast({
+    //   title: "Status updated",
+    //   description: "Court Unavailability has been updated successfully",
+    // })
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return false
+  }
+}
+
+export async function deleteCourtUnavailability(id: string) {
+  const body = { unavailabilityId: id }
+
+  try {
+    const res = await API.post(`/courts/unavailability/delete`, body)
+
+    // Using res?.status check as per your requirement
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Deletion Failed",
+        description: "The server could not remove the unavailability record.",
+      })
+      return false // Return false so the UI knows NOT to remove the row
+    }
+
+    toast({
+      title: "Deleted",
+      description: "Court unavailability removed successfully.",
+    })
+
+    return true // Success!
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return false // Failure
+  }
+}
+
 export async function updateCourtStatus(body: {}) {
   try {
     const res = await API.post(`/courts/status/update`, body)
@@ -1155,17 +1307,55 @@ export async function updateCourtStatus(body: {}) {
   }
 }
 
-export async function getAllAnnouncements(
+export async function getAllNotifications(
   page: number = 1,
-  limit: number = 15,
-  searchTerm: string = "",
-  pathUrl: string = ""
+  limit: number = 15
 ) {
   try {
     const res = await API.post(
-      `/announcements/all?page=${page}&limit=${limit}`,
-      {}
-    )
+      `/notifications/all?page=${page}&limit=${limit}`,
+      {}, { 
+      _noLoader: true 
+    } as any)
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load admins",
+        description: "Unable to fetch notifications list",
+      })
+      return null
+    }
+
+    // toast({
+    //    title: "Admins loaded",
+    //    description: "Admins list fetched successfully",
+    // });
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return null
+  }
+}
+
+export async function getAllAnnouncements(
+  page: number = 1,
+  limit: number = 15
+) {
+  try {
+    const res = await API.post(
+      `/notifications/all?page=${page}&limit=${limit}`,
+      {}, { 
+      _noLoader: true 
+    } as any)
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({
@@ -1195,9 +1385,11 @@ export async function getAllAnnouncements(
   }
 }
 
-export async function getAnnouncementCount() {
+export async function getNotificationCount() {
   try {
-    const res = await API.post(`/announcements/count`, {})
+    const res = await API.post(`/notifications/unread-count`, {}, { 
+      _noLoader: true 
+    } as any)
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({
@@ -1227,9 +1419,11 @@ export async function getAnnouncementCount() {
   }
 }
 
-export async function readAllAnnouncements() {
+export async function readAllNotifications() {
   try {
-    const res = await API.post(`/announcements/read-all`, {})
+    const res = await API.post(`/notifications/read-all`, {}, { 
+      _noLoader: true 
+    } as any)
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({

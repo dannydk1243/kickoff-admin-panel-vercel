@@ -9,6 +9,7 @@ import { Providers } from "@/providers"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
+import { LoadingProvider } from "@/contexts/loading-context"
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { Toaster } from "@/components/ui/toaster"
 
@@ -43,7 +44,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         )}
       >
         <Providers locale="en" direction="ltr" session={null}>
-          {children}
+          <LoadingProvider>{children}</LoadingProvider>
           <Toaster />
           <Sonner />
         </Providers>

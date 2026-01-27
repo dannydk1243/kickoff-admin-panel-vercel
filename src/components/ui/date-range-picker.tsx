@@ -22,23 +22,27 @@ type DateRangePickerProps = Omit<
 > & {
   value?: DateRange
   onValueChange?: (date?: DateRange) => void
+  excludeRanges?: DateRange[]
   formatStr?: string
   popoverContentClassName?: string
   popoverContentOptions?: ComponentProps<typeof PopoverContent>
   buttonClassName?: string
   buttonOptions?: ComponentProps<typeof Button>
   placeholder?: string
+  pickerDisabled?: boolean
 }
 
 export function DateRangePicker({
   value,
   onValueChange,
+  excludeRanges = [],
   formatStr = "yyyy-MM-dd",
   popoverContentClassName,
   popoverContentOptions,
   buttonClassName,
   buttonOptions,
   placeholder = "Pick date range",
+  pickerDisabled = false,
   ...props
 }: DateRangePickerProps) {
   const today = new Date()
@@ -52,20 +56,31 @@ export function DateRangePicker({
   const selectedRange = value ?? defaultValue
 
   // Disable all dates before today
-  const disabled = { before: today }
+  const disabled = [
+    { before: today },
+    ...excludeRanges
+      .map((range) => ({
+        from: range.from,
+        to: range.to,
+      }))
+      .filter((range) => range.from && range.to), // Only exclude complete ranges
+  ]
 
   return (
     <Popover modal>
       <PopoverTrigger asChild>
         <Button
+          disabled = {pickerDisabled}
           variant="outline"
           className={cn("w-full px-3 text-start font-normal", buttonClassName)}
+
           {...buttonOptions}
         >
           {selectedRange.from ? (
             selectedRange.to ? (
               <span>
-                {format(selectedRange.from, formatStr)} to {format(selectedRange.to, formatStr)}
+                {format(selectedRange.from, formatStr)} to{" "}
+                {format(selectedRange.to, formatStr)}
               </span>
             ) : (
               <span>{format(selectedRange.from, formatStr)}</span>
@@ -83,9 +98,9 @@ export function DateRangePicker({
       >
         <Calendar
           mode="range"
-          selected={selectedRange}
+          selected={value}
           onSelect={onValueChange}
-          disabled={disabled}
+          disabled={disabled} // Passes the array of rules to react-day-picker
           {...props}
         />
       </PopoverContent>

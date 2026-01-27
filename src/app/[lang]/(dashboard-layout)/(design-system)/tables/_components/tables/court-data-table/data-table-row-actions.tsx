@@ -36,11 +36,13 @@ interface InvoiceTableRowActionsProps {
     id: string,
     updates: { isBlocked: boolean; isDeleted: boolean }
   ) => void
+  callback: any
 }
 
 export function InvoiceTableRowActions({
   row,
   onStatusUpdate,
+  callback
 }: InvoiceTableRowActionsProps) {
   let id = row.original._id
 
@@ -199,6 +201,7 @@ export function InvoiceTableRowActions({
             onClose={() => setOpen(false)}
             courtId={id}
             view={paramId != null && paramId != ""}
+            callback={callback}
           />
         </DialogContent>
       </Dialog>

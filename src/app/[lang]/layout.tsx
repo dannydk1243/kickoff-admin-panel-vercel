@@ -15,6 +15,7 @@ import type { ReactNode } from "react"
 
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { Toaster } from "@/components/ui/toaster"
+import { LoadingProvider } from "@/contexts/loading-context"
 
 // Define metadata for the application
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
@@ -65,7 +66,9 @@ export default async function RootLayout(props: {
         )}
       >
         <Providers locale={locale} direction={direction} session={session}>
+          <LoadingProvider>
           {children}
+          </LoadingProvider>
           <Toaster />
           <Sonner />
         </Providers>

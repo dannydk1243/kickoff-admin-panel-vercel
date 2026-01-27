@@ -64,8 +64,8 @@ export function TimePicker({
         className="w-[180px] p-3"
         align="start"
         // THIS PREVENTS AUTO-CLOSING
-        onPointerDownOutside={(e) => e.preventDefault()}
-        onInteractOutside={(e) => e.preventDefault()}
+        // onPointerDownOutside={(e) => e.preventDefault()}
+        // onInteractOutside={(e) => e.preventDefault()}
       >
         <div
           className="flex items-center justify-center gap-2"

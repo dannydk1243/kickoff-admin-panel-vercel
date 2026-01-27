@@ -26,13 +26,11 @@ export async function logout(lang: string = "en") {
   let isSuccessful = false
 
   try {
-    console.log( 'logout response', isSuccessful)
 
     // 1. Call your backend/external service to invalidate the session
     const response = await logoutAdmin()
     if (response) isSuccessful = true
 
-    console.log(response, 'logout response', isSuccessful)
 
   } catch (error) {
     console.error("Logout API call failed:", error)

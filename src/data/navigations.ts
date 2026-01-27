@@ -51,30 +51,30 @@ export const navigationsData: NavigationType[] = [
       {
         title: "Admins",
         href: "/pages/admins",
-        iconName: "Users",
+        iconName: "Shield",
         roles: [ROLES.SUPERADMIN]
       },
       {
         title: "Court Owners",
         href: "/pages/court-owners",
-        iconName: "Users",
+        iconName: "Crown",
         roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
       },
       {
         title: "Courts",
         href: "/pages/courts",
-        iconName: "Users",
+        iconName: "SquareMenu",
+        roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]
+      },
+      {
+        title: "Bookings",
+        href: "/pages/bookings",
+        iconName: "Album",
         roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]
       },
       // {
-      //   title: "All Bookings",
-      //   href: "/pages/all-bookings",
-      //   iconName: "Users",
-      //   roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
-      // },
-      // {
       //   title: "All Trainings",
-      //   href: "/pages/all-trainings",
+      //   href: "/pages/trainings",
       //   iconName: "Users",
       //   roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
       // },
@@ -87,7 +87,7 @@ export const navigationsData: NavigationType[] = [
       {
         title: "Announcement",
         href: "/pages/announcement",
-        iconName: "Users",
+        iconName: "Megaphone",
         roles: [ROLES.SUPERADMIN]
       },
 

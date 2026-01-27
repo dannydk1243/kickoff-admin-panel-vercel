@@ -2,7 +2,7 @@ import { toast } from '@/hooks/use-toast';
 import { STATUS_CODE } from '@/lib/enum';
 import { devError } from '@/lib/utils';
 import axios, { AxiosError } from 'axios';
-
+import { loaderManager } from '@/lib/loading-manager'; // 1. Import manager
 
 const API_AXIOS = axios.create({
    baseURL: process.env.NEXT_PUBLIC_API_FORM_URL,
@@ -16,10 +16,27 @@ const API_AXIOS = axios.create({
 
 // Request interceptor (Optional: Attach Authorization Token)
 
+API_AXIOS.interceptors.request.use((config) => {
+   const customConfig = config as any;
+   
+   if (!customConfig._noLoader) {
+      loaderManager.setLoading(true);
+   }
+   
+   return config;
+}, (error) => {
+   loaderManager.setLoading(false);
+   return Promise.reject(error);
+});
+
 // Response interceptor to handle status codes globally
 API_AXIOS.interceptors.response.use(
-   (response) => response,
+   (response) => {
+      loaderManager.setLoading(false); // ✅ Success: Turn off
+      return response;
+   },
    (error: AxiosError<any>) => {
+      loaderManager.setLoading(false);
       if (error?.response) {
          const { status, data } = error.response;
 

@@ -1,9 +1,14 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { EllipsisVertical } from "lucide-react"
+
 import type { Row } from "@tanstack/react-table"
 import type { InvoiceType } from "../../../types"
+
+import { getStatusHandler } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -13,9 +18,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { UserForm } from "@/app/[lang]/(dashboard-layout)/pages/users/_components/userForm"
 import { updateUserStatus } from "@/components/dashboards/services/apiService"
-import { getStatusHandler } from "@/lib/utils"
-
 import { CustomModal } from "@/components/layout/CustomModal" // Adjust path if needed
 
 type InvoiceTableRow = InvoiceType & {
@@ -26,7 +30,14 @@ type InvoiceTableRow = InvoiceType & {
 
 interface InvoiceTableRowActionsProps {
   row: Row<InvoiceTableRow>
-  onStatusUpdate: (id: string, updates: { isBlocked: boolean; isDeleted: boolean, deletedByAdmin?: boolean }) => void
+  onStatusUpdate: (
+    id: string,
+    updates: {
+      isBlocked: boolean
+      isDeleted: boolean
+      deletedByAdmin?: boolean
+    }
+  ) => void
 }
 
 export function InvoiceTableRowActions({
@@ -41,8 +52,9 @@ export function InvoiceTableRowActions({
   >(null)
   const [loading, setLoading] = useState(false)
 
-  const isActuallyDeleted = row.original.isDeleted || row.original.deletedByAdmin
-
+  const [open, setOpen] = useState(false)
+  const isActuallyDeleted =
+    row.original.isDeleted || row.original.deletedByAdmin
 
   const openModalFor = (action: "block" | "unblock" | "delete" | "restore") => {
     setPendingAction(action)
@@ -104,7 +116,6 @@ export function InvoiceTableRowActions({
     row.original.deletedByAdmin,
   ])
 
-
   // Modal texts dynamically
   const modalTitle =
     pendingAction === "block"
@@ -128,6 +139,10 @@ export function InvoiceTableRowActions({
             ? "Are you sure you want to restore this user?"
             : ""
 
+  const viewUser = function (id: any) {
+    setTimeout(() => setOpen(true), 0)
+  }
+
   return (
     <>
       <div className="flex justify-end me-4">
@@ -144,6 +159,12 @@ export function InvoiceTableRowActions({
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-[160px]">
+            <DropdownMenuItem onClick={() => viewUser(row.original._id)}>
+              View
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
             <DropdownMenuItem
               onClick={() =>
                 openModalFor(row.original.isBlocked ? "unblock" : "block")
@@ -162,7 +183,6 @@ export function InvoiceTableRowActions({
             >
               {isActuallyDeleted ? "Restore" : "Delete"}
             </DropdownMenuItem>
-
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -182,6 +202,11 @@ export function InvoiceTableRowActions({
         confirmText={pendingAction === "delete" ? "Delete" : "Confirm"}
         cancelText="Cancel"
       />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-lg sm:max-w-[65vw] max-h-[98vh] overflow-visible">
+          <UserForm onClose={() => setOpen(false)} userId={row.original._id} />
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

@@ -1,11 +1,13 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { CustomLoader } from "@/app/[lang]/(dashboard-layout)/(design-system)/ui/loader/page"
 import Cookies from "js-cookie"
 import { Bell } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 
+import { socketInstance } from "@/lib/socket-singleton"
 import { formatDistance } from "@/lib/utils"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -19,39 +21,41 @@ import {
 } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
-  getAllAnnouncements,
-  readAllAnnouncements,
+  getAllNotifications,
+  readAllNotifications,
 } from "@/components/dashboards/services/apiService"
-import { io } from "socket.io-client"
 
-interface Announcement {
+interface Notification {
   _id: string
+  senderType: string
+  sender: string
+  category: string
   title: string
   message: string
-  sender: { name: string; email: string }
-  type: string
+  audience: string
   createdAt: string
+  updatedAt: string
 }
 
 export function NotificationDropdown({
   dictionary,
-  initialData = { announcements: [], unreadCount: 0, pages: 0 },
+  initialData = { notifications: [], unreadCount: 0, pages: 0 },
 }: {
   dictionary: DictionaryType
   initialData?: {
-    announcements: Announcement[]
+    notifications: Notification[]
     unreadCount: number
     pages: number
   }
 }) {
-  const [notifications, setNotifications] = useState<Announcement[]>(
-    initialData.announcements
+  const [notifications, setNotifications] = useState<Notification[]>(
+    initialData.notifications
   )
   const [unreadCount, setUnreadCount] = useState(initialData.unreadCount)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(initialData.pages > 1)
   const [isLoading, setIsLoading] = useState(false)
-
+  const socket = socketInstance
   const observerTarget = useRef(null)
 
   // 1. Handle Popover State (Open/Close logic)
@@ -61,7 +65,7 @@ export function NotificationDropdown({
       await refreshToPageOne()
     } else {
       // Triggered when closing
-      const readResponse = await readAllAnnouncements()
+      const readResponse = await readAllNotifications()
       if (readResponse) {
         setUnreadCount(0)
       }
@@ -73,10 +77,13 @@ export function NotificationDropdown({
   const refreshToPageOne = async () => {
     setIsLoading(true)
     try {
-      const response = await getAllAnnouncements(1)
+      const response = await getAllNotifications(1)
       if (response) {
-        setNotifications(response.announcements)
-        setUnreadCount(response.unreadCount)
+        setNotifications(response.notifications)
+        setUnreadCount(
+          (response.unreadCounts.generalNotification ?? 0) +
+            (response.unreadCounts.announcementNotification ?? 0)
+        )
         setPage(1)
         setHasMore(1 < response.pages)
       }
@@ -92,51 +99,26 @@ export function NotificationDropdown({
   }, [initialData.unreadCount])
 
   useEffect(() => {
-    const value = Cookies.get("accessToken") ?? ""
-    // If no token is present, don't attempt connection
-    if (!value) return
+    if (!socket) return
 
-    // 1. Initialize the socket connection
-    // const socket = io("ws://10.60.0.103:5000", {
-    //   path: "/realtime",
-    //   addTrailingSlash: false, // Prevents appending /socket.io/ to your path
-    //   // extraHeaders: {
-
-    //   //   "x-api-key": "LOC74LJ@qG3sBkSNWXMa0^&7Mvb3Ahg!ZQh3pEOg",
-    //   // },
-    //   transports: ["websocket"],
-    //   secure: true,
-    // });
-
-    const socket = io( `${process.env.NEXT_PUBLIC_SOCKET_FORM_URL}`, {
-      autoConnect: true, // manually connect
-      extraHeaders: {
-        Authorization: `Bearer ${value}`,
-        "x-api-key": `${process.env.NEXT_PUBLIC_API_FORM_x_API_KEY}`,
-      },
-      secure: true,
-    })
-
-    // 2. Event Listeners
-    socket.on("connect", () => {
-      console.log("Connected to /realtime. Socket ID:", socket.id)
-    })
-
-    socket.on("broadcast-message", (data) => {
+    socket.on("broadcast-announcement", (data: any) => {
       setUnreadCount((prev) => prev + 1)
     })
 
-    socket.on("connect_error", (err) => {
-      // If it still fails, check the Network Tab for the exact URL being called
+    socket.on("general-notification", (data: any) => {
+      setUnreadCount((prev) => prev + 1)
+    })
+
+    socket.on("connect_error", (err: { message: any }) => {
       console.error("Socket Connection Error:", err.message)
     })
 
     // 3. Cleanup
     return () => {
-      socket.off("broadcast-message")
-      socket.disconnect()
+      socket.off("broadcast-announcement")
+      socket.off("general-notification")
     }
-  }, [])
+  }, [socket])
   // 3. Keep existing scroll logic
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -160,9 +142,9 @@ export function NotificationDropdown({
     const nextPage = page + 1
 
     try {
-      const response = await getAllAnnouncements(nextPage)
-      if (response && response.announcements.length > 0) {
-        setNotifications((prev) => [...prev, ...response.announcements])
+      const response = await getAllNotifications(nextPage)
+      if (response && response.notifications.length > 0) {
+        setNotifications((prev) => [...prev, ...response.notifications])
         setPage(nextPage)
         setHasMore(nextPage < response.pages)
       } else {
@@ -208,7 +190,7 @@ export function NotificationDropdown({
                     <div className="flex items-start gap-3 py-4 px-4 hover:bg-accent transition-colors">
                       <Avatar className="h-9 w-9">
                         <AvatarFallback>
-                          {item.sender?.name?.charAt(0).toUpperCase() || "U"}
+                          {item.sender?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 space-y-1">
@@ -237,9 +219,9 @@ export function NotificationDropdown({
               </ul>
             ) : (
               <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
-                <p className="text-sm">
-                  {isLoading ? "Fetching latest..." : "No notifications yet"}
-                </p>
+                <div className="text-sm">
+                  {isLoading ? <CustomLoader /> : "No notifications yet"}
+                </div>
               </div>
             )}
           </ScrollArea>
