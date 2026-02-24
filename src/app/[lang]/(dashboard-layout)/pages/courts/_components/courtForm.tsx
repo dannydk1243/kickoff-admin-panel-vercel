@@ -1135,16 +1135,16 @@ export function CourtForm({
               </div>
               <div className="h-[8.5vh]">
                 <FormField
-                  control={control}
+                   control={control}
                   name="city"
-                  rules={{ required: "City is required." }}
+                  rules={{ required: dictionary.ErrorMsg.cityIsRequired }}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>City*</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="City" disabled={view} />
                       </FormControl>
-                      <FormMessage>Map URL is required.</FormMessage>
+                      <FormMessage>{errors.city?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
