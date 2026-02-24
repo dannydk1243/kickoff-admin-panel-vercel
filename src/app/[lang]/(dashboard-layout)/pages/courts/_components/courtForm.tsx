@@ -1137,12 +1137,14 @@ export function CourtForm({
                 <FormField
                   control={control}
                   name="city"
+                  rules={{ required: "City is required." }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>City</FormLabel>
+                      <FormLabel>City*</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="City" disabled={view} />
                       </FormControl>
+                      <FormMessage>Map URL is required.</FormMessage>
                     </FormItem>
                   )}
                 />
