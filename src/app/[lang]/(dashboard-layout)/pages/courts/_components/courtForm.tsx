@@ -1137,7 +1137,7 @@ export function CourtForm({
                 <FormField
                    control={control}
                   name="city"
-                  rules={{ required: dictionary.ErrorMsg.cityIsRequired }}
+                  rules={{ required: "City is required" }}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>City*</FormLabel>
