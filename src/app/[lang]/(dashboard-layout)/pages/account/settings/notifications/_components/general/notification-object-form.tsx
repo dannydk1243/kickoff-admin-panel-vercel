@@ -33,9 +33,10 @@ import { sendAnnouncements } from "@/components/dashboards/services/apiService"
 type NotificationObjectFormProps = {
   onClose?: () => void
   callback?: () => void
+  dictionary: any
 }
 
-export function NotificationObjectForm({ onClose, callback }: NotificationObjectFormProps) {
+export function NotificationObjectForm({ onClose, callback, dictionary }: NotificationObjectFormProps) {
 
 
   // 2. Initialize Form with correct default values
@@ -65,17 +66,17 @@ export function NotificationObjectForm({ onClose, callback }: NotificationObject
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-y-4">
-        
+
         {/* Title */}
         <FormField
           control={form.control}
           name="title"
-          rules={{ required: "Notification title is required" }}
+          rules={{ required: dictionary.ErrorMsg.notificationTitleRequired }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>{dictionary.courtLabel.notificationTitle}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter notification title" {...field} />
+                <Input placeholder={dictionary.placeholder.enterNotificationTitle} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -86,12 +87,12 @@ export function NotificationObjectForm({ onClose, callback }: NotificationObject
         <FormField
           control={form.control}
           name="message"
-          rules={{ required: "Message is required" }}
+          rules={{ required: dictionary.ErrorMsg.messageRequired }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Message</FormLabel>
+              <FormLabel>{dictionary.courtLabel.message}</FormLabel>
               <FormControl>
-                <Textarea placeholder="Enter message" {...field} />
+                <Textarea placeholder={dictionary.placeholder.enterMessage} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -104,18 +105,18 @@ export function NotificationObjectForm({ onClose, callback }: NotificationObject
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Recipient</FormLabel>
+              <FormLabel>{dictionary.courtLabel.recipient}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a recipient" />
+                    <SelectValue placeholder={dictionary.placeholder.selectRecipient} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                  <SelectItem value="OWNER">Owner</SelectItem>
-                  <SelectItem value="USERS">Users</SelectItem>
-                  <SelectItem value="EVERYONE">Everyone</SelectItem>
+                  <SelectItem value="ADMIN">{dictionary.courtLabel.admin}</SelectItem>
+                  <SelectItem value="OWNER">{dictionary.courtLabel.owner}</SelectItem>
+                  <SelectItem value="USERS">{dictionary.courtLabel.users}</SelectItem>
+                  <SelectItem value="EVERYONE">{dictionary.courtLabel.everyone}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -125,14 +126,14 @@ export function NotificationObjectForm({ onClose, callback }: NotificationObject
 
         {/* Actions */}
         <div className="flex gap-x-2 mt-4 justify-end">
-          <Button 
-            type="button" 
-            variant="outline" 
+          <Button
+            type="button"
+            variant="outline"
             onClick={() => form.reset()}
           >
-            Reset
+            {dictionary.btnText.reset}
           </Button>
-          <Button type="submit">Send Notification</Button>
+          <Button type="submit">{dictionary.btnText.sendNotification}</Button>
         </div>
       </form>
     </Form>

@@ -12,6 +12,7 @@ type TitleImageUploadProps = {
   onChange: (file: File | null) => void
   error?: string
   disabled: boolean
+  dictionary: any
 }
 
 export function TitleImageUpload({
@@ -19,6 +20,7 @@ export function TitleImageUpload({
   onChange,
   error,
   disabled,
+  dictionary,
 }: TitleImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -130,7 +132,7 @@ export function TitleImageUpload({
             </>
           ) : (
             <div className="flex items-center justify-center h-full text-black text-sm">
-              No image selected
+              {dictionary.courtLabel.noImageSelected}
             </div>
           )}
         </div>
@@ -144,7 +146,7 @@ export function TitleImageUpload({
             className="dark:invert w-[2vw]"
           />
           <p className="text-sm text-muted-foreground select-none">
-            Drop or import image here
+            {dictionary.courtLabel.dropOrImportImageHere}
           </p>
         </>
       )}

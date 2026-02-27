@@ -16,12 +16,13 @@ type InvoiceTableRow = InvoiceType & {
 
 // Accept the handler and return columns array
 export const getColumns = (
-  onStatusUpdate: (id: string, updates: { isBlocked: boolean; isDeleted: boolean }) => void
+  onStatusUpdate: (id: string, updates: { isBlocked: boolean; isDeleted: boolean }) => void,
+  dictionary: any
 ): ColumnDef<InvoiceTableRow>[] => [
     {
       accessorKey: "name",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.name} />
       ),
       cell: ({ row }) => {
         const name = row.getValue<string>("name")
@@ -31,7 +32,7 @@ export const getColumns = (
     {
       accessorKey: "_id",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="ID" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.id} />
       ),
       cell: ({ row }) => {
         const id = row.getValue<string>("_id")
@@ -41,7 +42,7 @@ export const getColumns = (
     {
       accessorKey: "email",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Email" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.email} />
       ),
       cell: ({ row }) => {
         const email = row.getValue<string>("email")
@@ -51,7 +52,7 @@ export const getColumns = (
     {
       accessorKey: "phone",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Phone Number" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.phoneNumber} />
       ),
       cell: ({ row }) => {
         const phone = row.getValue<string>("phone")
@@ -61,7 +62,7 @@ export const getColumns = (
     {
       accessorKey: "createdAt",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Registration Date" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.registrationDate} />
       ),
       cell: ({ row }) => {
         const createdAt = row.getValue<string>("createdAt")
@@ -71,7 +72,7 @@ export const getColumns = (
     {
       accessorKey: "createdA",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Last active date" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.lastActiveDate} />
       ),
       cell: ({ row }) => {
         const createdAt = row.getValue<string>("createdAt")
@@ -93,7 +94,7 @@ export const getColumns = (
     {
       id: "status",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Status" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.status} />
       ),
       cell: ({ row }) => {
         const { isBlocked, isDeleted, deletedByAdmin } = row.original
@@ -119,8 +120,8 @@ export const getColumns = (
     },
     {
       id: 'isVerified',
-       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Verification" />
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.verification} />
       ),
       cell: ({ row }) => {
         const { isVerified } = row.original
@@ -142,9 +143,9 @@ export const getColumns = (
     },
     {
       id: "actions",
-      header: () => <span className="sr-only">Actions</span>,
+      header: () => <span className="sr-only">{dictionary.tableColumnLabels.actions}</span>,
       cell: ({ row }) => (
-        <InvoiceTableRowActions row={row} onStatusUpdate={onStatusUpdate} />
+        <InvoiceTableRowActions row={row} onStatusUpdate={onStatusUpdate} dictionary={dictionary} />
       ),
     }
   ]

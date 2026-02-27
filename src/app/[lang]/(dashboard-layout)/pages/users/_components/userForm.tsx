@@ -37,9 +37,10 @@ export type UserInfoFormType = {
 type UserInfoFormProps = {
   onClose?: () => void
   userId: string
+  dictionary: any
 }
 
-export function UserForm({ onClose, userId }: UserInfoFormProps) {
+export function UserForm({ onClose, userId, dictionary }: UserInfoFormProps) {
   const [user, setUser] = useState<UserInfoFormType>({
     _id: "",
     name: "",
@@ -59,25 +60,25 @@ export function UserForm({ onClose, userId }: UserInfoFormProps) {
     updatedAt: "",
     __v: 0,
   })
- useEffect(() => {
-  if (!userId) return
+  useEffect(() => {
+    if (!userId) return
 
-  const fetchUserDetails = async () => {
-    try {
-      const success = await getUserDetails(userId)
-      if (success) {
-        setUser(success)
-      } else {
-        onClose?.()
+    const fetchUserDetails = async () => {
+      try {
+        const success = await getUserDetails(userId)
+        if (success) {
+          setUser(success)
+        } else {
+          onClose?.()
+        }
+      } catch (error) {
+        // It's good practice to log the error or handle it
+        console.error("Failed to fetch user:", error)
       }
-    } catch (error) {
-      // It's good practice to log the error or handle it
-      console.error("Failed to fetch user:", error)
     }
-  }
 
-  fetchUserDetails()
-}, [userId]) // <--- Add this! Now it only runs when userId changes
+    fetchUserDetails()
+  }, [userId]) // <--- Add this! Now it only runs when userId changes
 
   return (
     <>
@@ -94,21 +95,21 @@ export function UserForm({ onClose, userId }: UserInfoFormProps) {
       <div className="space-y-4 py-4">
         {/* Status Section */}
         <div className="grid grid-cols-2 gap-4">
-          <StatusItem label="Verified" value={user.isVerified} />
-          <StatusItem label="Profile Done" value={user.isProfileCompleted} />
-          <StatusItem label="Phone Verified" value={user.isPhoneVerified} />
-          <StatusItem label="Locale" text={user.locale} />
+          <StatusItem label={dictionary.dialogFormLabels.verified} value={user.isVerified} dictionary={dictionary} />
+          <StatusItem label={dictionary.dialogFormLabels.profileDone} value={user.isProfileCompleted} dictionary={dictionary} />
+          <StatusItem label={dictionary.dialogFormLabels.phoneVerified} value={user.isPhoneVerified} dictionary={dictionary} />
+          <StatusItem label={dictionary.dialogFormLabels.locale} text={user.locale} dictionary={dictionary} />
         </div>
 
         {/* Details Section */}
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Phone:</span>
-            <span>{user.phone || "Not provided"}</span>
+            <span className="text-muted-foreground">{dictionary.dialogFormLabels.phone}:</span>
+            <span>{user.phone || dictionary.dialogFormLabels.notProvided}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Address:</span>
-            <span className="text-right">{user.address || "N/A"}</span>
+            <span className="text-muted-foreground">{dictionary.dialogFormLabels.address}:</span>
+            <span className="text-right">{user.address || dictionary.dialogFormLabels.notProvided}</span>
           </div>
         </div>
 
@@ -119,7 +120,7 @@ export function UserForm({ onClose, userId }: UserInfoFormProps) {
               className="flex items-center gap-2"
             >
               <CalendarDays className="h-4 w-4" />
-              All Bookings
+              {dictionary.dialogFormLabels.allBookings}
             </Link>
           </Button>
         </div>
@@ -131,10 +132,12 @@ function StatusItem({
   label,
   value,
   text,
+  dictionary
 }: {
   label: string
   value?: boolean
   text?: string
+  dictionary: any
 }) {
   return (
     <div className="flex flex-col gap-1">
@@ -143,7 +146,7 @@ function StatusItem({
         <span className="text-sm font-medium">{text}</span>
       ) : (
         <Badge variant={value ? "outline" : "secondary"} className="w-fit">
-          {value ? "Yes" : "No"}
+          {value ? dictionary.dialogFormLabels.yes : dictionary.dialogFormLabels.no}
         </Badge>
       )}
     </div>

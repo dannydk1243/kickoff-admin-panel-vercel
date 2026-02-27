@@ -1,14 +1,14 @@
 import type { Metadata } from "next"
-import { UsersDataTable } from "../../(design-system)/tables/_components/tables/users-data-table"
+import { BookingDataTable } from "../../(design-system)/tables/_components/tables/booking-data-table"
 import { getDictionary } from "@/lib/get-dictionary"
-import type { LocaleType } from "@/types"
+import { LocaleType } from "@/types"
 
 // Define metadata for the page
 export const metadata: Metadata = {
-  title: "Users",
+  title: "Refunds",
 }
 
-export default async function UsersManagementPage(props: {
+export default async function RefundsPage(props: {
   params: Promise<{ lang: string }>
 }) {
   const { lang } = await props.params
@@ -17,9 +17,9 @@ export default async function UsersManagementPage(props: {
   return (
     <section className="grid gap-8 p-4">
       <div className="mx-auto text-center space-y-1.5">
-        <h2 className="text-4xl font-semibold">{dictionary.navigation.users}</h2>
+        <h2 className="text-4xl font-semibold">{dictionary.navigation.refunds}</h2>
       </div>
-      <UsersDataTable />
+      <BookingDataTable />
     </section>
   )
 }

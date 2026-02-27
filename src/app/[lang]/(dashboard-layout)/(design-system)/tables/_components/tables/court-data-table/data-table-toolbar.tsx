@@ -22,7 +22,8 @@ interface InvoiceTableToolbarProps<TTable> {
   table: Table<TTable>
   searchTerm: string
   setSearchTerm: (term: string) => void
-  callback:() => void
+  callback: () => void
+  dictionary: any
 }
 
 interface ProfileInfoFormType {
@@ -33,7 +34,8 @@ export function InvoiceTableToolbar<TTable>({
   table,
   searchTerm,
   setSearchTerm,
-  callback
+  callback,
+  dictionary
 }: InvoiceTableToolbarProps<TTable>) {
   const [open, setOpen] = useState(false)
 
@@ -104,7 +106,7 @@ export function InvoiceTableToolbar<TTable>({
         </Button>
 
         <Input
-          placeholder="Search..."
+          placeholder={dictionary.search.search}
           className="border border-input bg-background hover:bg-accent hover:text-accent-foreground"
           value={inputValue}
           onChange={handleChange}
@@ -117,7 +119,7 @@ export function InvoiceTableToolbar<TTable>({
       {/* Keep modal if needed or remove if not used */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg sm:max-w-[65vw] max-h-[98vh] overflow-visible">
-          <CourtForm onClose={() => setOpen(false)} selectedOwner={selectedOwner} setSelectedOwner={setSelectedOwner} courtId={""} view={false} callback={callback}/>
+          <CourtForm onClose={() => setOpen(false)} selectedOwner={selectedOwner} setSelectedOwner={setSelectedOwner} courtId={""} view={false} callback={callback} />
         </DialogContent>
       </Dialog>
 

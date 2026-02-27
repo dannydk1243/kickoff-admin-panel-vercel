@@ -200,7 +200,7 @@ export function CourtForm({
   const dictionary: any = useTranslation()
   const initialValuesRef = useRef<ProfileInfoFormType | null>(null)
 
-  let { createCourt, courtName, editCourt } = dictionary.label
+  let { createCourt, courtName, editCourt, courtOwner, sportType, surfaceType, courtSize, courtType, titleImage, courtPictures, description } = dictionary.courtLabel
 
   const [pendingDeleteIndex, setPendingDeleteIndex] = useState<number | null>(
     null
@@ -252,19 +252,19 @@ export function CourtForm({
   } = form
 
   const amenitiesOptions = [
-    { label: "Parking", value: "PARKING" },
-    { label: "Washroom", value: "WASHROOM" },
-    { label: "Shower", value: "SHOWER" },
-    { label: "AC / Heating", value: "AC_HEATING" },
-    { label: "Changing Room", value: "CHANGING_ROOM" },
-    { label: "First Aid", value: "FIRST_AID" },
-    { label: "Water", value: "WATER" },
+    { label: dictionary.amenitiesLabel.parking, value: "PARKING" },
+    { label: dictionary.amenitiesLabel.washroom, value: "WASHROOM" },
+    { label: dictionary.amenitiesLabel.shower, value: "SHOWER" },
+    { label: dictionary.amenitiesLabel.acHeating, value: "AC_HEATING" },
+    { label: dictionary.amenitiesLabel.changingRoom, value: "CHANGING_ROOM" },
+    { label: dictionary.amenitiesLabel.firstAid, value: "FIRST_AID" },
+    { label: dictionary.amenitiesLabel.water, value: "WATER" },
   ]
 
   const weekDaysOptions = [
-    { label: "Daily", value: "daily" },
-    { label: "Every Weekday (Monday to Friday)", value: "mondayToFriday" },
-    { label: "Monday to Saturday", value: "mondayToSaturday" },
+    { label: dictionary.weekDaysLabel.daily, value: "daily" },
+    { label: dictionary.weekDaysLabel.mondayToFriday, value: "mondayToFriday" },
+    { label: dictionary.weekDaysLabel.mondayToSaturday, value: "mondayToSaturday" },
   ]
 
   const isSameDate = (a: Date, b: Date) =>
@@ -286,9 +286,9 @@ export function CourtForm({
 
     // Simple validation logic
     if (val.length > 250) {
-      setError("Reason cannot exceed 250 characters")
+      setError(dictionary.ErrorMsg.reasonTooLong)
     } else if (val.length === 0) {
-      setError("Reason is required")
+      setError(dictionary.ErrorMsg.reasonRequired)
     } else {
       setError("")
     }
@@ -297,13 +297,13 @@ export function CourtForm({
   async function handleClick() {
     // 1. Validation Check: Ensure a status is actually selected
     if (!statusDropdown) {
-      triggerError("Please select a status")
+      triggerError(dictionary.ErrorMsg.selectStatus)
       return
     }
 
     // 2. Validation Check: Ensure reason is provided for rejection
     if (statusDropdown === "REJECTED" && statusRej.trim() === "") {
-      setError("Rejection reason is required") // Assuming you have an setError state
+      setError(dictionary.ErrorMsg.rejectionReasonRequired) // Assuming you have an setError state
       return
     }
 
@@ -329,7 +329,7 @@ export function CourtForm({
     } catch (err) {
       // 5. Handle API Errors
       console.error("Failed to update status:", err)
-      triggerError("Something went wrong. Please try again.")
+      triggerError(dictionary.ErrorMsg.genericError)
     }
   }
 
@@ -419,7 +419,7 @@ export function CourtForm({
         getCourtById(courtId),
         //   getCourtAvailability(courtId),
       ])
-      
+
       if (res) {
         //   console.log("debug: ", res, availabilityRes, unavailabilityRes)
         const { court, attachments } = res
@@ -505,7 +505,7 @@ export function CourtForm({
         )
 
         setCourtImages(existingImages)
-      }else{
+      } else {
         onClose?.()
       }
       if (!res?.court) return
@@ -524,16 +524,16 @@ export function CourtForm({
     // watchedValues comes from RHF watch()
     const watchedValues = watch()
 
-    ;(Object.keys(watchedValues) as FormKeys[]).forEach((key) => {
-      const currentValue = watchedValues[key]
-      const initialValue = initialValuesRef.current![key]
+      ; (Object.keys(watchedValues) as FormKeys[]).forEach((key) => {
+        const currentValue = watchedValues[key]
+        const initialValue = initialValuesRef.current![key]
 
-      const changed = Array.isArray(currentValue)
-        ? JSON.stringify(currentValue) !== JSON.stringify(initialValue)
-        : currentValue !== initialValue
+        const changed = Array.isArray(currentValue)
+          ? JSON.stringify(currentValue) !== JSON.stringify(initialValue)
+          : currentValue !== initialValue
 
-      if (changed) changedFields.push(key)
-    })
+        if (changed) changedFields.push(key)
+      })
 
     return changedFields
   }
@@ -570,7 +570,7 @@ export function CourtForm({
         setAllOwnersList([])
       }
     }
-    
+
     if (adminData.role === "OWNER") {
       if (adminData._id) {
         setSelectedOwner?.(adminData._id)
@@ -613,10 +613,11 @@ export function CourtForm({
       } else {
         setCourtResponceId(success?.court?._id)
       }
-      
-      if (callback && success) {
-        callback()
-      }
+
+      // if (callback && success) {
+      //   callback()
+      // }
+
       if (!success) {
         // handle failure
       }
@@ -651,7 +652,7 @@ export function CourtForm({
   }
 
   const triggerError = (description: string) => {
-    toast({ variant: "destructive", title: "Validation Error", description })
+    toast({ variant: "destructive", title: dictionary.ErrorMsg.validationErrorTitle, description })
   }
 
   const parseTimeToMinutes = (time?: string): number => {
@@ -676,18 +677,18 @@ export function CourtForm({
   async function onFinalSubmit(data: ProfileInfoFormType) {
 
     // 1. Basic Presence Validation
-    if (!data.selectedWeekDay) return triggerError("Please select a weekday")
+    if (!data.selectedWeekDay) return triggerError(dictionary.ErrorMsg.selectWeekday)
     if (!openingTime || !closingTime)
-      return triggerError("Operating hours are required")
+      return triggerError(dictionary.ErrorMsg.operatingHoursRequired)
     const openMins = parseTimeToMinutes(openingTime)
     const closeMins = parseTimeToMinutes(closingTime)
 
     if (closeMins <= openMins) {
-      return triggerError("Closing time must be later than opening time")
+      return triggerError(dictionary.ErrorMsg.closingTimeError)
     }
 
     if (closeMins - openMins < 60) {
-      return triggerError("The operating window must be at least 1 hour")
+      return triggerError(dictionary.ErrorMsg.operatingWindowError)
     }
     // 2. Off Day Logic & Restrictions
     let offDayPayload = null
@@ -695,7 +696,7 @@ export function CourtForm({
     const offDaysArray = data.offDays || []
     let offDayPayloads = []
 
-    
+
     if (isOffDay && offDaysArray.length > 0) {
       for (let i = 0; i < offDaysArray.length; i++) {
         const item = offDaysArray[i]
@@ -704,7 +705,7 @@ export function CourtForm({
 
         // 1. Basic Range Check
         if (!range?.from || !range?.to) {
-          return triggerError(`Select dates for Off Day #${rowNum}`)
+          return triggerError(`${dictionary.ErrorMsg.selectDatesOffDay} #${rowNum}`)
         }
 
         const today = new Date()
@@ -718,7 +719,7 @@ export function CourtForm({
           selectedStartDate.getTime() === today.getTime()
         ) {
           return triggerError(
-            `Off Day #${rowNum}: Full off-days must be scheduled at least one day in advance.`
+            `Off Day #${rowNum}: ${dictionary.ErrorMsg.fullOffDayAdvance}`
           )
         }
 
@@ -730,7 +731,7 @@ export function CourtForm({
           // 3. Presence Check
           if (!offDayStartHours || !offDayEndtHours) {
             return triggerError(
-              `Off Day #${rowNum}: Partial times are required`
+              `Off Day #${rowNum}: ${dictionary.ErrorMsg.partialTimesRequired}`
             )
           }
 
@@ -739,19 +740,19 @@ export function CourtForm({
 
           // 4. Validity & Logic Check
           if (offStartMins === -1 || offEndMins === -1) {
-            return triggerError(`Off Day #${rowNum}: Invalid time format.`)
+            return triggerError(`Off Day #${rowNum}: ${dictionary.ErrorMsg.invalidTimeFormat}`)
           }
 
           if (offStartMins >= offEndMins) {
             return triggerError(
-              `Off Day #${rowNum}: Start time must be before end time.`
+              `Off Day #${rowNum}: ${dictionary.ErrorMsg.startTimeBeforeEndTime}`
             )
           }
 
           // 5. Business Hours Containment
           if (offStartMins < openMins || offEndMins > closeMins) {
             return triggerError(
-              `Off Day #${rowNum} must fall within ${openingTime} and ${closingTime}`
+              `Off Day #${rowNum} ${dictionary.ErrorMsg.offDayWithinBusinessHours} (${openingTime} - ${closingTime})`
             )
           }
 
@@ -761,7 +762,7 @@ export function CourtForm({
             const currentTimeMins = now.getHours() * 60 + now.getMinutes()
             if (offStartMins < currentTimeMins) {
               return triggerError(
-                `Off Day #${rowNum}: Start time cannot be in the past.`
+                `Off Day #${rowNum}: ${dictionary.ErrorMsg.startTimePast}`
               )
             }
           }
@@ -793,7 +794,7 @@ export function CourtForm({
       })),
       offDayPayloadData: offDayPayloads,
     }
-    
+
     try {
       // 1. Prepare the Availability promise (this always runs)
       const availabilityPromise = createCourtAvailability(
@@ -824,8 +825,8 @@ export function CourtForm({
       // Since results is an array, we check if all calls returned truthy values
       if (results.every((res) => !!res)) {
         toast({
-          title: "Success",
-          description: "Availability and all Off-days updated successfully.",
+          title: dictionary.courtLabel.successTitle,
+          description: dictionary.courtLabel.availabilityUpdated,
         })
       }
 
@@ -834,9 +835,9 @@ export function CourtForm({
       console.error("Parallel API Error:", error)
       toast({
         variant: "destructive",
-        title: "Update Failed",
+        title: dictionary.courtLabel.updateFailedTitle,
         description:
-          "One or more updates failed to save. Please check your data.",
+          dictionary.courtLabel.updateFailedMsg,
       })
     }
   }
@@ -865,7 +866,7 @@ export function CourtForm({
           >
             <div className=" text-[0.94vw] font-bold">
               {/* If view is true, you might want a "View Court" title instead */}
-              {view ? "View Court" : !courtId ? createCourt : editCourt}
+              {view ? dictionary.courtLabel.viewCourt : !courtId ? createCourt : editCourt}
             </div>
             <div></div>
 
@@ -875,14 +876,14 @@ export function CourtForm({
                 <FormField
                   control={control}
                   name="name"
-                  rules={{ required: "Court Name is required" }}
+                  rules={{ required: dictionary.ErrorMsg.courtNameIsRequired }}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{courtName}*</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder="Enter court name"
+                          placeholder={dictionary.placeholder.enterCourtName}
                           disabled={view}
                         />
                       </FormControl>
@@ -898,10 +899,10 @@ export function CourtForm({
                   <FormField
                     control={control}
                     name="owner"
-                    rules={{ required: "Court Owner is required" }}
+                    rules={{ required: dictionary.ErrorMsg.courtOwnerIsRequired }}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Court Owner*</FormLabel>
+                        <FormLabel>{courtOwner}*</FormLabel>
                         <FormControl>
                           <Select
                             onValueChange={field.onChange}
@@ -909,7 +910,7 @@ export function CourtForm({
                             disabled={view}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Select owner" />
+                              <SelectValue placeholder={dictionary.placeholder.selectOwner} />
                             </SelectTrigger>
                             <SelectContent>
                               {allOwnersList?.map((val: any, index: any) => (
@@ -932,10 +933,10 @@ export function CourtForm({
                 <FormField
                   control={control}
                   name="sport"
-                  rules={{ required: "Sport Type is required" }}
+                  rules={{ required: dictionary.ErrorMsg.sportTypeIsRequired }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Sport Type*</FormLabel>
+                      <FormLabel>{sportType}*</FormLabel>
                       <FormControl>
                         <Select
                           onValueChange={field.onChange}
@@ -943,11 +944,11 @@ export function CourtForm({
                           disabled={view}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select sport" />
+                            <SelectValue placeholder={dictionary.placeholder.selectSport} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="FOOTBALL">Football</SelectItem>
-                            <SelectItem value="PADEL">Padel</SelectItem>
+                            <SelectItem value="FOOTBALL">{dictionary.courtLabel.football}</SelectItem>
+                            <SelectItem value="PADEL">{dictionary.courtLabel.padel}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -962,10 +963,10 @@ export function CourtForm({
                 <FormField
                   control={control}
                   name="surfaceType"
-                  rules={{ required: "Surface Type is required" }}
+                  rules={{ required: dictionary.ErrorMsg.surfaceTypeIsRequired }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Surface Type*</FormLabel>
+                      <FormLabel>{surfaceType}*</FormLabel>
                       <FormControl>
                         <Select
                           onValueChange={field.onChange}
@@ -973,18 +974,18 @@ export function CourtForm({
                           disabled={view}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select surface type" />
+                            <SelectValue placeholder={dictionary.placeholder.selectSurfaceType} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="NATURAL_GRASS">
-                              Natural Grass
+                              {dictionary.courtLabel.naturalGrass}
                             </SelectItem>
                             <SelectItem value="ARTIFICIAL_TURF">
-                              Artificial Turf
+                              {dictionary.courtLabel.artificialTurf}
                             </SelectItem>
-                            <SelectItem value="CARPET">Carpet</SelectItem>
-                            <SelectItem value="CONCRETE">Concrete</SelectItem>
-                            <SelectItem value="WOOD">Wood</SelectItem>
+                            <SelectItem value="CARPET">{dictionary.courtLabel.carpet}</SelectItem>
+                            <SelectItem value="CONCRETE">{dictionary.courtLabel.concrete}</SelectItem>
+                            <SelectItem value="WOOD">{dictionary.courtLabel.wood}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -1000,15 +1001,15 @@ export function CourtForm({
                   <FormField
                     control={control}
                     name="size"
-                    rules={{ required: "Court Size is required" }}
+                    rules={{ required: dictionary.ErrorMsg.courtSizeIsRequired }}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Court Size*</FormLabel>
+                        <FormLabel>{courtSize}*</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
                             disabled={view}
-                            placeholder="Size"
+                            placeholder={dictionary.courtLabel.courtSize}
                             className="w-[11vw] rounded-br-none rounded-tr-none "
                             onInput={(e) => {
                               if (view) return
@@ -1037,11 +1038,11 @@ export function CourtForm({
                             disabled={view}
                           >
                             <SelectTrigger className="rounded-bl-none rounded-tl-none border-l-0 ">
-                              <SelectValue placeholder="unit" />
+                              <SelectValue placeholder={dictionary.courtLabel.unit} />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="m²">m²</SelectItem>
-                              <SelectItem value="YARD">Yard</SelectItem>
+                              <SelectItem value="m²">{dictionary.courtLabel.meterSquare}</SelectItem>
+                              <SelectItem value="YARD">{dictionary.courtLabel.yard}</SelectItem>
                             </SelectContent>
                           </Select>
                         </FormControl>
@@ -1058,10 +1059,10 @@ export function CourtForm({
                 <FormField
                   control={control}
                   name="capacity"
-                  rules={{ required: "Capacity is required" }}
+                  rules={{ required: dictionary.ErrorMsg.sittingCapacityIsRequired }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Capacity*</FormLabel>
+                      <FormLabel>{dictionary.courtLabel.capacity}*</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -1073,7 +1074,7 @@ export function CourtForm({
                             field.onChange(val)
                           }}
                           disabled={view}
-                          placeholder="Capacity"
+                          placeholder={dictionary.courtLabel.capacity}
                         />
                       </FormControl>
                       <FormMessage>{errors.size?.message}</FormMessage>
@@ -1087,10 +1088,10 @@ export function CourtForm({
                 <FormField
                   control={control}
                   name="price"
-                  rules={{ required: "Price is required" }}
+                  rules={{ required: dictionary.ErrorMsg.priceIsRequired }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price*</FormLabel>
+                      <FormLabel>{dictionary.courtLabel.price}*</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -1102,7 +1103,7 @@ export function CourtForm({
                             field.onChange(val)
                           }}
                           disabled={view}
-                          placeholder="Price"
+                          placeholder={dictionary.courtLabel.price}
                         />
                       </FormControl>
                       <FormMessage>{errors.price?.message}</FormMessage>
@@ -1117,15 +1118,15 @@ export function CourtForm({
                 <FormField
                   control={control}
                   name="mapUrl"
-                  rules={{ required: "Map URL is required" }}
+                  rules={{ required: dictionary.ErrorMsg.mapUrlIsRequired }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Map URL*</FormLabel>
+                      <FormLabel>{dictionary.courtLabel.mapUrl}*</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           disabled={view}
-                          placeholder="Map Url"
+                          placeholder={dictionary.courtLabel.mapUrl}
                         />
                       </FormControl>
                       <FormMessage>{errors.mapUrl?.message}</FormMessage>
@@ -1135,14 +1136,14 @@ export function CourtForm({
               </div>
               <div className="h-[8.5vh]">
                 <FormField
-                   control={control}
+                  control={control}
                   name="city"
-                  rules={{ required: "City is required" }}
+                  rules={{ required: dictionary.ErrorMsg.cityIsRequired }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>City*</FormLabel>
+                      <FormLabel>{dictionary.courtLabel.city}*</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="City" disabled={view} />
+                        <Input {...field} placeholder={dictionary.courtLabel.city} disabled={view} />
                       </FormControl>
                       <FormMessage>{errors.city?.message}</FormMessage>
                     </FormItem>
@@ -1155,9 +1156,9 @@ export function CourtForm({
                   name="area"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Area</FormLabel>
+                      <FormLabel>{dictionary.courtLabel.area}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Area" disabled={view} />
+                        <Input {...field} placeholder={dictionary.courtLabel.area} disabled={view} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -1169,11 +1170,11 @@ export function CourtForm({
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Address</FormLabel>
+                      <FormLabel>{dictionary.dialogFormLabels.address}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder="Address"
+                          placeholder={dictionary.dialogFormLabels.address}
                           disabled={view}
                         />
                       </FormControl>
@@ -1196,7 +1197,7 @@ export function CourtForm({
                     />
                   )}
                 />
-                <FormLabel>Offers Training</FormLabel>
+                <FormLabel>{dictionary.courtLabel.offersTraining}</FormLabel>
               </div>
               {view && (
                 <div className="flex items-center gap-x-2 mb-[1vh]">
@@ -1206,13 +1207,13 @@ export function CourtForm({
                       setStep("SLOT")
                     }}
                   >
-                    Show Timings
+                    {dictionary.courtLabel.showTimings}
                   </Button>
                 </div>
               )}
             </div>
 
-            <div className=" text-[0.94vw] font-bold">Amenities</div>
+            <div className=" text-[0.94vw] font-bold">{dictionary.courtLabel.amenities}</div>
 
             {/* Amenities Checkboxes */}
             <div className="grid grid-cols-7 gap-3 mt-[1vh]">
@@ -1227,8 +1228,8 @@ export function CourtForm({
                       if (view) return // Prevent change logic if viewing
                       let newValue = checked
                         ? field.value.filter(
-                            (item: string) => item !== option.value
-                          )
+                          (item: string) => item !== option.value
+                        )
                         : [...field.value, option.value]
                       field.onChange(newValue)
                       setHasAmenitiesChanged(true)
@@ -1262,15 +1263,16 @@ export function CourtForm({
                 <FormField
                   control={control}
                   name="titleImage"
-                  rules={{ required: "Title Image is required" }}
+                  rules={{ required: dictionary.ErrorMsg.titleImageIsRequired }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title Image*</FormLabel>
+                      <FormLabel>{titleImage}*</FormLabel>
                       <FormControl>
                         <TitleImageUpload
                           disabled={view}
                           value={field?.value}
                           onChange={field.onChange}
+                          dictionary={dictionary}
                         />
                       </FormControl>
                       <FormMessage>{errors.mapUrl?.message}</FormMessage>
@@ -1285,7 +1287,7 @@ export function CourtForm({
                   name="courtImages"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Court Pictures</FormLabel>
+                      <FormLabel>{courtPictures}</FormLabel>
                       <div className="border border-[#e4e4e7] rounded-md p-[0.3vw]">
                         <FormControl>
                           <CourtImagesUpload
@@ -1298,6 +1300,7 @@ export function CourtForm({
                               if (view) return
                               setDeletedCimagesIds(deletedIds.map(String))
                             }}
+                            dictionary={dictionary}
                           />
                         </FormControl>
                       </div>
@@ -1311,10 +1314,10 @@ export function CourtForm({
                 <FormField
                   control={control}
                   name="description"
-                  rules={{ required: "Description is required" }}
+                  rules={{ required: dictionary.ErrorMsg.descriptionIsRequired }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description*</FormLabel>
+                      <FormLabel>{description}*</FormLabel>
                       <FormControl>
                         <textarea
                           {...field}
@@ -1409,12 +1412,12 @@ export function CourtForm({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Status" />
+                            <SelectValue placeholder={dictionary.courtLabel.status} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="REJECTED">Rejected</SelectItem>
-                          <SelectItem value="APPROVED">Approved</SelectItem>
+                          <SelectItem value="REJECTED">{dictionary.courtLabel.rejected}</SelectItem>
+                          <SelectItem value="APPROVED">{dictionary.courtLabel.approved}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -1430,7 +1433,7 @@ export function CourtForm({
                     <Input
                       value={statusRej}
                       onChange={handleInputChange} // Fix: Uses the event to get the string
-                      placeholder="State reason of Rejection (max. 250)"
+                      placeholder={dictionary.courtLabel.rejectionReasonPlaceholder}
                       className={error ? "border-red-500" : ""}
                     />
 
@@ -1448,7 +1451,7 @@ export function CourtForm({
                   </div>
                 )}
                 <Button type="button" onClick={handleClick}>
-                  Update
+                  {dictionary.courtLabel.update}
                 </Button>
               </div>
             )}
@@ -1459,18 +1462,18 @@ export function CourtForm({
                     courtImgChangeStatus !== "nothing" ||
                     getChangedFields().length > 0) && (
                     <>
-                      <Button type="submit">Save</Button>
+                      <Button type="submit">{dictionary.btnText.save}</Button>
                       <Button
                         type="button"
                         variant="secondary"
                         onClick={handleReset}
                       >
-                        Reset
+                        {dictionary.btnText.reset}
                       </Button>
                     </>
                   )
                 ) : (
-                  <Button type="submit">Create Court</Button>
+                  <Button type="submit">{dictionary.courtLabel.createCourt}</Button>
                 )}
               </div>
             )}
@@ -1483,7 +1486,7 @@ export function CourtForm({
         <div className="space-y-6">
           {" "}
           {/* Increased spacing */}
-          <p className="text-lg font-semibold">Book Your Slot</p>
+          <p className="text-lg font-semibold">{dictionary.courtLabel.bookYourSlot}</p>
           <Form {...form}>
             <form onSubmit={handleSubmit(onFinalSubmit)} className="space-y-8">
               {/* Row 1: Regular Schedule */}
@@ -1494,7 +1497,7 @@ export function CourtForm({
                     name="selectedWeekDay"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Days</FormLabel>
+                        <FormLabel>{dictionary.courtLabel.days}</FormLabel>
                         <Select
                           disabled={view}
                           onValueChange={field.onChange}
@@ -1502,7 +1505,7 @@ export function CourtForm({
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select weekday nothing added" />
+                              <SelectValue placeholder={dictionary.courtLabel.selectWeekdayPlaceholder} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -1524,7 +1527,7 @@ export function CourtForm({
                   name="startHours"
                   render={({ field }) => (
                     <FormItem className="w-[12vw]">
-                      <FormLabel>Opening Time</FormLabel>
+                      <FormLabel>{dictionary.courtLabel.openingTime}</FormLabel>
                       <TimePickerComponent
                         disabled={view}
                         value={openingTime}
@@ -1541,7 +1544,7 @@ export function CourtForm({
                   name="endtHours"
                   render={({ field }) => (
                     <FormItem className="w-[12vw]">
-                      <FormLabel>Closing Time</FormLabel>
+                      <FormLabel>{dictionary.courtLabel.closingTime}</FormLabel>
                       <TimePickerComponent
                         disabled={view}
                         value={closingTime}
@@ -1568,7 +1571,7 @@ export function CourtForm({
                     )}
                   />
                   <FormLabel htmlFor="offDay" className="cursor-pointer">
-                    Off Day Schedule
+                    {dictionary.courtLabel.offDaySchedule}
                   </FormLabel>
                 </div>
               </div>
@@ -1668,7 +1671,7 @@ export function CourtForm({
                         .map((item) => item.range)
                         .filter(Boolean) // Remove undefined/nulls
                       const isConfirming = pendingDeleteIndex === index
-                      
+
                       return (
                         <div
                           key={field.id}
@@ -1676,7 +1679,7 @@ export function CourtForm({
                         >
                           <div className="flex justify-between items-center">
                             <p className="text-md font-medium">
-                              Off Day Details #{index + 1}
+                              {dictionary.courtLabel.offDayDetails} #{index + 1}
                             </p>
                             {/* {fields.length > 1 && (
                             <Button
@@ -1693,7 +1696,7 @@ export function CourtForm({
                                 {isConfirming ? (
                                   <div className="flex items-center gap-2 animate-in zoom-in-95">
                                     <span className="text-xs font-medium text-destructive">
-                                      Confirm?
+                                      {dictionary.courtLabel.confirm}
                                     </span>
                                     <Button
                                       type="button"
@@ -1767,44 +1770,47 @@ export function CourtForm({
                                 htmlFor={`offDayType-${index}`}
                                 className="font-bold"
                               >
-                                {form.watch(`offDays.${index}.offDayType`)} Day
+                                {form.watch(`offDays.${index}.offDayType`) ===
+                                  "Partial"
+                                  ? dictionary.courtLabel.partialDay
+                                  : dictionary.courtLabel.fullDay}
                               </FormLabel>
                             </div>
 
                             {/* Partial Day Time Pickers */}
                             {form.watch(`offDays.${index}.offDayType`) ===
                               "Partial" && (
-                              <div className="flex gap-4 animate-in fade-in slide-in-from-left-2">
-                                <FormField
-                                  control={form.control}
-                                  name={`offDays.${index}.offDayStartHours`}
-                                  render={({ field }) => (
-                                    <FormItem className="w-[12vw]">
-                                      <FormLabel>Start Time</FormLabel>
-                                      <TimePickerComponent
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                        disabled={view}
-                                      />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name={`offDays.${index}.offDayEndtHours`}
-                                  render={({ field }) => (
-                                    <FormItem className="w-[12vw]">
-                                      <FormLabel>End Time</FormLabel>
-                                      <TimePickerComponent
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                        disabled={view}
-                                      />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                            )}
+                                <div className="flex gap-4 animate-in fade-in slide-in-from-left-2">
+                                  <FormField
+                                    control={form.control}
+                                    name={`offDays.${index}.offDayStartHours`}
+                                    render={({ field }) => (
+                                      <FormItem className="w-[12vw]">
+                                        <FormLabel>{dictionary.courtLabel.startTime}</FormLabel>
+                                        <TimePickerComponent
+                                          value={field.value}
+                                          onValueChange={field.onChange}
+                                          disabled={view}
+                                        />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  <FormField
+                                    control={form.control}
+                                    name={`offDays.${index}.offDayEndtHours`}
+                                    render={({ field }) => (
+                                      <FormItem className="w-[12vw]">
+                                        <FormLabel>{dictionary.courtLabel.endTime}</FormLabel>
+                                        <TimePickerComponent
+                                          value={field.value}
+                                          onValueChange={field.onChange}
+                                          disabled={view}
+                                        />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+                              )}
 
                             {/* Calendar Range Picker */}
                             <div className="w-[18vw]">
@@ -1813,7 +1819,7 @@ export function CourtForm({
                                 name={`offDays.${index}.range`}
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Calendar</FormLabel>
+                                    <FormLabel>{dictionary.courtLabel.calendar}</FormLabel>
                                     <DateRangePickerComponent
                                       value={field.value}
                                       onValueChange={field.onChange}
@@ -1844,7 +1850,7 @@ export function CourtForm({
                       className="w-full py-3 border-2 border-dashed rounded-lg flex items-center justify-center gap-2 hover:bg-accent transition-colors"
                     >
                       <PlusCircle className="h-5 w-5" />
-                      <span>Add Another Off Day</span>
+                      <span>{dictionary.courtLabel.addOffDay}</span>
                     </button>
                   )}
                 </div>
@@ -1861,10 +1867,10 @@ export function CourtForm({
           <div className="flex gap-2 justify-end mt-4">
             {view ? (
               <Button onClick={() => setStep("FORM")} variant="secondary">
-                Back
+                {dictionary.btnText.back}
               </Button>
             ) : (
-              <Button onClick={handleSubmit(onFinalSubmit)}>Submit</Button>
+              <Button onClick={handleSubmit(onFinalSubmit)}>{dictionary.btnText.submit}</Button>
             )}
           </div>
         </div>

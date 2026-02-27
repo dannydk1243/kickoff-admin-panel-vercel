@@ -147,7 +147,7 @@ export function ActionNotificationDropdown({
   }
 
   const triggerError = (description: string) => {
-    toast({ variant: "destructive", title: "Validation Error", description })
+    toast({ variant: "destructive", title: dictionary.ErrorMsg.validationErrorTitle, description })
   }
 
   const handleReject = async function (id: any, reason: string) {
@@ -164,7 +164,7 @@ export function ActionNotificationDropdown({
         setRejectionReason("")
       }
     } else {
-      return triggerError("State reason of rejection.")
+      return triggerError(dictionary.ErrorMsg.stateReasonOrRejection)
     }
   }
 
@@ -201,7 +201,7 @@ export function ActionNotificationDropdown({
         {/* Increased width */}
         <Card className="border-0 shadow-none">
           <div className="flex items-center justify-between border-b border-border p-3 font-semibold text-sm">
-            {dictionary.navigation.notifications.notifications}
+            {dictionary.navigation.courtApproval}
           </div>
 
           <ScrollArea className="h-[400px]">
@@ -241,8 +241,8 @@ export function ActionNotificationDropdown({
                             <div className="flex-1 space-y-1 pr-24">
                               <p className="text-sm font-medium">{item.name}</p>
                               <p className="text-xs text-muted-foreground line-clamp-2">
-                                {item.owner.name} has requested &nbsp;
-                                {item.name} for approval.
+                                {item.owner.name} {dictionary.notifications.hasRequested} &nbsp;
+                                {item.name} {dictionary.notifications.forApproval}
                               </p>
                             </div>
                           </div>
@@ -253,7 +253,7 @@ export function ActionNotificationDropdown({
                           <div className="px-4 pb-4 flex items-center gap-2">
                             <Input
                               autoFocus
-                              placeholder="Reason for rejection..."
+                              placeholder={dictionary.placeholder.reasonForRejection}
                               className="h-8 text-xs"
                               value={rejectionReason}
                               onChange={(e) =>
@@ -269,7 +269,7 @@ export function ActionNotificationDropdown({
                                 setRejectionReason("")
                               }}
                             >
-                              Send
+                              {dictionary.btnText.send}
                             </Button>
                             <Button
                               size="sm"
@@ -326,7 +326,7 @@ export function ActionNotificationDropdown({
                 >
                   {isLoading && page > 1 && (
                     <span className="text-[10px] text-muted-foreground">
-                      Loading...
+                      {dictionary.navigation.loading}
                     </span>
                   )}
                 </div>
@@ -334,7 +334,7 @@ export function ActionNotificationDropdown({
             ) : (
               <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
                 <div className="text-sm">
-                  {isLoading ? <CustomLoader /> : "No requests yet"}
+                  {isLoading ? <CustomLoader /> : dictionary.notifications.noRequests}
                 </div>
               </div>
             )}

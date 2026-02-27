@@ -35,11 +35,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { getAllAnnouncements } from "@/components/dashboards/services/apiService"
+import { getAllAnnouncements, getAllBookings } from "@/components/dashboards/services/apiService"
 import { getColumns } from "./columns"
 import { InvoiceTableToolbar } from "./data-table-toolbar"
 
-export function AnnouncementDataTable() {
+export function TrainingDataTable() {
   const dictionary: any = useTranslation()
 
   // Table state
@@ -76,17 +76,6 @@ export function AnnouncementDataTable() {
     [handleStatusUpdate]
   )
 
-  const updateAnnouncementsList = async () => {
-    const res = await getAllAnnouncements(
-      pagination.pageIndex + 1,
-      pagination.pageSize,
-    )
-    if (res?.notifications) {
-      setData(res.notifications)
-      setTotalCount(res.total) // ✅ TOTAL ROWS
-    }
-  }
-
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
@@ -95,13 +84,14 @@ export function AnnouncementDataTable() {
       const page = pagination.pageIndex + 1
       const limit = pagination.pageSize
 
-      const res = await getAllAnnouncements(
+      const res = await getAllBookings(
         page,
         limit,
+        "TRAINING"
       )
 
-      if (res?.notifications) {
-        setData(res.notifications)
+      if (res?.bookings) {
+        setData(res.bookings)
         setTotalCount(res.total) // ✅ TOTAL ROWS
       } else {
         setData([])
@@ -145,14 +135,13 @@ export function AnnouncementDataTable() {
   return (
     <Card>
       <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
-        <CardTitle>{dictionary.tableLabels.announcementDataTable}</CardTitle>
+        <CardTitle>{dictionary.tableLabels.trainingDataTable}</CardTitle>
         <InvoiceTableToolbar
           table={table}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           selectedRole={selectedRole}
           setSelectedRole={setSelectedRole}
-          callback={updateAnnouncementsList}
           dictionary={dictionary}
         />
       </CardHeader>

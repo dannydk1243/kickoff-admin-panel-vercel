@@ -37,12 +37,14 @@ interface InvoiceTableRowActionsProps {
     updates: { isBlocked: boolean; isDeleted: boolean }
   ) => void
   callback: any
+  dictionary: any
 }
 
 export function InvoiceTableRowActions({
   row,
   onStatusUpdate,
-  callback
+  callback,
+  dictionary
 }: InvoiceTableRowActionsProps) {
   let id = row.original._id
 
@@ -160,10 +162,10 @@ export function InvoiceTableRowActions({
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-[160px]">
-            <DropdownMenuItem onClick={handleView}>View</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleView}>{dictionary.rowControlLabels.view}</DropdownMenuItem>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleEdit}>{dictionary.rowControlLabels.edit}</DropdownMenuItem>
 
             <DropdownMenuSeparator />
 
@@ -173,7 +175,7 @@ export function InvoiceTableRowActions({
                 openModalFor(row.original.isDeleted ? "restore" : "delete")
               }
             >
-              {row.original.isDeleted ? "Restore" : "Delete"}
+              {row.original.isDeleted ? dictionary.rowControlLabels.restore : dictionary.rowControlLabels.delete}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -191,8 +193,8 @@ export function InvoiceTableRowActions({
             setPendingAction(null)
           }
         }}
-        confirmText={pendingAction === "delete" ? "Delete" : "Confirm"}
-        cancelText="Cancel"
+        confirmText={pendingAction === "delete" ? dictionary.rowControlLabels.delete : dictionary.rowControlLabels.confirm}
+        cancelText={dictionary.rowControlLabels.cancel}
       />
 
       <Dialog open={open} onOpenChange={setOpen}>

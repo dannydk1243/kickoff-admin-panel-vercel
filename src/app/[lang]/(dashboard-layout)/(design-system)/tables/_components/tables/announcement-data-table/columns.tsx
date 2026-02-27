@@ -13,12 +13,13 @@ type InvoiceTableRow = InvoiceType & {
 
 // Accept the handler and return columns array
 export const getColumns = (
-  onStatusUpdate: (id: string, updates: { isBlocked: boolean; isDeleted: boolean }) => void
+  onStatusUpdate: (id: string, updates: { isBlocked: boolean; isDeleted: boolean }) => void,
+  dictionary: any
 ): ColumnDef<InvoiceTableRow>[] => [
     {
       accessorKey: "title",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Title" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.title} />
       ),
       cell: ({ row }) => {
         const title = row.getValue<string>("title")
@@ -28,7 +29,7 @@ export const getColumns = (
     {
       accessorKey: "_id",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="ID" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.id} />
       ),
       cell: ({ row }) => {
         const id = row.getValue<string>("_id")
@@ -38,7 +39,7 @@ export const getColumns = (
     {
       accessorKey: "message",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Message" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.message} />
       ),
       cell: ({ row }) => {
         const message = row.getValue<string>("message")
@@ -48,7 +49,7 @@ export const getColumns = (
     {
       accessorKey: "audience",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Recipients" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.recipients} />
       ),
       cell: ({ row }) => {
         const phone = row.getValue<string>("audience")
@@ -58,7 +59,7 @@ export const getColumns = (
     {
       accessorKey: "createdAt",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Sent On" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.sentOn} />
       ),
       cell: ({ row }) => {
         const createdAt = row.getValue<string>("createdAt")

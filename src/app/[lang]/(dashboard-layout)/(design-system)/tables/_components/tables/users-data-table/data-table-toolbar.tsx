@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 interface InvoiceTableToolbarProps<TTable> {
   searchTerm: string
   setSearchTerm: (term: string) => void
+  dictionary: any
 }
 
 /**
@@ -14,6 +15,7 @@ interface InvoiceTableToolbarProps<TTable> {
 export function InvoiceTableToolbar<TTable>({
   searchTerm,
   setSearchTerm,
+  dictionary,
 }: InvoiceTableToolbarProps<TTable>) {
   // Local input state to update immediately on user typing
   const [inputValue, setInputValue] = useState(searchTerm)
@@ -54,11 +56,11 @@ export function InvoiceTableToolbar<TTable>({
   return (
     <div className="flex gap-x-1.5">
       <Input
-        placeholder="Search..."
+        placeholder={dictionary.search.search}
         className="border border-input bg-background hover:bg-accent hover:text-accent-foreground"
         value={inputValue}
         onChange={handleChange}
-        aria-label="Search..."
+        aria-label={dictionary.search.search}
         spellCheck={false}
         autoComplete="off"
       />

@@ -66,16 +66,28 @@ export const navigationsData: NavigationType[] = [
         iconName: "SquareMenu",
         roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]
       },
+      {
+        title: "Bookings",
+        href: "/pages/bookings",
+        iconName: "Album",
+        roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]
+      },
+      {
+        title: "Trainings",
+        href: "/pages/trainings",
+        iconName: "School",
+        roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]
+      },
       // {
-      //   title: "Bookings",
-      //   href: "/pages/bookings",
-      //   iconName: "Album",
-      //   roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]
+      //   title: "User Wallet",
+      //   href: "/pages/user-wallet",
+      //   iconName: "Wallet",
+      //   roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
       // },
       // {
-      //   title: "All Trainings",
-      //   href: "/pages/trainings",
-      //   iconName: "Users",
+      //   title: "Refunds",
+      //   href: "/pages/refunds",
+      //   iconName: "Wallet",
       //   roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
       // },
       // {

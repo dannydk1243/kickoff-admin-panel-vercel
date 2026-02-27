@@ -9,7 +9,7 @@ import type { Row } from "@tanstack/react-table"
 import type { InvoiceType } from "../../../types"
 
 import { getStatusHandler } from "@/lib/utils"
-
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { updateAdminStatus, sendReinviteMail } from "@/components/dashboards/services/apiService"
 import { CustomModal } from "@/components/layout/CustomModal" // Adjust path if needed
+import { AdminViewForm } from "@/app/[lang]/(dashboard-layout)/pages/admins/_components/adminViewForm"
 
 type InvoiceTableRow = InvoiceType & {
   isBlocked: boolean
@@ -34,14 +35,17 @@ interface InvoiceTableRowActionsProps {
     id: string,
     updates: { isBlocked: boolean; isDeleted: boolean }
   ) => void
+  dictionary: any
 }
 
 export function InvoiceTableRowActions({
   row,
   onStatusUpdate,
+  dictionary
 }: InvoiceTableRowActionsProps) {
   const id = row.original._id
 
+  const [open, setOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [pendingAction, setPendingAction] = useState<
     "block" | "unblock" | "delete" | "restore" | null
@@ -144,6 +148,10 @@ export function InvoiceTableRowActions({
             ? "Are you sure you want to restore this user?"
             : ""
 
+  const viewAdmin = function (id: any) {
+    setTimeout(() => setOpen(true), 0)
+  }
+
   return (
     <>
       <div className="flex justify-end me-4">
@@ -160,10 +168,17 @@ export function InvoiceTableRowActions({
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-[160px]">
+
+            <DropdownMenuItem onClick={() => viewAdmin(row.original._id)}>
+              {dictionary.rowControlLabels.view}
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
             {validReinvite && (
               <>
                 <DropdownMenuItem onClick={() => sendReinviteEmail()}>
-                  Re-invite Email
+                  {dictionary.rowControlLabels.reinviteEmail}
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
@@ -175,7 +190,7 @@ export function InvoiceTableRowActions({
                 openModalFor(row.original.isBlocked ? "unblock" : "block")
               }
             >
-              {row.original.isBlocked ? "Unblock" : "Block"}
+              {row.original.isBlocked ? dictionary.rowControlLabels.unblock : dictionary.rowControlLabels.block}
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
@@ -186,7 +201,7 @@ export function InvoiceTableRowActions({
                 openModalFor(row.original.isDeleted ? "restore" : "delete")
               }
             >
-              {row.original.isDeleted ? "Restore" : "Delete"}
+              {row.original.isDeleted ? dictionary.rowControlLabels.restore : dictionary.rowControlLabels.delete}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -204,9 +219,14 @@ export function InvoiceTableRowActions({
             setPendingAction(null)
           }
         }}
-        confirmText={pendingAction === "delete" ? "Delete" : "Confirm"}
-        cancelText="Cancel"
+        confirmText={pendingAction === "delete" ? dictionary.rowControlLabels.delete : dictionary.rowControlLabels.confirm}
+        cancelText={dictionary.rowControlLabels.cancel}
       />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-lg sm:max-w-[65vw] max-h-[98vh] overflow-visible">
+          <AdminViewForm onClose={() => setOpen(false)} adminId={row.original._id} dictionary={dictionary} />
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

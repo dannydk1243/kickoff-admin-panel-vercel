@@ -251,6 +251,41 @@ export async function getOnlyAllowedOwners(
   }
 }
 
+export async function getAdminDetails(adminId: string) {
+  const body = {
+    adminId: adminId,
+  }
+  try {
+    const res = await API.post(`/admins/details`, body)
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load admin",
+        description: "Unable to fetch admin details",
+      })
+      return null
+    }
+
+    // toast({
+    //    title: "Admin loaded",
+    //    description: "Admin details fetched successfully",
+    // });
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return null
+  }
+}
+
 export async function updateAdminStatus(data: {
   adminId: string
   isBlocked: boolean
@@ -332,9 +367,9 @@ export async function getAllUsers(
   }
 }
 
-export async function getUserDetails(id: string){
+export async function getUserDetails(id: string) {
   const body = {
-    userId : id
+    userId: id
   }
   try {
     const res = await API.post(
@@ -885,9 +920,9 @@ export async function getAllPendingCourts(page: number = 1, limit: number = 15) 
   try {
     const res = await API.post(
       `/courts/all?status=PENDING&page=${page}&limit=${limit}`,
-      {}, { 
-      _noLoader: true 
-    } as any)
+      {}, {
+        _noLoader: true
+      } as any)
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({
@@ -1314,9 +1349,9 @@ export async function getAllNotifications(
   try {
     const res = await API.post(
       `/notifications/all?page=${page}&limit=${limit}`,
-      {}, { 
-      _noLoader: true 
-    } as any)
+      {}, {
+        _noLoader: true
+      } as any)
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({
@@ -1353,9 +1388,9 @@ export async function getAllAnnouncements(
   try {
     const res = await API.post(
       `/notifications/all?page=${page}&limit=${limit}`,
-      {}, { 
-      _noLoader: true 
-    } as any)
+      {}, {
+        _noLoader: true
+      } as any)
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({
@@ -1387,8 +1422,8 @@ export async function getAllAnnouncements(
 
 export async function getNotificationCount() {
   try {
-    const res = await API.post(`/notifications/unread-count`, {}, { 
-      _noLoader: true 
+    const res = await API.post(`/notifications/unread-count`, {}, {
+      _noLoader: true
     } as any)
 
     if (res?.status !== 200 && res?.status !== 201) {
@@ -1421,8 +1456,8 @@ export async function getNotificationCount() {
 
 export async function readAllNotifications() {
   try {
-    const res = await API.post(`/notifications/read-all`, {}, { 
-      _noLoader: true 
+    const res = await API.post(`/notifications/read-all`, {}, {
+      _noLoader: true
     } as any)
 
     if (res?.status !== 200 && res?.status !== 201) {
@@ -1469,6 +1504,72 @@ export async function sendAnnouncements(body: {}) {
     toast({
       title: "Status updated",
       description: "Announcement sent successfully.",
+    })
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return false
+  }
+}
+
+export async function getAllBookings(page: number = 1,
+  limit: number = 15,
+  type: string = "MATCH") {
+  try {
+    const res = await API.post(`/bookings/all?page=${page}&limit=${limit}&type=${type}&participants=true`, {})
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load bookings",
+        description: "Unable to fetch bookings list",
+      })
+      return null
+    }
+
+    // toast({
+    //    title: "Bookings loaded",
+    //    description: "Bookings list fetched successfully",
+    // });
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return null
+  }
+}
+
+export async function cancelBooking(body: {}) {
+  try {
+    const res = await API.post(`/bookings/cancel`, body)
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Update failed",
+        description: "Unable to cancel booking.",
+      })
+      return null
+    }
+
+    toast({
+      title: "Status updated",
+      description: "Booking cancelled successfully.",
     })
 
     return res.data

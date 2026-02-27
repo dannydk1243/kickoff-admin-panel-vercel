@@ -35,11 +35,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { getAllAnnouncements } from "@/components/dashboards/services/apiService"
+import { getAllAnnouncements, getAllBookings } from "@/components/dashboards/services/apiService"
 import { getColumns } from "./columns"
 import { InvoiceTableToolbar } from "./data-table-toolbar"
 
-export function AnnouncementDataTable() {
+export function BookingDataTable() {
   const dictionary: any = useTranslation()
 
   // Table state
@@ -61,12 +61,12 @@ export function AnnouncementDataTable() {
 
   // Local status update
   const handleStatusUpdate = (
-    adminId: string,
-    updates: { isBlocked: boolean; isDeleted: boolean }
+    bookingId: string,
+    updates: { isBlocked: boolean; isDeleted: boolean, status?: string }
   ) => {
     setData((prev) =>
       prev.map((item) =>
-        item._id === adminId ? { ...item, ...updates } : item
+        item._id === bookingId ? { ...item, ...updates } : item
       )
     )
   }
@@ -77,12 +77,13 @@ export function AnnouncementDataTable() {
   )
 
   const updateAnnouncementsList = async () => {
-    const res = await getAllAnnouncements(
+    const res = await getAllBookings(
       pagination.pageIndex + 1,
       pagination.pageSize,
+      "MATCH"
     )
-    if (res?.notifications) {
-      setData(res.notifications)
+    if (res?.bookings) {
+      setData(res.bookings)
       setTotalCount(res.total) // ✅ TOTAL ROWS
     }
   }
@@ -95,13 +96,14 @@ export function AnnouncementDataTable() {
       const page = pagination.pageIndex + 1
       const limit = pagination.pageSize
 
-      const res = await getAllAnnouncements(
+      const res = await getAllBookings(
         page,
         limit,
+        "MATCH"
       )
 
-      if (res?.notifications) {
-        setData(res.notifications)
+      if (res?.bookings) {
+        setData(res.bookings)
         setTotalCount(res.total) // ✅ TOTAL ROWS
       } else {
         setData([])
@@ -145,7 +147,7 @@ export function AnnouncementDataTable() {
   return (
     <Card>
       <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
-        <CardTitle>{dictionary.tableLabels.announcementDataTable}</CardTitle>
+        <CardTitle>{dictionary.tableLabels.bookingDataTable}</CardTitle>
         <InvoiceTableToolbar
           table={table}
           searchTerm={searchTerm}

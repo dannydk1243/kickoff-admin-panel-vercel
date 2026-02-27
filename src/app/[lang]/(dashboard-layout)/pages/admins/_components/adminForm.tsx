@@ -22,9 +22,10 @@ type ErrorsState = Partial<Record<keyof ProfileInfoState, string>>
 type ProfileInfoFormProps = {
   onClose?: () => void
   callback?: () => void
+  dictionary: any
 }
 
-export function AdminForm({ onClose, callback }: ProfileInfoFormProps) {
+export function AdminForm({ onClose, callback, dictionary }: ProfileInfoFormProps) {
   const [formState, setFormState] = useState<ProfileInfoState>({
     avatar: undefined,
     avatarPreview: undefined,
@@ -37,9 +38,9 @@ export function AdminForm({ onClose, callback }: ProfileInfoFormProps) {
   const [errors, setErrors] = useState<ErrorsState>({})
 
   const fieldLabels: Record<Exclude<keyof ProfileInfoState, "avatar" | "avatarPreview">, string> = {
-    name: "Name",
-    email: "Email",
-    phoneNumber: "Phone Number",
+    name: dictionary.tableColumnLabels.name,
+    email: dictionary.tableColumnLabels.email,
+    phoneNumber: dictionary.tableColumnLabels.phoneNumber,
   }
 
   const pathname = usePathname()
@@ -57,11 +58,14 @@ export function AdminForm({ onClose, callback }: ProfileInfoFormProps) {
       (typeof value === "string" && value.trim() === "")
 
     if (isEmpty) {
+      if (name === "name") return dictionary.ErrorMsg.nameIsRequired
+      if (name === "email") return dictionary.ErrorMsg.emailIsRequired
+      if (name === "phoneNumber") return dictionary.ErrorMsg.phoneNumberIsRequired
       return `${fieldLabels[name]} is required`
     }
 
     if (name === "email" && typeof value === "string" && !EMAIL_REGEX.test(value)) {
-      return "Please enter a valid email address"
+      return dictionary.ErrorMsg.invalidEmail
     }
 
     return undefined
@@ -193,9 +197,9 @@ export function AdminForm({ onClose, callback }: ProfileInfoFormProps) {
 
       {/* Name */}
       <div>
-        <label className="text-sm font-medium">Name</label>
+        <label className="text-sm font-medium">{dictionary.tableColumnLabels.name}</label>
         <Input
-          placeholder="Enter your name"
+          placeholder={dictionary.placeholder.enterName}
           value={formState.name}
           onChange={(e) => handleChange("name", e.target.value)}
           className={errors.name ? "border-red-500" : ""}
@@ -205,9 +209,9 @@ export function AdminForm({ onClose, callback }: ProfileInfoFormProps) {
 
       {/* Email */}
       <div>
-        <label className="text-sm font-medium">Email</label>
+        <label className="text-sm font-medium">{dictionary.tableColumnLabels.email}</label>
         <Input
-          placeholder="name@example.com"
+          placeholder={dictionary.placeholder.emailExample}
           value={formState.email}
           onChange={(e) => handleChange("email", e.target.value)}
           className={errors.email ? "border-red-500" : ""}
@@ -224,9 +228,9 @@ export function AdminForm({ onClose, callback }: ProfileInfoFormProps) {
 
       {/* Actions */}
       <div className="flex gap-x-2 mt-4 justify-end">
-        <Button type="submit">Save</Button>
+        <Button type="submit">{dictionary.btnText.save}</Button>
         <Button type="button" variant="secondary" onClick={handleReset}>
-          Reset
+          {dictionary.btnText.reset}
         </Button>
       </div>
     </form>

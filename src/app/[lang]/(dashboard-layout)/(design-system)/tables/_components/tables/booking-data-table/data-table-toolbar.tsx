@@ -125,7 +125,7 @@ export function InvoiceTableToolbar<TTable>({
     <>
       <div className="flex items-center gap-x-4">
         {/* OPEN MODAL BUTTON */}
-        <Button
+        {/* <Button
           variant="outline"
           size="icon"
           className="shrink-0"
@@ -133,7 +133,7 @@ export function InvoiceTableToolbar<TTable>({
           onClick={() => setOpen(true)}
         >
           <DiamondPlus className="h-4 w-4" />
-        </Button>
+        </Button> */}
 
         {/* <Input
           placeholder="Search..."

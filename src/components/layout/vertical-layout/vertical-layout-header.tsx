@@ -36,7 +36,7 @@ export function VerticalLayoutHeader({
     unreadCount: 0,
     pages: 0,
   })
-  
+
   useEffect(() => {
     // Define the async function inside
     const fetchNotifications = async () => {
@@ -62,9 +62,9 @@ export function VerticalLayoutHeader({
         <ToggleMobileSidebar />
         <div className="grow flex justify-end gap-2">
           <SidebarTrigger className="hidden lg:flex lg:me-auto" />
-          {/* {adminData?.role !== "OWNER" && (
-            <ActionNotificationDropdown dictionary={dictionary} adminData={adminData}/>
-          )} */}
+          {adminData?.role !== "OWNER" && (
+            <ActionNotificationDropdown dictionary={dictionary} adminData={adminData} />
+          )}
 
           <NotificationDropdown
             dictionary={dictionary}

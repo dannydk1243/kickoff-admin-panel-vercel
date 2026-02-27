@@ -1,13 +1,9 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
-import Cookies from "js-cookie"
+import { useState, useCallback } from "react"
 import { EllipsisVertical } from "lucide-react"
-
 import type { Row } from "@tanstack/react-table"
 import type { InvoiceType } from "../../../types"
-
-import { getStatusHandler } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -17,24 +13,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { sendReinviteMail, updateAdminStatus } from "@/components/dashboards/services/apiService"
+import { cancelBooking, updateAdminStatus } from "@/components/dashboards/services/apiService"
+import { getStatusHandler } from "@/lib/utils"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
+
+import { BookingForm } from "@/app/[lang]/(dashboard-layout)/pages/bookings/_components/bookingForm"
+
 import { CustomModal } from "@/components/layout/CustomModal" // Adjust path if needed
-import { AdminViewForm } from "@/app/[lang]/(dashboard-layout)/pages/admins/_components/adminViewForm"
 
 type InvoiceTableRow = InvoiceType & {
   isBlocked: boolean
   isDeleted: boolean
-  isVerified: boolean
-  email: string
 }
 
 interface InvoiceTableRowActionsProps {
   row: Row<InvoiceTableRow>
-  onStatusUpdate: (
-    id: string,
-    updates: { isBlocked: boolean; isDeleted: boolean }
-  ) => void
+  onStatusUpdate: (id: string, updates: { isBlocked: boolean; isDeleted: boolean, status?: string }) => void,
   dictionary: any
 }
 
@@ -46,14 +40,14 @@ export function InvoiceTableRowActions({
   const id = row.original._id
 
   const [open, setOpen] = useState(false)
+  const [rowData, setRowData] = useState<any>(undefined)
   const [modalOpen, setModalOpen] = useState(false)
   const [pendingAction, setPendingAction] = useState<
-    "block" | "unblock" | "delete" | "restore" | null
+    "block" | "unblock" | "delete" | "restore" | "cancel" | null
   >(null)
   const [loading, setLoading] = useState(false)
-  const [validReinvite, setValidReinvite] = useState(false)
 
-  const openModalFor = (action: "block" | "unblock" | "delete" | "restore") => {
+  const openModalFor = (action: "block" | "unblock" | "delete" | "restore" | "cancel") => {
     setPendingAction(action)
     setModalOpen(true)
   }
@@ -65,6 +59,7 @@ export function InvoiceTableRowActions({
 
     let isBlocked = row.original.isBlocked
     let isDeleted = row.original.isDeleted
+    let isCancelled = row.original.status === "CANCELLED"
 
     switch (pendingAction) {
       case "block":
@@ -79,16 +74,15 @@ export function InvoiceTableRowActions({
       case "restore":
         isDeleted = false
         break
+      case "cancel":
+        isCancelled = true
+        break
     }
 
     try {
-      const success = await updateAdminStatus({
-        adminId: id,
-        isBlocked,
-        isDeleted,
-      })
+      const success = await cancelBooking({ bookingId: id })
       if (success) {
-        onStatusUpdate(id, { isBlocked, isDeleted })
+        onStatusUpdate(id, { isBlocked, isDeleted, status: "CANCELLED" })
         setModalOpen(false)
         setPendingAction(null)
       }
@@ -97,49 +91,36 @@ export function InvoiceTableRowActions({
     } finally {
       setLoading(false)
     }
-  }, [
-    id,
-    onStatusUpdate,
-    pendingAction,
-    row.original.isBlocked,
-    row.original.isDeleted,
-  ])
+  }, [id, onStatusUpdate, pendingAction, row.original.isBlocked, row.original.isDeleted, row.original.status])
 
-  const sendReinviteEmail = async function () {
-    const success = await sendReinviteMail(row.original.email)
-  }
-
-  useEffect(() => {
-    const value = Cookies.get("adminProfile") ?? ""
-    const adminData = JSON.parse(value)
-    if (adminData.role == "SUPERADMIN" && !row.original.isVerified) {
-      setValidReinvite(true)
-    }
-  }, [])
   // Modal texts dynamically
   const modalTitle =
     pendingAction === "block"
-      ? "Block Confirmation"
+      ? dictionary.confirmationDialog?.blockTitle || "Block Confirmation"
       : pendingAction === "unblock"
-        ? "Unblock Confirmation"
+        ? dictionary.confirmationDialog?.unblockTitle || "Unblock Confirmation"
         : pendingAction === "delete"
-          ? "Delete Confirmation"
+          ? dictionary.confirmationDialog?.deleteTitle || "Delete Confirmation"
           : pendingAction === "restore"
-            ? "Restore Confirmation"
-            : ""
+            ? dictionary.confirmationDialog?.restoreTitle || "Restore Confirmation"
+            : pendingAction === "cancel"
+              ? dictionary.confirmationDialog?.cancelTitle || "Cancel Confirmation"
+              : ""
 
   const modalDescription =
     pendingAction === "block"
-      ? "Are you sure you want to block this user?."
+      ? dictionary.confirmationDialog?.blockDescription || "Are you sure you want to block this user?"
       : pendingAction === "unblock"
-        ? "Are you sure you want to unblock this user?"
+        ? dictionary.confirmationDialog?.unblockDescription || "Are you sure you want to unblock this user?"
         : pendingAction === "delete"
-          ? "Are you sure you want to delete this user? "
+          ? dictionary.confirmationDialog?.deleteDescription || "Are you sure you want to delete this user?"
           : pendingAction === "restore"
-            ? "Are you sure you want to restore this user?"
-            : ""
-
-  const viewAdmin = function (id: any) {
+            ? dictionary.confirmationDialog?.restoreDescription || "Are you sure you want to restore this user?"
+            : pendingAction === "cancel"
+              ? dictionary.confirmationDialog?.cancelTrainingDescription || "Are you sure you want to cancel this training?"
+              : ""
+  const handleView = () => {
+    setRowData(row.original)
     setTimeout(() => setOpen(true), 0)
   }
   return (
@@ -158,38 +139,31 @@ export function InvoiceTableRowActions({
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-[160px]">
-            <DropdownMenuItem onClick={() => viewAdmin(row.original._id)}>
-              {dictionary.rowControlLabels.view}
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleView}>{dictionary.rowControlLabels.view}</DropdownMenuItem>
+            {/* <DropdownMenuItem
+                   onClick={() =>
+                     openModalFor(row.original.isBlocked ? "unblock" : "block")
+                   }
+                 >
+                   {row.original.isBlocked ? "Unblock" : "Block"}
+                 </DropdownMenuItem> */}
 
-            <DropdownMenuSeparator />
-            {validReinvite && (
+
+
+            {row.original.status !== "CANCELLED" && (
               <>
-                <DropdownMenuItem onClick={() => sendReinviteEmail()}>
-                  {dictionary.rowControlLabels.reinviteEmail}
-                </DropdownMenuItem>
-
                 <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={() =>
+                    openModalFor("cancel")
+                  }
+                >
+                  {dictionary.rowControlLabels.cancel}
+                </DropdownMenuItem>
               </>
+
             )}
-            <DropdownMenuItem
-              onClick={() =>
-                openModalFor(row.original.isBlocked ? "unblock" : "block")
-              }
-            >
-              {row.original.isBlocked ? dictionary.rowControlLabels.unblock : dictionary.rowControlLabels.block}
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() =>
-                openModalFor(row.original.isDeleted ? "restore" : "delete")
-              }
-            >
-              {row.original.isDeleted ? dictionary.rowControlLabels.restore : dictionary.rowControlLabels.delete}
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -206,13 +180,17 @@ export function InvoiceTableRowActions({
             setPendingAction(null)
           }
         }}
-        confirmText={pendingAction === "delete" ? dictionary.rowControlLabels.delete : dictionary.rowControlLabels.confirm}
-        cancelText={dictionary.rowControlLabels.cancel}
+        confirmText={pendingAction === "delete" ? "Delete" : "Confirm"}
+        cancelText="Cancel"
       />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg sm:max-w-[65vw] max-h-[98vh] overflow-visible">
-          <AdminViewForm onClose={() => setOpen(false)} adminId={row.original._id} dictionary={dictionary} />
+          <BookingForm
+            onClose={() => setOpen(false)}
+            bookingDetails={rowData}
+            dictionary={dictionary}
+          />
         </DialogContent>
       </Dialog>
     </>

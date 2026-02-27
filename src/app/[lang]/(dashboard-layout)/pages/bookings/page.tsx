@@ -1,21 +1,25 @@
-import { cookies } from "next/headers"
 import type { Metadata } from "next"
-// import { DataTable } from "../../(design-system)/tables/_components/tables/admin-data-table"
+import { BookingDataTable } from "../../(design-system)/tables/_components/tables/booking-data-table"
+import { getDictionary } from "@/lib/get-dictionary"
+import { LocaleType } from "@/types"
 
 // Define metadata for the page
 export const metadata: Metadata = {
-  title: "All Bookings",
+  title: "Bookings",
 }
 
-export default async function RoleManagementPage() {
-
+export default async function BookingsPage(props: {
+  params: Promise<{ lang: string }>
+}) {
+  const { lang } = await props.params
+  const dictionary = await getDictionary(lang as LocaleType)
 
   return (
     <section className="grid gap-8 p-4">
       <div className="mx-auto text-center space-y-1.5">
-        <h2 className="text-4xl font-semibold">All Bookings</h2>
+        <h2 className="text-4xl font-semibold">{dictionary.navigation.bookings}</h2>
       </div>
-      {/* <DataTable /> */}
+      <BookingDataTable />
     </section>
   )
 }

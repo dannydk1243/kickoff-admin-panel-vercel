@@ -40,7 +40,7 @@ interface Notification {
 
 const getCategoryIcon = (category: string, target?: string) => {
   if (category === 'ANNOUNCEMENT') return <Megaphone className="h-4 w-4 text-red-500" />;
-  
+
   if (category === 'NOTIFICATION') {
     switch (target) {
       case 'COURT': return <SquareMenu className="h-4 w-4" />;
@@ -97,7 +97,7 @@ export function NotificationDropdown({
         setNotifications(response.notifications)
         setUnreadCount(
           (response.unreadCounts.generalNotification ?? 0) +
-            (response.unreadCounts.announcementNotification ?? 0)
+          (response.unreadCounts.announcementNotification ?? 0)
         )
         setPage(1)
         setHasMore(1 < response.pages)
@@ -191,7 +191,7 @@ export function NotificationDropdown({
       <PopoverContent className="w-[380px] p-0" align="end">
         <Card className="border-0 shadow-none">
           <div className="flex items-center justify-between border-b border-border p-3 font-semibold text-sm">
-            {dictionary.navigation.notifications.notifications}
+            {dictionary.navigation.notifications}
           </div>
 
           <ScrollArea className="h-[400px]">

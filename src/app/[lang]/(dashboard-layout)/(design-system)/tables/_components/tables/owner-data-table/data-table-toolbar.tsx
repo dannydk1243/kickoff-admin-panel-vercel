@@ -21,6 +21,7 @@ interface InvoiceTableToolbarProps<TTable> {
   searchTerm: string
   setSearchTerm: (term: string) => void
   callback: () => void
+  dictionary: any
 }
 
 
@@ -28,7 +29,8 @@ export function InvoiceTableToolbar<TTable>({
   table,
   searchTerm,
   setSearchTerm,
-  callback
+  callback,
+  dictionary
 }: InvoiceTableToolbarProps<TTable>) {
   const [open, setOpen] = useState(false)
 
@@ -82,7 +84,7 @@ export function InvoiceTableToolbar<TTable>({
         </Button>
 
         <Input
-          placeholder="Search..."
+          placeholder={dictionary.search.search}
           className="border border-input bg-background hover:bg-accent hover:text-accent-foreground"
           value={inputValue}
           onChange={handleChange}
@@ -96,10 +98,10 @@ export function InvoiceTableToolbar<TTable>({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg sm:max-w-lg max-h-[90vh] overflow-visible">
           <DialogHeader>
-            <DialogTitle>Create Owner</DialogTitle>
+            <DialogTitle>{dictionary.inputDialogLabels.titleCreateOwner}</DialogTitle>
           </DialogHeader>
 
-          <OwnerForm onClose={() => setOpen(false)} callback={callback}/>
+          <OwnerForm onClose={() => setOpen(false)} callback={callback} dictionary={dictionary} />
         </DialogContent>
       </Dialog>
     </>

@@ -25,9 +25,10 @@ type ErrorsState = Partial<Record<keyof ProfileInfoState, string>>
 type ProfileInfoFormProps = {
   onClose?: () => void
   callback?: () => void
+  dictionary: any
 }
 
-export function OwnerForm({ onClose, callback }: ProfileInfoFormProps) {
+export function OwnerForm({ onClose, callback, dictionary }: ProfileInfoFormProps) {
   const [formState, setFormState] = useState<ProfileInfoState>({
     avatar: undefined,
     avatarPreview: undefined,
@@ -45,9 +46,9 @@ export function OwnerForm({ onClose, callback }: ProfileInfoFormProps) {
     Exclude<keyof ProfileInfoState, "avatar" | "avatarPreview">,
     string
   > = {
-    name: "Name",
-    email: "Email",
-    phoneNumber: "Phone Number",
+    name: dictionary.inputDialogLabels.name,
+    email: dictionary.inputDialogLabels.email,
+    phoneNumber: dictionary.inputDialogLabels.phoneNumber,
   }
 
   function validateField(
@@ -62,7 +63,7 @@ export function OwnerForm({ onClose, callback }: ProfileInfoFormProps) {
       (typeof value === "string" && value.trim() === "")
 
     if (isEmpty) {
-      return `${fieldLabels[name]} is required`
+      return `${fieldLabels[name]} ${dictionary.errorMessages.required}`
     }
 
     if (
@@ -70,7 +71,7 @@ export function OwnerForm({ onClose, callback }: ProfileInfoFormProps) {
       typeof value === "string" &&
       !EMAIL_REGEX.test(value)
     ) {
-      return "Please enter a valid email address"
+      return dictionary.errorMessages.invalidEmail
     }
 
     return undefined
@@ -128,12 +129,12 @@ export function OwnerForm({ onClose, callback }: ProfileInfoFormProps) {
 
     const newErrors: ErrorsState = {}
 
-    ;(Object.keys(formState) as Array<keyof ProfileInfoState>)
-      .filter((key) => key !== "avatar" && key !== "avatarPreview")
-      .forEach((field) => {
-        const error = validateField(field, formState[field])
-        if (error) newErrors[field] = error
-      })
+      ; (Object.keys(formState) as Array<keyof ProfileInfoState>)
+        .filter((key) => key !== "avatar" && key !== "avatarPreview")
+        .forEach((field) => {
+          const error = validateField(field, formState[field])
+          if (error) newErrors[field] = error
+        })
 
     setErrors(newErrors)
 
@@ -200,9 +201,9 @@ export function OwnerForm({ onClose, callback }: ProfileInfoFormProps) {
 
       {/* Name */}
       <div>
-        <label className="text-sm font-medium">Name</label>
+        <label className="text-sm font-medium">{dictionary.tableColumnLabels.name}</label>
         <Input
-          placeholder="Enter your name"
+          placeholder={dictionary.placeholder.enterName}
           value={formState.name}
           onChange={(e) => handleChange("name", e.target.value)}
           className={errors.name ? "border-red-500" : ""}
@@ -212,9 +213,9 @@ export function OwnerForm({ onClose, callback }: ProfileInfoFormProps) {
 
       {/* Email */}
       <div>
-        <label className="text-sm font-medium">Email</label>
+        <label className="text-sm font-medium">{dictionary.tableColumnLabels.email}</label>
         <Input
-          placeholder="name@example.com"
+          placeholder={dictionary.placeholder.emailExample}
           value={formState.email}
           onChange={(e) => handleChange("email", e.target.value)}
           className={errors.email ? "border-red-500" : ""}
@@ -231,9 +232,9 @@ export function OwnerForm({ onClose, callback }: ProfileInfoFormProps) {
 
       {/* Actions */}
       <div className="flex gap-x-2 mt-4 justify-end">
-        <Button type="submit">Save</Button>
+        <Button type="submit">{dictionary.btnText.save}</Button>
         <Button type="button" variant="secondary" onClick={handleReset}>
-          Reset
+          {dictionary.btnText.reset}
         </Button>
       </div>
     </form>

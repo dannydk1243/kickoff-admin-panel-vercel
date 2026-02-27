@@ -14,12 +14,13 @@ type InvoiceTableRow = InvoiceType & {
 export const getColumns = (onStatusUpdate: (
   id: string,
   updates: { isBlocked: boolean; isDeleted: boolean }) => void,
-  callback: any
+  callback: any,
+  dictionary: any
 ): ColumnDef<InvoiceTableRow>[] => [
     {
       accessorKey: "name",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.title} />
       ),
       cell: ({ row }) => (
         <span className="text-primary">
@@ -31,16 +32,16 @@ export const getColumns = (onStatusUpdate: (
     {
       accessorKey: "_id",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Court ID" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.courtId} />
       ),
       cell: ({ row }) => <span>{row.getValue<string>("_id")}</span>,
     },
 
-    
+
     {
       accessorKey: "sport",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Sport Type" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.sportType} />
       ),
       cell: ({ row }) => {
         const sport = row.getValue<string>("sport")
@@ -58,17 +59,17 @@ export const getColumns = (onStatusUpdate: (
     {
       accessorKey: "location.city",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Area / Location" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.area} />
       ),
       cell: ({ row }) => (
         <span>{row.original.location.city || "-"}</span>
       ),
     },
-    
+
     {
       accessorKey: "price",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Price/hr" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.priceHr} />
       ),
       cell: ({ row }) => <span>{row.getValue<number>("price")}</span>,
     },
@@ -76,7 +77,7 @@ export const getColumns = (onStatusUpdate: (
     {
       accessorKey: "amenities",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Amenities" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.amenities} />
       ),
       cell: ({ row }) => (
         <span>{row.original.amenities.length}</span>
@@ -85,7 +86,7 @@ export const getColumns = (onStatusUpdate: (
     {
       accessorKey: "status",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="State" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.state} />
       ),
       cell: ({ row }) => {
         const status = row.getValue<string>("status")
@@ -99,7 +100,7 @@ export const getColumns = (onStatusUpdate: (
     {
       id: "isActive",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Status" />
+        <DataTableColumnHeader column={column} title={dictionary.tableColumnLabels.status} />
       ),
       cell: ({ row }) => {
         const { isBlocked, isDeleted } = row.original
@@ -126,12 +127,13 @@ export const getColumns = (onStatusUpdate: (
 
     {
       id: "actions",
-      header: () => <span className="sr-only">Actions</span>,
+      header: () => <span className="sr-only">{dictionary.tableColumnLabels.actions}</span>,
       cell: ({ row }) => (
         <InvoiceTableRowActions
           row={row}
           onStatusUpdate={onStatusUpdate}
           callback={callback}
+          dictionary={dictionary}
         />
       ),
     },

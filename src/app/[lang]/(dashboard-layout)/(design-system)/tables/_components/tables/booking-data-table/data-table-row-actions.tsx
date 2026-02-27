@@ -1,14 +1,9 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { useState, useCallback } from "react"
 import { EllipsisVertical } from "lucide-react"
-
 import type { Row } from "@tanstack/react-table"
 import type { InvoiceType } from "../../../types"
-
-import { getStatusHandler } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -18,47 +13,42 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { UserForm } from "@/app/[lang]/(dashboard-layout)/pages/users/_components/userForm"
-import { updateUserStatus } from "@/components/dashboards/services/apiService"
+import { cancelBooking, updateAdminStatus } from "@/components/dashboards/services/apiService"
+import { getStatusHandler } from "@/lib/utils"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+
+
 import { CustomModal } from "@/components/layout/CustomModal" // Adjust path if needed
+import { BookingForm } from "@/app/[lang]/(dashboard-layout)/pages/bookings/_components/bookingForm"
+import { isCancel } from "axios"
 
 type InvoiceTableRow = InvoiceType & {
   isBlocked: boolean
   isDeleted: boolean
-  deletedByAdmin?: boolean
 }
 
 interface InvoiceTableRowActionsProps {
   row: Row<InvoiceTableRow>
-  onStatusUpdate: (
-    id: string,
-    updates: {
-      isBlocked: boolean
-      isDeleted: boolean
-      deletedByAdmin?: boolean
-    }
-  ) => void
+  onStatusUpdate: (id: string, updates: { isBlocked: boolean; isDeleted: boolean, status?: string }) => void
   dictionary: any
 }
 
 export function InvoiceTableRowActions({
   row,
   onStatusUpdate,
-  dictionary
+  dictionary,
 }: InvoiceTableRowActionsProps) {
   const id = row.original._id
 
+  const [open, setOpen] = useState(false)
+  const [rowData, setRowData] = useState<any>(undefined)
   const [modalOpen, setModalOpen] = useState(false)
   const [pendingAction, setPendingAction] = useState<
-    "block" | "unblock" | "delete" | "restore" | null
+    "block" | "unblock" | "delete" | "restore" | "cancel" | null
   >(null)
   const [loading, setLoading] = useState(false)
 
-  const [open, setOpen] = useState(false)
-  const isActuallyDeleted =
-    row.original.isDeleted || row.original.deletedByAdmin
-
-  const openModalFor = (action: "block" | "unblock" | "delete" | "restore") => {
+  const openModalFor = (action: "block" | "unblock" | "delete" | "restore" | "cancel") => {
     setPendingAction(action)
     setModalOpen(true)
   }
@@ -70,37 +60,30 @@ export function InvoiceTableRowActions({
 
     let isBlocked = row.original.isBlocked
     let isDeleted = row.original.isDeleted
-    let deletedByAdmin = row.original.deletedByAdmin ?? false
+    let isCancelled = row.original.status === "CANCELLED"
 
     switch (pendingAction) {
       case "block":
         isBlocked = true
         break
-
       case "unblock":
         isBlocked = false
         break
-
       case "delete":
         isDeleted = true
-        deletedByAdmin = true
         break
-
       case "restore":
         isDeleted = false
-        deletedByAdmin = false
+        break
+      case "cancel":
+        isCancelled = true
         break
     }
 
     try {
-      const success = await updateUserStatus({
-        userId: id,
-        isBlocked,
-        isDeleted,
-      })
-
+      const success = await cancelBooking({ bookingId: id })
       if (success) {
-        onStatusUpdate(id, { isBlocked, isDeleted, deletedByAdmin })
+        onStatusUpdate(id, { isBlocked, isDeleted, status: "CANCELLED" })
         setModalOpen(false)
         setPendingAction(null)
       }
@@ -109,42 +92,39 @@ export function InvoiceTableRowActions({
     } finally {
       setLoading(false)
     }
-  }, [
-    id,
-    onStatusUpdate,
-    pendingAction,
-    row.original.isBlocked,
-    row.original.isDeleted,
-    row.original.deletedByAdmin,
-  ])
+  }, [id, onStatusUpdate, pendingAction, row.original.isBlocked, row.original.isDeleted, row.original.status])
 
   // Modal texts dynamically
   const modalTitle =
     pendingAction === "block"
-      ? "Block Confirmation"
+      ? dictionary.confirmationDialog?.blockTitle || "Block Confirmation"
       : pendingAction === "unblock"
-        ? "Unblock Confirmation"
+        ? dictionary.confirmationDialog?.unblockTitle || "Unblock Confirmation"
         : pendingAction === "delete"
-          ? "Delete Confirmation"
+          ? dictionary.confirmationDialog?.deleteTitle || "Delete Confirmation"
           : pendingAction === "restore"
-            ? "Restore Confirmation"
-            : ""
+            ? dictionary.confirmationDialog?.restoreTitle || "Restore Confirmation"
+            : pendingAction === "cancel"
+              ? dictionary.confirmationDialog?.cancelTitle || "Cancel Confirmation"
+              : ""
 
   const modalDescription =
     pendingAction === "block"
-      ? "Are you sure you want to block this user?."
+      ? dictionary.confirmationDialog?.blockDescription || "Are you sure you want to block this user?"
       : pendingAction === "unblock"
-        ? "Are you sure you want to unblock this user?"
+        ? dictionary.confirmationDialog?.unblockDescription || "Are you sure you want to unblock this user?"
         : pendingAction === "delete"
-          ? "Are you sure you want to delete this user? "
+          ? dictionary.confirmationDialog?.deleteDescription || "Are you sure you want to delete this user?"
           : pendingAction === "restore"
-            ? "Are you sure you want to restore this user?"
-            : ""
+            ? dictionary.confirmationDialog?.restoreDescription || "Are you sure you want to restore this user?"
+            : pendingAction === "cancel"
+              ? dictionary.confirmationDialog?.cancelBookingDescription || "Are you sure you want to cancel this booking?"
+              : ""
 
-  const viewUser = function (id: any) {
+  const handleView = () => {
+    setRowData(row.original)
     setTimeout(() => setOpen(true), 0)
   }
-
   return (
     <>
       <div className="flex justify-end me-4">
@@ -161,30 +141,29 @@ export function InvoiceTableRowActions({
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-[160px]">
-            <DropdownMenuItem onClick={() => viewUser(row.original._id)}>
-              {dictionary.rowControlLabels.view}
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem
+            <DropdownMenuItem onClick={handleView}>{dictionary.rowControlLabels.view}</DropdownMenuItem>
+            {/* <DropdownMenuItem
               onClick={() =>
                 openModalFor(row.original.isBlocked ? "unblock" : "block")
               }
             >
-              {row.original.isBlocked ? dictionary.rowControlLabels.unblock : dictionary.rowControlLabels.block}
-            </DropdownMenuItem>
+              {row.original.isBlocked ? "Unblock" : "Block"}
+            </DropdownMenuItem> */}
 
-            <DropdownMenuSeparator />
+            {row.original.status !== "CANCELLED" && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={() =>
+                    openModalFor("cancel")
+                  }
+                >
+                  {dictionary.rowControlLabels.cancel}
+                </DropdownMenuItem>
+              </>
+            )}
 
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onClick={() =>
-                openModalFor(isActuallyDeleted ? "restore" : "delete")
-              }
-            >
-              {isActuallyDeleted ? dictionary.rowControlLabels.restore : dictionary.rowControlLabels.delete}
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -201,12 +180,17 @@ export function InvoiceTableRowActions({
             setPendingAction(null)
           }
         }}
-        confirmText={pendingAction === "delete" ? dictionary.rowControlLabels.delete : dictionary.rowControlLabels.confirm}
-        cancelText={dictionary.rowControlLabels.cancel}
+        confirmText={pendingAction === "delete" ? "Delete" : "Confirm"}
+        cancelText="Cancel"
       />
+
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg sm:max-w-[65vw] max-h-[98vh] overflow-visible">
-          <UserForm onClose={() => setOpen(false)} userId={row.original._id} dictionary={dictionary} />
+          <BookingForm
+            onClose={() => setOpen(false)}
+            bookingDetails={rowData}
+            dictionary={dictionary}
+          />
         </DialogContent>
       </Dialog>
     </>

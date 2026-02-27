@@ -23,6 +23,7 @@ type CourtImagesUploadProps = {
   setCourtImgChangeStatus: (status: "nothing" | "uploaded" | "deleted") => void
   onDeleteIdsChange?: (deletedIds: (string | number)[]) => void // New optional prop
   disabled: boolean
+  dictionary: any
 }
 
 export function CourtImagesUpload({
@@ -33,6 +34,7 @@ export function CourtImagesUpload({
   setCourtImgChangeStatus,
   onDeleteIdsChange,
   disabled,
+  dictionary,
 }: CourtImagesUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -161,7 +163,7 @@ export function CourtImagesUpload({
           className="dark:invert w-[2vw]"
         />
         <p className="text-sm text-muted-foreground select-none">
-          Drop or import image here
+          {dictionary.courtLabel.dropOrImportImageHere}
         </p>
         {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
       </div>

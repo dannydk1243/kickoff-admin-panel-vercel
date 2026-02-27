@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 import {
   flexRender,
   getCoreRowModel,
@@ -39,6 +40,7 @@ import {
 import { getAllAdminsOwners } from "@/components/dashboards/services/apiService"
 import { getColumns } from "./columns"
 import { InvoiceTableToolbar } from "./data-table-toolbar"
+import { AdminViewForm } from "@/app/[lang]/(dashboard-layout)/pages/admins/_components/adminViewForm"
 
 export function AdminDataTable() {
   const dictionary: any = useTranslation()
@@ -73,7 +75,7 @@ export function AdminDataTable() {
   }
 
   const columns = useMemo(
-    () => getColumns(handleStatusUpdate),
+    () => getColumns(handleStatusUpdate, dictionary),
     [handleStatusUpdate]
   )
 
@@ -91,7 +93,22 @@ export function AdminDataTable() {
       setTotalCount(res.pagination.total) // ✅ TOTAL ROWS
     }
   }
+  const [open, setOpen] = useState(false)
+  const [paramId, setParamId] = useState<string>("")
+  const searchParams = useSearchParams()
 
+  useEffect(() => {
+    let val = searchParams.get("id")
+    setParamId(val ?? "")
+    const timer = setTimeout(() => {
+      if (val) {
+        setTimeout(() => setOpen(true), 0)
+      }
+    }, 2000)
+
+    // CLEANUP: This kills the timer if the component unmounts
+    return () => clearTimeout(timer)
+  }, [])
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
@@ -145,81 +162,90 @@ export function AdminDataTable() {
   })
 
   return (
-    <Card>
-      <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
-        <CardTitle>{dictionary.tableLabels.adminsDataTable}</CardTitle>
-        <InvoiceTableToolbar
-          table={table}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          callback={updateAdminsList}
-        />
-      </CardHeader>
+    <>
+      <Card>
+        <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
+          <CardTitle>{dictionary.tableLabels.adminsDataTable}</CardTitle>
+          <InvoiceTableToolbar
+            table={table}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            callback={updateAdminsList}
+            dictionary={dictionary}
+          />
+        </CardHeader>
 
-      <CardContent className="p-0">
-        <ScrollArea
-          orientation="horizontal"
-          className="w-[calc(100vw-2.25rem)] md:w-auto"
-        >
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
+        <CardContent className="p-0">
+          <ScrollArea
+            orientation="horizontal"
+            className="w-[calc(100vw-2.25rem)] md:w-auto"
+          >
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
+                      </TableHead>
                     ))}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    {dictionary.tableLabels.noResults}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </ScrollArea>
-      </CardContent>
+                ))}
+              </TableHeader>
 
-      <CardFooter className="block py-3">
-        <DataTablePagination table={table} />
-      </CardFooter>
-    </Card>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      Loading...
+                    </TableCell>
+                  </TableRow>
+                ) : table.getRowModel().rows.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      {dictionary.tableLabels.noResults}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+        </CardContent>
+
+        <CardFooter className="block py-3">
+          <DataTablePagination table={table} />
+        </CardFooter>
+      </Card>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-lg sm:max-w-[65vw] max-h-[98vh] overflow-visible">
+          <AdminViewForm onClose={() => setOpen(false)} adminId={paramId} dictionary={dictionary} />
+        </DialogContent>
+      </Dialog>
+    </>
+
   )
 }

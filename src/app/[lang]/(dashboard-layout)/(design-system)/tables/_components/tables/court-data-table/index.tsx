@@ -40,10 +40,11 @@ import { CourtForm } from "@/app/[lang]/(dashboard-layout)/pages/courts/_compone
 import { getAllCourts } from "@/components/dashboards/services/apiService"
 import { getColumns } from "./columns"
 import { InvoiceTableToolbar } from "./data-table-toolbar"
+import { useTranslation } from "@/lib/translationContext"
 
 export function CourtDataTable() {
   const [open, setOpen] = useState(false)
-
+  const dictionary: any = useTranslation()
   // Table state
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -74,7 +75,7 @@ export function CourtDataTable() {
     )
   }
 
-  
+
 
   let pathUrl: any = pathname?.split("/").pop()
 
@@ -110,7 +111,7 @@ export function CourtDataTable() {
   }
 
   const columns = useMemo(
-    () => getColumns(handleStatusUpdate, updateCourtsList), 
+    () => getColumns(handleStatusUpdate, updateCourtsList, dictionary),
     [handleStatusUpdate]
   )
   // Fetch data
@@ -172,12 +173,13 @@ export function CourtDataTable() {
     <div>
       <Card>
         <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
-          <CardTitle>Courts Data Table</CardTitle>
+          <CardTitle>{dictionary.tableLabels.courtsDataTable}</CardTitle>
           <InvoiceTableToolbar
             table={table}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
             callback={updateCourtsList}
+            dictionary={dictionary}
           />
         </CardHeader>
 
@@ -195,9 +197,9 @@ export function CourtDataTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                       </TableHead>
                     ))}
                   </TableRow>

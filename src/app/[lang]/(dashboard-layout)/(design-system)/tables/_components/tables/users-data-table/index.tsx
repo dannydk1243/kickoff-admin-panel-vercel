@@ -71,15 +71,15 @@ export function UsersDataTable() {
   }
 
   const columns = useMemo(
-    () => getColumns(handleStatusUpdate),
+    () => getColumns(handleStatusUpdate, dictionary),
     [handleStatusUpdate]
   )
-  
+
   const [open, setOpen] = useState(false)
   const [paramId, setParamId] = useState<string>("")
-    const searchParams = useSearchParams()
+  const searchParams = useSearchParams()
 
-    useEffect(() => {
+  useEffect(() => {
     let val = searchParams.get("id")
     setParamId(val ?? "")
     const timer = setTimeout(() => {
@@ -151,6 +151,7 @@ export function UsersDataTable() {
           <InvoiceTableToolbar
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
+            dictionary={dictionary}
           />
         </CardHeader>
 
@@ -168,9 +169,9 @@ export function UsersDataTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                       </TableHead>
                     ))}
                   </TableRow>
