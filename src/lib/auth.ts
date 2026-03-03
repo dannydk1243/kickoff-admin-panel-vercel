@@ -23,29 +23,49 @@ export async function authenticateUser() {
 }
 
 export async function logout(lang: string = "en") {
-  let isSuccessful = false
+  const cookieStore = await cookies()
+  const accessToken = cookieStore.get("accessToken")?.value
+
+  console.log("logout initiated")
 
   try {
-
-    // 1. Call your backend/external service to invalidate the session
-    const response = await logoutAdmin()
-    if (response) isSuccessful = true
-
-
+    // 1. Call backend API directly to invalidate the session
+    // We use fetch instead of client-side helpers to ensure server-side compatibility
+    if (accessToken) {
+      await fetch(`${process.env.NEXT_PUBLIC_API_FORM_URL}/auth/admin/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_API_FORM_x_API_KEY || "",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+    }
   } catch (error) {
     console.error("Logout API call failed:", error)
-    // We usually proceed to clear cookies anyway for security
-    isSuccessful = true
+    // We proceed to clear cookies anyway for security
   }
 
-  if (isSuccessful) {
-    const cookieStore = await cookies()
+  // 2. Clear cookies
+  const cookiesToClear = [
+    "accessToken",
+    "adminProfile",
+    "next-auth.session-token",
+    "next-auth.callback-url",
+    "next-auth.csrf-token",
+    "__Secure-next-auth.session-token",
+    "__Host-next-auth.csrf-token",
+  ]
 
-    // 2. Clear cookies
-    cookieStore.delete("accessToken")
-    cookieStore.delete("adminProfile")
+  cookiesToClear.forEach((cookieName) => {
+    cookieStore.set(cookieName, "", { maxAge: 0, path: "/" })
+  })
 
-    // 3. Redirect (Perform this OUTSIDE of try/catch blocks)
-    redirect(`/${lang}/sign-in`)
+  console.log("logout successful")
+
+  return {
+    success: true,
+    redirectUrl: `/${lang}/sign-in`,
   }
 }
+

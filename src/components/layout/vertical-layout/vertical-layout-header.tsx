@@ -31,6 +31,7 @@ export function VerticalLayoutHeader({
 
   // const locale = params.lang as LocaleType
   const lang = (params?.lang as string) || "en"
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [notifications, setNotification] = useState({
     notifications: [],
     unreadCount: 0,
@@ -76,10 +77,24 @@ export function VerticalLayoutHeader({
           <Button
             size="icon"
             variant="ghost"
-            onClick={() => logout(lang)}
+            disabled={isLoggingOut}
+            onClick={async () => {
+              setIsLoggingOut(true)
+              try {
+                const result = await logout(lang)
+                if (result?.success && result.redirectUrl) {
+                  // Hard redirect to clear client-side state and ensure middleware triggers
+                  window.location.href = result.redirectUrl
+                }
+              } catch (error) {
+                console.error("Logout failed:", error)
+              } finally {
+                setIsLoggingOut(false)
+              }
+            }}
             className=" text-red-500 "
           >
-            <LogOut className="size-4" />
+            <LogOut className={`size-4`} />
           </Button>
           {/* <UserDropdown dictionary={dictionary} locale={locale} adminData={adminData} /> */}
         </div>

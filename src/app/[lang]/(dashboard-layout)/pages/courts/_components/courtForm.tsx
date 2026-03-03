@@ -157,6 +157,26 @@ const getCurrentTime24 = (minutesToAdd: number) => {
   return `${hours}:${mins}`
 }
 
+const convertLocalTimeToUTCStr = (timeStr?: string): string => {
+  if (!timeStr) return ""
+  const [hours, minutes] = timeStr.split(":").map(Number)
+  const date = new Date()
+  date.setHours(hours, minutes, 0, 0)
+  const utcHours = String(date.getUTCHours()).padStart(2, "0")
+  const utcMinutes = String(date.getUTCMinutes()).padStart(2, "0")
+  return `${utcHours}:${utcMinutes}`
+}
+
+const convertUTCToLocalTimeStr = (utcTimeStr?: string): string => {
+  if (!utcTimeStr) return ""
+  const [hours, minutes] = utcTimeStr.split(":").map(Number)
+  const date = new Date()
+  date.setUTCHours(hours, minutes, 0, 0)
+  const localHours = String(date.getHours()).padStart(2, "0")
+  const localMinutes = String(date.getMinutes()).padStart(2, "0")
+  return `${localHours}:${localMinutes}`
+}
+
 // Initialize state with today's date as `from` and tomorrow as `to`
 const today = new Date()
 // const tomorrow = new Date();
@@ -440,9 +460,11 @@ export function CourtForm({
         }
         let [startH, startM] = firstSlot.openTime.split(":")
         let [endH, endM] = firstSlot.closeTime.split(":")
-        setOpeningTime(firstSlot.openTime)
-        setClosingTime(firstSlot.closeTime)
+        // setOpeningTime(firstSlot.openTime)
+        // setClosingTime(firstSlot.closeTime)
 
+        setOpeningTime(convertUTCToLocalTimeStr(firstSlot.openTime))
+        setClosingTime(convertUTCToLocalTimeStr(firstSlot.closeTime))
         let selection = ""
         const dayCount = res.dailySlots.length
 
@@ -789,8 +811,8 @@ export function CourtForm({
       ...data,
       dailySlots: getFilteredWeekDays(data.selectedWeekDay)?.map((day) => ({
         day,
-        openTime: openingTime,
-        closeTime: closingTime,
+        openTime: convertLocalTimeToUTCStr(openingTime),
+        closeTime: convertLocalTimeToUTCStr(closingTime),
       })),
       offDayPayloadData: offDayPayloads,
     }
