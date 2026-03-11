@@ -102,6 +102,12 @@ export const navigationsData: NavigationType[] = [
         iconName: "Megaphone",
         roles: [ROLES.SUPERADMIN]
       },
+      // {
+      //   title: "Content Management",
+      //   href: "/pages/content-management",
+      //   iconName: "BetweenHorizontalStart",
+      //   roles: [ROLES.SUPERADMIN]
+      // },
 
       // {
       //   title: "Setting",

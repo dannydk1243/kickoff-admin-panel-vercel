@@ -85,7 +85,7 @@ export function BookingForm({ onClose, bookingDetails: initialBookingDetails, di
     const { creator, court } = bookingDetails
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 flex-1 pr-2">
             {/* Header: Status and ID */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">

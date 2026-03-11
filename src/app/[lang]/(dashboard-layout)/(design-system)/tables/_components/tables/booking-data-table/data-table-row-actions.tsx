@@ -150,7 +150,7 @@ export function InvoiceTableRowActions({
               {row.original.isBlocked ? "Unblock" : "Block"}
             </DropdownMenuItem> */}
 
-            {row.original.status !== "CANCELLED" && (
+            {row.original.status === "PENDING" && (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -185,7 +185,7 @@ export function InvoiceTableRowActions({
       />
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg sm:max-w-[65vw] max-h-[98vh] overflow-visible">
+        <DialogContent className="max-w-lg sm:max-w-[65vw] max-h-[98vh] overflow-y-auto flex flex-col">
           <BookingForm
             onClose={() => setOpen(false)}
             bookingDetails={rowData}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
 import {
   flexRender,
@@ -64,7 +64,7 @@ export function CourtDataTable() {
   const pathname = usePathname()
 
   // Local status update
-  const handleStatusUpdate = (
+  const handleStatusUpdate = useCallback((
     courtId: string,
     updates: { isBlocked: boolean; isDeleted: boolean }
   ) => {
@@ -73,9 +73,7 @@ export function CourtDataTable() {
         item._id === courtId ? { ...item, ...updates } : item
       )
     )
-  }
-
-
+  }, [])
 
   let pathUrl: any = pathname?.split("/").pop()
 
@@ -95,7 +93,7 @@ export function CourtDataTable() {
     return () => clearTimeout(timer)
   }, [searchParams])
 
-  const updateCourtsList = async () => {
+  const updateCourtsList = useCallback(async () => {
     const value = Cookies.get("adminProfile") ?? ""
     const adminData = JSON.parse(value)
     const res = await getAllCourts(
@@ -108,11 +106,11 @@ export function CourtDataTable() {
       setData(res?.courts)
       setTotalCount(res?.total) // ✅ TOTAL ROWS
     }
-  }
+  }, [pagination.pageIndex, pagination.pageSize, searchTerm])
 
   const columns = useMemo(
     () => getColumns(handleStatusUpdate, updateCourtsList, dictionary),
-    [handleStatusUpdate]
+    [handleStatusUpdate, updateCourtsList, dictionary]
   )
   // Fetch data
   useEffect(() => {
@@ -145,6 +143,7 @@ export function CourtDataTable() {
   const table = useReactTable({
     data,
     columns,
+    getRowId: (row: any) => row._id,
 
     manualPagination: true, // ✅ SERVER SIDE PAGINATION
     rowCount: totalCount, // ✅ TOTAL FROM API

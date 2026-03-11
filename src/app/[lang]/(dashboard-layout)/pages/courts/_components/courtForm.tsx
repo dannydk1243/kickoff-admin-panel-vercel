@@ -636,9 +636,9 @@ export function CourtForm({
         setCourtResponceId(success?.court?._id)
       }
 
-      // if (callback && success) {
-      //   callback()
-      // }
+      if (callback && success) {
+        callback()
+      }
 
       if (!success) {
         // handle failure
