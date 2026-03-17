@@ -37,8 +37,8 @@ interface InvoiceTableToolbarProps<TTable> {
   table: Table<TTable>
   searchTerm: string
   setSearchTerm: (term: string) => void
-  selectedRole?: string
-  setSelectedRole?: (role: string | undefined) => void
+  selectedStatus?: string
+  setSelectedStatus?: (role: string | undefined) => void
   callback?: () => void
   dictionary: any
 }
@@ -51,8 +51,8 @@ export function InvoiceTableToolbar<TTable>({
   table,
   searchTerm,
   setSearchTerm,
-  selectedRole,
-  setSelectedRole,
+  selectedStatus,
+  setSelectedStatus,
   callback,
   dictionary
 }: InvoiceTableToolbarProps<TTable>) {
@@ -112,7 +112,7 @@ export function InvoiceTableToolbar<TTable>({
 
   function handleResetForm() {
     form.reset()
-    setSelectedRole?.("")
+    setSelectedStatus?.("")
   }
 
   function handleResetFilters() {
@@ -146,7 +146,7 @@ export function InvoiceTableToolbar<TTable>({
         /> */}
 
         {/* Inline Role Select Form */}
-        {/* <Form {...form}>
+        <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex items-center gap-x-2 max-w-sm"
@@ -156,21 +156,24 @@ export function InvoiceTableToolbar<TTable>({
               name="language"
               render={({ field }) => (
                 <FormItem className="min-w-[150px]">
-                  <FormLabel className="sr-only">Role</FormLabel>
+                  <FormLabel className="sr-only">{dictionary.tableLabels.status}</FormLabel>
                   <FormControl>
                     <Select
                       onValueChange={(value) => {
                         field.onChange(value)
-                        setSelectedRole?.(value)
+                        setSelectedStatus?.(value)
                       }}
-                      value={selectedRole ?? ""}
+                      value={selectedStatus ?? " "}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Role" />
+                        <SelectValue placeholder={dictionary.tableLabels.status} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="ADMIN">Admin</SelectItem>
-                        <SelectItem value="OWNER">Owner</SelectItem>
+                        <SelectItem value=" ">All</SelectItem>
+                        <SelectItem value="PENDING">Pending</SelectItem>
+                        <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                        <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                        <SelectItem value="COMPLETED">Completed</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -181,7 +184,7 @@ export function InvoiceTableToolbar<TTable>({
               )}
             />
           </form>
-        </Form> */}
+        </Form>
         {/* <Button variant="outline" onClick={handleResetFilters}>
           Reset Filters
         </Button> */}

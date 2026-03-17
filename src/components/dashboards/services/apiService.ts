@@ -1522,9 +1522,11 @@ export async function sendAnnouncements(body: {}) {
 
 export async function getAllBookings(page: number = 1,
   limit: number = 15,
-  type: string = "MATCH") {
+  type: string = "MATCH",
+  status: string = "") {
   try {
-    const res = await API.post(`/bookings/all?page=${page}&limit=${limit}&type=${type}&participants=true`, {})
+    const statusQuery = status && status !== "ALL" ? `&status=${status}` : "";
+    const res = await API.post(`/bookings/all?page=${page}&limit=${limit}&type=${type}&participants=true${statusQuery}`, {})
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({

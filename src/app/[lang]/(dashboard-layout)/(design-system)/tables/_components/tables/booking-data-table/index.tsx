@@ -57,7 +57,7 @@ export function BookingDataTable() {
   const [totalCount, setTotalCount] = useState(0) // ✅ IMPORTANT
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedRole, setSelectedRole] = useState<string | undefined>("")
+  const [selectedStatus, setSelectedStatus] = useState<string | undefined>(" ")
 
   // Local status update
   const handleStatusUpdate = (
@@ -80,7 +80,8 @@ export function BookingDataTable() {
     const res = await getAllBookings(
       pagination.pageIndex + 1,
       pagination.pageSize,
-      "MATCH"
+      "MATCH",
+      selectedStatus
     )
     if (res?.bookings) {
       setData(res.bookings)
@@ -99,7 +100,8 @@ export function BookingDataTable() {
       const res = await getAllBookings(
         page,
         limit,
-        "MATCH"
+        "MATCH",
+        selectedStatus
       )
 
       if (res?.bookings) {
@@ -114,7 +116,7 @@ export function BookingDataTable() {
     }
 
     fetchData()
-  }, [pagination.pageIndex, pagination.pageSize])
+  }, [pagination.pageIndex, pagination.pageSize, selectedStatus])
 
   // React Table
   const table = useReactTable({
@@ -152,8 +154,8 @@ export function BookingDataTable() {
           table={table}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          selectedRole={selectedRole}
-          setSelectedRole={setSelectedRole}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
           callback={updateAnnouncementsList}
           dictionary={dictionary}
         />

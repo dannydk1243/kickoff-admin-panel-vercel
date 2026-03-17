@@ -57,7 +57,7 @@ export function TrainingDataTable() {
   const [totalCount, setTotalCount] = useState(0) // ✅ IMPORTANT
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedRole, setSelectedRole] = useState<string | undefined>("")
+  const [selectedStatus, setSelectedStatus] = useState<string | undefined>(" ")
 
   // Local status update
   const handleStatusUpdate = (
@@ -87,7 +87,8 @@ export function TrainingDataTable() {
       const res = await getAllBookings(
         page,
         limit,
-        "TRAINING"
+        "TRAINING",
+        selectedStatus
       )
 
       if (res?.bookings) {
@@ -102,7 +103,7 @@ export function TrainingDataTable() {
     }
 
     fetchData()
-  }, [pagination.pageIndex, pagination.pageSize])
+  }, [pagination.pageIndex, pagination.pageSize, selectedStatus])
 
   // React Table
   const table = useReactTable({
@@ -140,8 +141,8 @@ export function TrainingDataTable() {
           table={table}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          selectedRole={selectedRole}
-          setSelectedRole={setSelectedRole}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
           dictionary={dictionary}
         />
       </CardHeader>
