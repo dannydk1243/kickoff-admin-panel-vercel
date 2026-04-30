@@ -15,7 +15,7 @@ export function LandingFooter() {
     <footer className="bg-background border-t-[1px] border-sidebar-border">
       <div className="container flex flex-wrap justify-between gap-6 py-6 md:px-6">
         <section className="max-w-prose w-full mb-3 space-y-1.5 md:w-auto">
-          <Link href="/" className="w-fit flex text-foreground font-black mb-6">
+          <Link href="/en/pages/courts" className="w-fit flex text-foreground font-black mb-6">
             <Image
               src="/images/icons/shadboard.svg"
               alt=""

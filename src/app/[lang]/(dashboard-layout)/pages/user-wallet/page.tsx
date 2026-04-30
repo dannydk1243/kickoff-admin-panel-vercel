@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { BookingDataTable } from "../../(design-system)/tables/_components/tables/booking-data-table"
+import { UserWalletDataTable } from "../../(design-system)/tables/_components/tables/user-wallet-data-table"
 import { getDictionary } from "@/lib/get-dictionary"
 import { LocaleType } from "@/types"
 
@@ -19,7 +19,7 @@ export default async function UserWalletPage(props: {
       <div className="mx-auto text-center space-y-1.5">
         <h2 className="text-4xl font-semibold">{dictionary.navigation.userWallet}</h2>
       </div>
-      <BookingDataTable />
+      <UserWalletDataTable />
     </section>
   )
 }

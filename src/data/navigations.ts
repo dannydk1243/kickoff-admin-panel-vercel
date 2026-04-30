@@ -78,12 +78,12 @@ export const navigationsData: NavigationType[] = [
         iconName: "School",
         roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER]
       },
-      // {
-      //   title: "User Wallet",
-      //   href: "/pages/user-wallet",
-      //   iconName: "Wallet",
-      //   roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
-      // },
+      {
+        title: "User Wallet",
+        href: "/pages/user-wallet",
+        iconName: "Wallet",
+        roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
+      },
       // {
       //   title: "Refunds",
       //   href: "/pages/refunds",
@@ -102,6 +102,12 @@ export const navigationsData: NavigationType[] = [
         iconName: "Megaphone",
         roles: [ROLES.SUPERADMIN]
       },
+      // {
+      //   title: "Activity Logs",
+      //   href: "/pages/activity-logs",
+      //   iconName: "Activity",
+      //   roles: [ROLES.SUPERADMIN]
+      // },
       // {
       //   title: "Content Management",
       //   href: "/pages/content-management",

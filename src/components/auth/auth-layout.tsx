@@ -41,7 +41,7 @@ export function Auth({
       <div className="flex-1 relative grid">
         <div className="absolute top-0 inset-x-0 flex justify-between items-center px-4 py-2.5">
           <Link
-            href={ensureLocalizedPathname("/", locale)}
+            href={ensureLocalizedPathname("/en/pages/courts", locale)}
             className="flex text-foreground font-black z-50"
           >
             <Image

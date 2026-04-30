@@ -73,8 +73,8 @@ export function VerticalLayoutHeader({
           />
           <FullscreenToggle />
           <ModeDropdown dictionary={dictionary} />
-          {/* <LanguageDropdown dictionary={dictionary} /> */}
-          <Button
+          <LanguageDropdown dictionary={dictionary} />
+          {/* <Button
             size="icon"
             variant="ghost"
             disabled={isLoggingOut}
@@ -95,8 +95,8 @@ export function VerticalLayoutHeader({
             className=" text-red-500 "
           >
             <LogOut className={`size-4`} />
-          </Button>
-          {/* <UserDropdown dictionary={dictionary} locale={locale} adminData={adminData} /> */}
+          </Button> */}
+          <UserDropdown dictionary={dictionary} locale={lang as LocaleType} adminData={adminData} />
         </div>
       </div>
     </header>

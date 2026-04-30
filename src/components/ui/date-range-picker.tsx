@@ -30,6 +30,7 @@ type DateRangePickerProps = Omit<
   buttonOptions?: ComponentProps<typeof Button>
   placeholder?: string
   pickerDisabled?: boolean
+  disablePastDates?: boolean
 }
 
 export function DateRangePicker({
@@ -43,6 +44,7 @@ export function DateRangePicker({
   buttonOptions,
   placeholder = "Pick date range",
   pickerDisabled = false,
+  disablePastDates = true,
   ...props
 }: DateRangePickerProps) {
   const today = new Date()
@@ -57,7 +59,7 @@ export function DateRangePicker({
 
   // Disable all dates before today
   const disabled = [
-    { before: today },
+    ...(disablePastDates ? [{ before: today }] : []),
     ...excludeRanges
       .map((range) => ({
         from: range.from,

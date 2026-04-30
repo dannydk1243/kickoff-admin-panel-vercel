@@ -24,9 +24,11 @@ export const routeMap = new Map<string, RouteType>([
   ["/pages/announcement", { type: "protected", roles: [ROLES.SUPERADMIN] }],
   ["/pages/setting", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN] }],
   ["/pages/content-management", { type: "protected", roles: [ROLES.SUPERADMIN] }],
+  ["/pages/activity-logs", { type: "protected", roles: [ROLES.SUPERADMIN] }],
 
-  ["/pages/account/settings", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
-  ["/pages/account/settings/security", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
+  // ["/pages/account/settings", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
+  ["/pages/account/profile", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
+  // ["/pages/account/settings/security", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
 
 ])
 
@@ -44,8 +46,10 @@ export function checkIfRouteExists(pathname: string): boolean {
     "/pages/announcement",
     "/pages/setting",
     "/pages/content-management",
-    "/pages/account/settings",
-    "/pages/account/settings/security",
+    "/pages/activity-logs",
+    // "/pages/account/settings",
+    "/pages/account/profile",
+    // "/pages/account/settings/security",
     "/pages/unauthorized-401",
     "/pages/not-found-404"
   ];

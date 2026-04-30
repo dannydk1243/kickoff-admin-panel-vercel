@@ -35,7 +35,7 @@ export function LandingHeader({ dictionary }: { dictionary: DictionaryType }) {
       <div className="container grid grid-cols-3 items-center gap-2 py-2.5">
         <LandingSidebar fullPathname={fullPathname} />
         <Link
-          href="/"
+          href="/en/pages/courts"
           className="place-self-center w-fit flex text-foreground font-black hover:text-primary/90 lg:place-self-auto"
         >
           <Image

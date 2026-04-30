@@ -48,9 +48,9 @@ export function UserDropdown({ dictionary, locale, adminData }: { dictionary: Di
           aria-label="User"
         >
           <Avatar className="size-9">
-            <AvatarImage src={userData?.avatar} alt="" />
+            {/* <AvatarImage src={userData?.avatar} alt="" /> */}
             <AvatarFallback className="bg-transparent">
-              {userData?.name && getInitials(userData.name)}
+              {adminData?.name && getInitials(adminData.name)}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -58,9 +58,9 @@ export function UserDropdown({ dictionary, locale, adminData }: { dictionary: Di
       <DropdownMenuContent forceMount>
         <DropdownMenuLabel className="flex gap-2">
           <Avatar>
-            <AvatarImage src={userData?.avatar} alt="Avatar" />
+            {/* <AvatarImage src={userData} alt="Avatar" /> */}
             <AvatarFallback className="bg-transparent">
-              {userData?.name && getInitials(userData.name)}
+              {adminData?.name && getInitials(adminData.name)}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden">
@@ -80,14 +80,14 @@ export function UserDropdown({ dictionary, locale, adminData }: { dictionary: Di
               {dictionary.navigation.userNav.profile}
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link
               href={ensureLocalizedPathname("/pages/account/settings", locale)}
             >
               <UserCog className="me-2 size-4" />
               {dictionary.navigation.userNav.settings}
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => handleLogout()}>

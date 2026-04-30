@@ -67,7 +67,7 @@ export function Sidebar({ dictionary, adminData }: SidebarProps) {
   const params = useParams()
   const { openMobile, setOpenMobile, isMobile } = useSidebar()
   const { settings } = useSettings()
- 
+
 
   const locale = params.lang as LocaleType
   const direction = i18n.localeDirection[locale]
@@ -170,7 +170,7 @@ export function Sidebar({ dictionary, adminData }: SidebarProps) {
     <SidebarWrapper side={isRTL ? "right" : "left"}>
       <SidebarHeader>
         <Link
-          href={ensureLocalizedPathname("/", locale)}
+          href={ensureLocalizedPathname("/en/pages/courts", locale)}
           className="w-fit flex text-foreground font-black p-2 pb-0 mb-2"
           onClick={() => isMobile && setOpenMobile(!openMobile)}
         >

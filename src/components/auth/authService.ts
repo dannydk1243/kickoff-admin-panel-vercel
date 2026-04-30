@@ -130,6 +130,66 @@ export async function resetPasswordAdmin(data: ResetPasswordPayload, router: any
    }
 }
 
+export async function updateProfileAdmin(data: any) {
+   try {
+      // const res = await API.post(`/auth/admin/reset-password`, data)
+      const res = await API.post(`/admins/update`, data)
+
+      if (res?.status !== 201) {
+         toast({
+            variant: "destructive",
+            title: "Update failed",
+            description: "Unable to update profile",
+         })
+         return false
+      }
+      toast({
+         title: "Profile updated",
+         description: "Your profile has been updated successfully",
+      })
+
+      return true
+   } catch (error: any) {
+
+      toast({
+         variant: "destructive",
+         title: "Error",
+         description: error?.response?.data?.details?.message || error?.message || "Something went wrong. Please try again.",
+      })
+      return false
+   }
+}
+
+export async function updatePasswordAdmin(data: any) {
+   try {
+      // const res = await API.post(`/auth/admin/reset-password`, data)
+      const res = await API.post(`/admins/update-password`, data)
+
+      if (res?.status !== 201) {
+         toast({
+            variant: "destructive",
+            title: "Update failed",
+            description: "Unable to update password",
+         })
+         return false
+      }
+      toast({
+         title: "Password updated",
+         description: "A password reset link has been sent to your email.",
+      })
+
+      return true
+   } catch (error: any) {
+
+      toast({
+         variant: "destructive",
+         title: "Error",
+         description: error?.response?.data?.details?.message || error?.message || "Something went wrong. Please try again.",
+      })
+      return false
+   }
+}
+
 
 export async function logoutAdmin() {
    try {

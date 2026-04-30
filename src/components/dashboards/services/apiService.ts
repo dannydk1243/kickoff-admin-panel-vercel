@@ -1556,6 +1556,68 @@ export async function getAllBookings(page: number = 1,
   }
 }
 
+export async function getAllUserWallet(page: number = 1,
+  limit: number = 15,
+  status: string = "") {
+  try {
+    const statusQuery = status && status !== "ALL" ? `&status=${status}` : "";
+    const res = await API.post(`/wallet/all?page=${page}&limit=${limit}${statusQuery}`, {})
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load user wallet",
+        description: "Unable to fetch user wallet list",
+      })
+      return null
+    }
+
+    // toast({
+    //    title: "User wallet loaded",
+    //    description: "User wallet list fetched successfully",
+    // });
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return null
+  }
+}
+
+export async function getWalletTransactions(id: string, page: number, limit: number = 15, type: string, from: string, to: string, source: string) {
+  try {
+    const res = await API.post(`/wallet/transactions?page=${page}&limit=${limit}&walletId=${id}&type=${type}&source=${source}&from=${from}&to=${to}`, {})
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load user wallet",
+        description: "Unable to fetch user wallet transactions.",
+      })
+      return null
+    }
+
+    return res.data
+  }
+  catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return null
+  }
+}
+
 export async function cancelBooking(body: {}) {
   try {
     const res = await API.post(`/bookings/cancel`, body)
@@ -1572,6 +1634,51 @@ export async function cancelBooking(body: {}) {
     toast({
       title: "Status updated",
       description: "Booking cancelled successfully.",
+    })
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return false
+  }
+}
+
+export async function getLandingContent() {
+  try {
+    const res = await API.post(`/content/landing`, {});
+    if (res?.status !== 200) {
+      // Optional: fail silently or let it be for now since it might be mocked
+    }
+    return res?.data;
+  } catch (error: any) {
+    return null;
+  }
+}
+
+export async function updateLandingContent(body: any) {
+  try {
+    // using generic API.put or post
+    const res = await API.post(`/content/landing/update`, body);
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Update failed",
+        description: "Unable to update content.",
+      })
+      return false
+    }
+
+    toast({
+      title: "Content updated",
+      description: "Landing content successfully updated.",
     })
 
     return res.data

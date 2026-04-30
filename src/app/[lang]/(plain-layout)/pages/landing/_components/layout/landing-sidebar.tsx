@@ -56,7 +56,7 @@ export function LandingSidebar({ fullPathname }: { fullPathname: string }) {
           <SheetTitle className="sr-only">Navigation Sidebar</SheetTitle>
           <SidebarHeader>
             <Link
-              href="/"
+              href="/en/pages/courts"
               className="w-fit flex text-foreground font-black p-2 pb-0 mb-2 hover:text-primary/90"
               onClick={() => isMobile && setOpenMobile(!openMobile)}
             >
