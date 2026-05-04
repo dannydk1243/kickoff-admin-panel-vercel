@@ -82,7 +82,7 @@ export const navigationsData: NavigationType[] = [
         title: "User Wallet",
         href: "/pages/user-wallet",
         iconName: "Wallet",
-        roles: [ROLES.ADMIN, ROLES.SUPERADMIN]
+        roles: [ROLES.SUPERADMIN]
       },
       // {
       //   title: "Refunds",
