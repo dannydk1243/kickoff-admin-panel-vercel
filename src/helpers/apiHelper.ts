@@ -2,6 +2,7 @@ import { toast } from '@/hooks/use-toast';
 import { STATUS_CODE } from '@/lib/enum';
 import { devError } from '@/lib/utils';
 import axios, { AxiosError } from 'axios';
+import Cookies from 'js-cookie';
 import { loaderManager } from '@/lib/loading-manager'; // 1. Import manager
 
 const API_AXIOS = axios.create({
@@ -40,6 +41,25 @@ API_AXIOS.interceptors.response.use(
       if (error?.response) {
          const { status, data } = error.response;
 
+         const errorMessage = typeof data?.message === 'string' ? data.message.toLowerCase() : '';
+         const detailsMessage = typeof data?.details?.message === 'string' ? data.details.message.toLowerCase() : '';
+         const detailsError = typeof data?.details?.error === 'string' ? data.details.error.toLowerCase() : '';
+
+         if (
+            errorMessage.includes('token invalid') ||
+            detailsMessage.includes('token invalid') ||
+            detailsError.includes('token invalid')
+         ) {
+            devError('Token Invalid - Session Expired');
+            Object.keys(Cookies.get()).forEach((cookieName) => {
+               Cookies.remove(cookieName);
+            });
+            if (typeof window !== 'undefined') {
+               window.location.href = '/sign-in';
+            }
+            return Promise.reject(error);
+         }
+
          switch (status) {
             case STATUS_CODE.BAD_REQUEST:
                devError(`Bad Request: ${data?.message || ''}`);
@@ -50,12 +70,18 @@ API_AXIOS.interceptors.response.use(
                if (data?.details?.error === "UnauthorizedException") {
                   devError('Session Expired');
                   // toast.error('Unauthorized User');
+                  Object.keys(Cookies.get()).forEach((cookieName) => {
+                     Cookies.remove(cookieName);
+                  });
+                  if (typeof window !== 'undefined') {
+                     window.location.href = '/sign-in'; // ✅ SSR safe
+                  }
                }
                else {
                   devError('Session Expired');
                   // toast.error('Unauthorized User');
                   if (typeof window !== 'undefined') {
-                     window.location.href = '/login'; // ✅ SSR safe
+                     window.location.href = '/sign-in'; // ✅ SSR safe
                   }
                }
                break;
