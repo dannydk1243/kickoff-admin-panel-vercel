@@ -35,7 +35,7 @@ const nextConfig = {
       // },
       {
         source: '/',
-        destination: process.env.HOME_PATHNAME || '/pages/courts',
+        destination: process.env.HOME_PATHNAME || '/dashboards/crm',
         permanent: false, // Use false (307) while testing to avoid browser caching issues
         has: [
           {
@@ -46,7 +46,7 @@ const nextConfig = {
       },
       {
         source: "/:lang/pages",
-        destination: process.env.HOME_PATHNAME || "/pages/courts",
+        destination: process.env.HOME_PATHNAME || "/dashboards/crm",
         permanent: true, // Use true for 301 (SEO) or false for 307 (temporary)
         has: [
           {
@@ -57,7 +57,7 @@ const nextConfig = {
       },
       {
         source: "/:lang",
-        destination: process.env.HOME_PATHNAME || "/pages/courts",
+        destination: process.env.HOME_PATHNAME || "/dashboards/crm",
         permanent: true,
         has: [
           {
@@ -68,7 +68,7 @@ const nextConfig = {
       },
       // {
       //   source: "/:lang",
-      //   destination: process.env.HOME_PATHNAME || "/en/pages/courts",
+      //   destination: process.env.HOME_PATHNAME || "/en/dashboards/crm",
       //   permanent: true,
       //   has: [
       //     {
