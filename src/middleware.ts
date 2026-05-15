@@ -34,7 +34,14 @@ function redirect(pathname: string, request: NextRequest) {
   if (hash) resolvedPathname += hash
 
   const redirectUrl = new URL(resolvedPathname, request.url).toString()
-  return NextResponse.redirect(redirectUrl)
+  const response = NextResponse.redirect(redirectUrl)
+  
+  // CRITICAL: Prevent Vercel Edge and browsers from caching this redirect!
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+  response.headers.set('Pragma', 'no-cache')
+  response.headers.set('Expires', '0')
+  
+  return response
 }
 
 export async function middleware(request: NextRequest) {
@@ -64,7 +71,9 @@ export async function middleware(request: NextRequest) {
       ? ensureLocalizedPathname(homePath, lang) 
       : loginPath
 
-    return NextResponse.redirect(new URL(destination, request.url))
+    const response = NextResponse.redirect(new URL(destination, request.url))
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    return response
   }
 
   // 4. Public/Guest Logic
@@ -87,7 +96,7 @@ export async function middleware(request: NextRequest) {
 
     // 🔐 Redirect unauthenticated users
     if (!isAuthenticated && isProtected) {
-      if (!pathname.includes("/sign-in")) {
+      if (!pathnameWithoutLocale.includes("/sign-in")) {
         return redirect(`/${lang}/sign-in`, request)
       }
     }
