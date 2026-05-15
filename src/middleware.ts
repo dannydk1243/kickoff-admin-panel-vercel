@@ -57,8 +57,9 @@ export async function middleware(request: NextRequest) {
   const pathnameWithoutLocale = ensureWithoutPrefix(pathname, `/${lang}`)
   
   // 2. Unified Token Retrieval
-  const accessToken = request.cookies.get("accessToken")?.value
-  const token = request.cookies.get("token")?.value
+  // Check for both standard and __Secure- prefixed cookies (enforced by some HTTPS environments)
+  const accessToken = request.cookies.get("accessToken")?.value || request.cookies.get("__Secure-accessToken")?.value
+  const token = request.cookies.get("token")?.value || request.cookies.get("__Secure-token")?.value
   const nextAuthToken = request.cookies.get("__Secure-next-auth.session-token")?.value || request.cookies.get("next-auth.session-token")?.value
   const isAuthenticated = !!accessToken || !!token || !!nextAuthToken
   
@@ -73,6 +74,8 @@ export async function middleware(request: NextRequest) {
 
     const response = NextResponse.redirect(new URL(destination, request.url))
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
     return response
   }
 
@@ -81,7 +84,7 @@ export async function middleware(request: NextRequest) {
   const isGuest = isGuestRoute(pathnameWithoutLocale)
 
   if (isNotPublic) {
-    const adminProfileCookie = request.cookies.get("adminProfile")?.value
+    const adminProfileCookie = request.cookies.get("adminProfile")?.value || request.cookies.get("__Secure-adminProfile")?.value
     let adminProfile: AdminProfile | null = null
 
     if (adminProfileCookie) {
@@ -127,7 +130,13 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next()
+  const response = NextResponse.next()
+  // Even for successful requests, prevent Edge from caching a "stale" version of the page 
+  // without the correct auth state
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+  response.headers.set('Pragma', 'no-cache')
+  response.headers.set('Expires', '0')
+  return response
 }
 
 export const config = {

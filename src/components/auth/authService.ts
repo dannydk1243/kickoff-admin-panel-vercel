@@ -19,9 +19,10 @@ export async function signInAdmin(data: SignInFormType, redirectPathname: string
       }
 
       const accessToken = loginRes?.data?.accessToken;
+      const securePrefix = typeof window !== 'undefined' && window.location.protocol === 'https:' ? '__Secure-' : '';
 
       // 2️⃣ Save token in cookie
-      Cookies.set("accessToken", accessToken, {
+      Cookies.set(`${securePrefix}accessToken`, accessToken, {
          expires: 7,
          secure: true,
          sameSite: "lax",
@@ -44,7 +45,7 @@ export async function signInAdmin(data: SignInFormType, redirectPathname: string
       };
 
       // 4️⃣ Save profile in cookie
-      Cookies.set("adminProfile", JSON.stringify(essentialProfile), {
+      Cookies.set(`${securePrefix}adminProfile`, JSON.stringify(essentialProfile), {
          expires: 7,
          secure: true,
          sameSite: "lax",
@@ -52,7 +53,10 @@ export async function signInAdmin(data: SignInFormType, redirectPathname: string
       });
 
       // 5️⃣ Redirect after everything succeeds
-      await router.push(redirectPathname);
+      // USE HARD NAVIGATION to ensure browser registers cookies before Next.js prefetching kicks in
+      if (typeof window !== 'undefined') {
+         window.location.href = redirectPathname;
+      }
 
       toast({
          title: "Login Successful",
