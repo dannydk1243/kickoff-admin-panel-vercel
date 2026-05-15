@@ -24,7 +24,7 @@ export async function signInAdmin(data: SignInFormType, redirectPathname: string
       Cookies.set("accessToken", accessToken, {
          expires: 7,
          secure: true,
-         sameSite: "strict",
+         sameSite: "lax",
       });
 
       // 3️⃣ Call profile API
@@ -38,7 +38,7 @@ export async function signInAdmin(data: SignInFormType, redirectPathname: string
       Cookies.set("adminProfile", JSON.stringify(profileRes.data), {
          expires: 7,
          secure: true,
-         sameSite: "strict",
+         sameSite: "lax",
       });
 
       // 5️⃣ Redirect after everything succeeds

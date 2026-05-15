@@ -52,7 +52,7 @@ export async function middleware(request: NextRequest) {
 
   // 2. Handle the Root "/" Redirect
   if (pathname === "/") {
-    const homePath = process.env.HOME_PATHNAME ?? "/pages/courts"
+    const homePath = process.env.HOME_PATHNAME ?? "/dashboards/crm"
     const loginPath = `/${lang}/sign-in`
     
     // Ensure the homePath has a locale prefix so it doesn't trigger "missing locale" redirect later
@@ -92,7 +92,7 @@ export async function middleware(request: NextRequest) {
 
     // 🚫 Redirect authenticated users away from guest routes (like login page)
     if (isAuthenticated && isGuest) {
-      return redirect(process.env.HOME_PATHNAME || "/pages/courts", request)
+      return redirect(process.env.HOME_PATHNAME || "/dashboards/crm", request)
     }
 
     // 🛑 Role-based access control
