@@ -38,7 +38,7 @@ export function SignInForm() {
   const redirectPathname =
     searchParams.get("redirectTo") ||
     process.env.NEXT_PUBLIC_HOME_PATHNAME ||
-    "/"
+    "/dashboards/crm"
 
   const form = useForm<SignInFormType>({
     resolver: zodResolver(SignInSchema),

@@ -52,7 +52,7 @@ export async function signInAdmin(data: SignInFormType, redirectPathname: string
       });
 
       // 5️⃣ Redirect after everything succeeds
-      await router.push(redirectPathname);
+      window.location.assign(redirectPathname);
 
       toast({
          title: "Login Successful",
