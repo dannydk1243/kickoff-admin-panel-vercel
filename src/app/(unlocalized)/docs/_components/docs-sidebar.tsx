@@ -36,7 +36,7 @@ export function DocsSidebar() {
     >
       <SidebarHeader className={openMobile && isMobile ? "" : "hidden"}>
         <Link
-          href="/en/pages/courts"
+          href="/en/dashboards/crm"
           className="w-fit flex text-foreground font-black p-2 pb-0 mb-2"
           onClick={() => isMobile && setOpenMobile(!openMobile)}
         >

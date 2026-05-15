@@ -170,7 +170,7 @@ export function Sidebar({ dictionary, adminData }: SidebarProps) {
     <SidebarWrapper side={isRTL ? "right" : "left"}>
       <SidebarHeader>
         <Link
-          href={ensureLocalizedPathname("/en/pages/courts", locale)}
+          href={ensureLocalizedPathname("/en/dashboards/crm", locale)}
           className="w-fit flex text-foreground font-black p-2 pb-0 mb-2"
           onClick={() => isMobile && setOpenMobile(!openMobile)}
         >
