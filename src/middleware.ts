@@ -40,22 +40,26 @@ function redirect(pathname: string, request: NextRequest) {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const locale = getLocaleFromPathname(pathname)
-  const pathnameWithoutLocale = ensureWithoutPrefix(pathname, `/${locale}`)
+
+  // 1. Locale enforcement (MUST happen first to normalize the path)
+  if (!locale && pathname !== "/") {
+    return redirect(pathname, request)
+  }
+
+  const lang = locale || "en"
+  const pathnameWithoutLocale = ensureWithoutPrefix(pathname, `/${lang}`)
   
-  // 1. Unified Token Retrieval
+  // 2. Unified Token Retrieval
   const accessToken = request.cookies.get("accessToken")?.value
   const token = request.cookies.get("token")?.value
   const nextAuthToken = request.cookies.get("__Secure-next-auth.session-token")?.value || request.cookies.get("next-auth.session-token")?.value
   const isAuthenticated = !!accessToken || !!token || !!nextAuthToken
   
-  const lang = locale || "en"
-
-  // 2. Handle the Root "/" Redirect
+  // 3. Handle the Root "/" Redirect
   if (pathname === "/") {
     const homePath = process.env.HOME_PATHNAME ?? "/dashboards/crm"
     const loginPath = `/${lang}/sign-in`
     
-    // Ensure the homePath has a locale prefix so it doesn't trigger "missing locale" redirect later
     const destination = isAuthenticated 
       ? ensureLocalizedPathname(homePath, lang) 
       : loginPath
@@ -63,7 +67,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(destination, request.url))
   }
 
-  // 3. Public/Guest Logic
+  // 4. Public/Guest Logic
   const isNotPublic = !isPublicRoute(pathnameWithoutLocale)
   const isGuest = isGuestRoute(pathnameWithoutLocale)
 
@@ -73,7 +77,6 @@ export async function middleware(request: NextRequest) {
 
     if (adminProfileCookie) {
       try {
-        // Decode URI component in case Vercel encoded the cookie string
         adminProfile = JSON.parse(decodeURIComponent(adminProfileCookie)) as AdminProfile
       } catch {
         adminProfile = null
@@ -84,9 +87,8 @@ export async function middleware(request: NextRequest) {
 
     // 🔐 Redirect unauthenticated users
     if (!isAuthenticated && isProtected) {
-      // Avoid redirecting if already on login
       if (!pathname.includes("/sign-in")) {
-        return redirect("/en/sign-in", request) // Use your login path
+        return redirect(`/${lang}/sign-in`, request)
       }
     }
 
@@ -97,31 +99,22 @@ export async function middleware(request: NextRequest) {
 
     // 🛑 Role-based access control
     const role = adminProfile?.role ?? ""
-    if (pathnameWithoutLocale.startsWith('/pages')) {
-  
-  // Logic to determine if the route is "known"
-  // If canAccessRoute (or a new helper) returns false because the route isn't found
-  const isKnownRoute = checkIfRouteExists(pathnameWithoutLocale); 
+    if (pathnameWithoutLocale.startsWith("/pages")) {
+      const isKnownRoute = checkIfRouteExists(pathnameWithoutLocale)
 
-  if (!isKnownRoute) {
-    return redirect("/pages/not-found-404", request);
-  }
+      if (!isKnownRoute) {
+        return redirect("/pages/not-found-404", request)
+      }
 
-  // 2. Existing Role-based access control
-  if (
-    isAuthenticated &&
-    !canAccessRoute(pathnameWithoutLocale, role) &&
-    pathnameWithoutLocale !== "/pages/unauthorized-401" &&
-    pathnameWithoutLocale !== "/pages/not-found-404"
-  ) {
-    return redirect("/pages/unauthorized-401", request);
-  }
-}
-  }
-
-  // 🌍 Locale enforcement (Move to end)
-  if (!locale && pathname !== '/') {
-    return redirect(pathname, request)
+      if (
+        isAuthenticated &&
+        !canAccessRoute(pathnameWithoutLocale, role) &&
+        pathnameWithoutLocale !== "/pages/unauthorized-401" &&
+        pathnameWithoutLocale !== "/pages/not-found-404"
+      ) {
+        return redirect("/pages/unauthorized-401", request)
+      }
+    }
   }
 
   return NextResponse.next()
@@ -129,6 +122,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|images|docs|pages/unauthorized-401).*)",
+    "/((?!api|_next|favicon.ico|sitemap.xml|robots.txt|images|docs|pages/unauthorized-401).*)",
   ],
 }
+
