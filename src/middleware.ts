@@ -99,12 +99,13 @@ export async function middleware(request: NextRequest) {
 
     // 🛑 Role-based access control
     const role = adminProfile?.role ?? ""
-    if (pathnameWithoutLocale.startsWith("/pages")) {
+    if (pathnameWithoutLocale.startsWith("/pages") || pathnameWithoutLocale.startsWith("/dashboards")) {
       const isKnownRoute = checkIfRouteExists(pathnameWithoutLocale)
 
       if (!isKnownRoute) {
         return redirect("/pages/not-found-404", request)
       }
+
 
       if (
         isAuthenticated &&
