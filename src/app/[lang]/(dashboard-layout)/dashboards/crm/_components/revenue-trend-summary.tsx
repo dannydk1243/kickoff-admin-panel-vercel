@@ -9,7 +9,10 @@ import { PercentageChangeBadge } from "@/components/dashboards/percentage-change
 export function RevenueTrendSummary({
   data,
 }: {
-  data: RevenueTrendType["summary"]
+  data: {
+    totalRevenue: number
+    totalPercentageChange: number
+  }
 }) {
   return (
     <div className="flex flex-col items-start bg-accent text-accent-foreground py-2 px-4 rounded-lg">

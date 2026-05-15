@@ -2,26 +2,34 @@ import { ROLES } from "@/lib/enum"
 import type { NavigationType } from "@/types"
 
 export const navigationsData: NavigationType[] = [
-  // {
-  //   title: "Dashboards",
-  //   items: [
-  //     {
-  //       title: "Analytics",
-  //       href: "/dashboards/analytics",
-  //       iconName: "ChartPie",
-  //     },
-  //     {
-  //       title: "CRM",
-  //       href: "/dashboards/crm",
-  //       iconName: "ChartBar",
-  //     },
-  //     {
-  //       title: "eCommerce",
-  //       href: "/dashboards/ecommerce",
-  //       iconName: "ShoppingCart",
-  //     },
-  //   ],
-  // },
+  {
+    title: "Dashboards",
+    items: [
+      {
+        title: "Analytics",
+        href: "/dashboards/crm",
+        iconName: "ChartBar",
+        roles: [ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.OWNER]
+      },
+
+
+      //   {
+      //   title: "Analytics",
+      //   href: "/dashboards/analytics",
+      //   iconName: "ChartPie",
+      // },
+      // {
+      //   title: "CRM",
+      //   href: "/dashboards/crm",
+      //   iconName: "ChartBar",
+      // },
+      // {
+      //   title: "eCommerce",
+      //   href: "/dashboards/ecommerce",
+      //   iconName: "ShoppingCart",
+      // },
+    ],
+  },
   {
     title: "Pages",
     items: [
@@ -83,6 +91,18 @@ export const navigationsData: NavigationType[] = [
         href: "/pages/user-wallet",
         iconName: "Wallet",
         roles: [ROLES.SUPERADMIN]
+      },
+      {
+        title: "Withdrawal",
+        href: "/pages/withdrawal",
+        iconName: "HandCoins",
+        roles: [ROLES.OWNER, ROLES.SUPERADMIN]
+      },
+      {
+        title: "Payout Account",
+        href: "/pages/payout-account",
+        iconName: "CreditCard",
+        roles: []
       },
       // {
       //   title: "Refunds",

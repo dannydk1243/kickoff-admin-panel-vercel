@@ -12,19 +12,22 @@ export const routeMap = new Map<string, RouteType>([
 
   // PROTECTED ROUTES WITH ROLES
 
+  ["/dashboards/crm", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
   ["/pages/users", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN] }],
   ["/pages/admins", { type: "protected", roles: [ROLES.SUPERADMIN] }],
   ["/pages/court-owners", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN] }],
   ["/pages/courts", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
   ["/pages/bookings", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
   ["/pages/trainings", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
-  ["/pages/user-wallet", { type: "protected", roles: [ ROLES.SUPERADMIN] }],
-  ["/pages/refunds", { type: "protected", roles: [ ROLES.SUPERADMIN] }],
+  ["/pages/user-wallet", { type: "protected", roles: [ROLES.SUPERADMIN] }],
+  ["/pages/withdrawal", { type: "protected", roles: [ROLES.OWNER, ROLES.SUPERADMIN] }],
+  ["/pages/refunds", { type: "protected", roles: [ROLES.SUPERADMIN] }],
   ["/pages/reports", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN] }],
   ["/pages/announcement", { type: "protected", roles: [ROLES.SUPERADMIN] }],
   ["/pages/setting", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN] }],
   ["/pages/content-management", { type: "protected", roles: [ROLES.SUPERADMIN] }],
   ["/pages/activity-logs", { type: "protected", roles: [ROLES.SUPERADMIN] }],
+  ["/pages/payout-account", { type: "protected", roles: [ROLES.SUPERADMIN] }],
 
   // ["/pages/account/settings", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
   ["/pages/account/profile", { type: "protected", roles: [ROLES.ADMIN, ROLES.SUPERADMIN, ROLES.OWNER] }],
@@ -34,6 +37,7 @@ export const routeMap = new Map<string, RouteType>([
 
 export function checkIfRouteExists(pathname: string): boolean {
   const routes = [
+    "/dashboards/crm",
     "/pages/users",
     "/pages/admins",
     "/pages/court-owners",
@@ -41,12 +45,14 @@ export function checkIfRouteExists(pathname: string): boolean {
     "/pages/bookings",
     "/pages/trainings",
     "/pages/user-wallet",
+    "/pages/withdrawal",
     "/pages/refunds",
     "/pages/reports",
     "/pages/announcement",
     "/pages/setting",
     "/pages/content-management",
     "/pages/activity-logs",
+    "/pages/payout-account",
     // "/pages/account/settings",
     "/pages/account/profile",
     // "/pages/account/settings/security",

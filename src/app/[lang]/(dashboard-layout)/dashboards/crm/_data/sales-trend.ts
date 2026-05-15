@@ -1,55 +1,64 @@
-import type { SalesTrendType } from "../types"
+import type { BookingsTrendType } from "../types"
 
-export const salesTrendData: SalesTrendType = {
-  period: "Last year",
-  summary: {
-    totalLead: 2200,
-    totalProposal: 1550,
-    totalNegotiation: 900,
-    totalClosed: 700,
+export const bookingsTrendDataByPeriod: Record<"WEEK" | "MONTH" | "YEAR", BookingsTrendType> = {
+  WEEK: {
+    summary: {
+      totalPending: 142,
+      totalConfirmed: 98,
+      totalCancelled: 54,
+      totalCompleted: 38,
+    },
+    revenueTrends: [
+      { label: "Mon", revenue: 5000 },
+      { label: "Tue", revenue: 4500 },
+      { label: "Wed", revenue: 6000 },
+      { label: "Thu", revenue: 5500 },
+      { label: "Fri", revenue: 7000 },
+      { label: "Sat", revenue: 8000 },
+      { label: "Sun", revenue: 4000 },
+    ],
+    totalRevenue: 40000,
   },
-  monthly: [
-    { month: "January", lead: 250, proposal: 200, negotiation: 80, closed: 50 },
-    {
-      month: "February",
-      lead: 230,
-      proposal: 190,
-      negotiation: 70,
-      closed: 55,
+  MONTH: {
+    summary: {
+      totalPending: 620,
+      totalConfirmed: 430,
+      totalCancelled: 240,
+      totalCompleted: 180,
     },
-    { month: "March", lead: 200, proposal: 180, negotiation: 75, closed: 60 },
-    { month: "April", lead: 180, proposal: 160, negotiation: 85, closed: 65 },
-    { month: "May", lead: 190, proposal: 140, negotiation: 90, closed: 50 },
-    { month: "June", lead: 170, proposal: 130, negotiation: 95, closed: 45 },
-    { month: "July", lead: 160, proposal: 120, negotiation: 100, closed: 70 },
-    { month: "August", lead: 150, proposal: 130, negotiation: 110, closed: 80 },
-    {
-      month: "September",
-      lead: 200,
-      proposal: 150,
-      negotiation: 120,
-      closed: 90,
+    revenueTrends: [
+      { label: "Week 1", revenue: 30000 },
+      { label: "Week 2", revenue: 35000 },
+      { label: "Week 3", revenue: 28000 },
+      { label: "Week 4", revenue: 42000 },
+    ],
+    totalRevenue: 135000,
+  },
+  YEAR: {
+    summary: {
+      totalPending: 2200,
+      totalConfirmed: 1550,
+      totalCancelled: 900,
+      totalCompleted: 700,
     },
-    {
-      month: "October",
-      lead: 220,
-      proposal: 170,
-      negotiation: 100,
-      closed: 85,
-    },
-    {
-      month: "November",
-      lead: 240,
-      proposal: 190,
-      negotiation: 70,
-      closed: 70,
-    },
-    {
-      month: "December",
-      lead: 210,
-      proposal: 220,
-      negotiation: 100,
-      closed: 80,
-    },
-  ],
+    revenueTrends: [
+      { label: "Jan", revenue: 120000 },
+      { label: "Feb", revenue: 110000 },
+      { label: "Mar", revenue: 130000 },
+      { label: "Apr", revenue: 125000 },
+      { label: "May", revenue: 140000 },
+      { label: "Jun", revenue: 135000 },
+      { label: "Jul", revenue: 150000 },
+      { label: "Aug", revenue: 145000 },
+      { label: "Sep", revenue: 160000 },
+      { label: "Oct", revenue: 170000 },
+      { label: "Nov", revenue: 155000 },
+      { label: "Dec", revenue: 180000 },
+    ],
+    totalRevenue: 1820000,
+  },
 }
+
+
+// Default fallback (year — matches legacy export name)
+export const bookingsTrendData: BookingsTrendType = bookingsTrendDataByPeriod.YEAR

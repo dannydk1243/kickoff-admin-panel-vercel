@@ -19,7 +19,7 @@ export const userData: UserType = {
   zipCode: "90210",
   language: "English",
   timeZone: "GMT+08:00",
-  currency: "USD",
+  currency: "SAR",
   organization: "Tech Innovations Inc.",
   twoFactorAuth: false,
   loginAlerts: true,

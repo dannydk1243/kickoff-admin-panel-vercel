@@ -1,15 +1,19 @@
-import { leadSourcesData } from "../_data/lead-sources"
 
 import { Card } from "@/components/ui/card"
 import { LeadSourcesChart } from "./lead-sources-chart"
 
-export function LeadSources() {
+interface LeadSourcesProps {
+  data: any
+}
+
+export function LeadSources({ data }: LeadSourcesProps) {
+  const displayData = data;
   return (
     <Card className="h-56 p-6">
       <LeadSourcesChart
         data={{
-          leads: leadSourcesData.leads,
-          summary: leadSourcesData.summary,
+          leads: displayData.leads,
+          summary: displayData.summary,
         }}
       />
     </Card>

@@ -1,20 +1,26 @@
-import { salesTrendData } from "../_data/sales-trend"
 
 import {
   DashboardCard,
-  DashboardCardActionsDropdown,
 } from "@/components/dashboards/dashboard-card"
-import { SalesTrendChart } from "./sales-trend-chart"
+import { BookingsTrendChart } from "./sales-trend-chart"
+import { DashboardPeriod } from "@/components/dashboards/services/dashboardService"
 
-export function SalesTrend() {
+interface BookingsTrendProps {
+  data: any
+  period: DashboardPeriod
+  onPeriodChange: (period: DashboardPeriod) => void
+}
+
+export function BookingsTrend({ data, period, onPeriodChange }: BookingsTrendProps) {
+  const periodLabel = period === DashboardPeriod.WEEK ? "Last week" : period === DashboardPeriod.YEAR ? "Last year" : "Last month";
+
   return (
     <DashboardCard
-      title="Sales Trend"
-      period={salesTrendData.period}
-      action={<DashboardCardActionsDropdown />}
+      title="Bookings Trend"
+      period={periodLabel}
       className="col-span-full md:col-span-3"
     >
-      <SalesTrendChart data={salesTrendData} />
+      <BookingsTrendChart data={data} />
     </DashboardCard>
   )
 }

@@ -7,27 +7,27 @@ export interface MetricType {
 }
 
 export interface OverviewType {
-  totalSales: MetricType
-  totalProfit: MetricType
-  revenueGrowth: MetricType
-  newCustomers: MetricType
+  bookingsRevenue: number
+  totalProfitShare: number
+  withdrawableAmount: number
+  withdrawanAmount: number
+  totalBookings: number
 }
 
-export interface SalesTrendType {
-  period: string
+export interface RevenueTrendItemType {
+  label: string
+  revenue: number
+}
+
+export interface BookingsTrendType {
+  revenueTrends: RevenueTrendItemType[]
   summary: {
-    totalLead: number
-    totalProposal: number
-    totalNegotiation: number
-    totalClosed: number
+    totalPending: number
+    totalConfirmed: number
+    totalCancelled: number
+    totalCompleted: number
   }
-  monthly: Array<{
-    month: string
-    lead: number
-    proposal: number
-    negotiation: number
-    closed: number
-  }>
+  totalRevenue: number
 }
 
 export interface SalesRepresentativeType {
@@ -123,3 +123,35 @@ export interface ActivityTimelineType {
     assignedMembers: AssignedMemberType[]
   }>
 }
+
+export type BookingStatusType = "Confirmed" | "Completed" | "Cancelled" | "Pending"
+
+export interface LatestBookingType {
+  id: string
+  customerName: string
+  customerAvatar: string
+  courtName: string
+  date: Date
+  duration: number        // minutes
+  amount: number          // SAR / AED
+  status: BookingStatusType
+}
+
+export interface TopSellingCourtType {
+  _id: string
+  name: string
+  revenue: number
+  bookings: number
+}
+
+export interface DashboardAnalyticsType extends OverviewType {
+  bookingTrend: BookingsTrendType
+  courts: TopSellingCourtType[]
+  total: number
+  page: number
+  limit: number
+  pages: number
+}
+
+
+

@@ -1,24 +1,29 @@
 import type { OverviewType } from "../types"
 
-export const overviewData: OverviewType = {
-  totalSales: {
-    period: "Last month",
-    value: 1234567,
-    percentageChange: 5.9,
+export const overviewDataByPeriod: Record<"WEEK" | "MONTH" | "YEAR", OverviewType> = {
+  WEEK: {
+    bookingsRevenue: 98450,
+    totalProfitShare: 28900,
+    withdrawableAmount: 55120,
+    withdrawanAmount: 40000,
+    totalBookings: 87,
   },
-  totalProfit: {
-    period: "Last month",
-    value: 345678,
-    percentageChange: -0.2,
+  MONTH: {
+    bookingsRevenue: 1234567,
+    totalProfitShare: 345678,
+    withdrawableAmount: 789123,
+    withdrawanAmount: 500000,
+    totalBookings: 456,
   },
-  revenueGrowth: {
-    period: "Last month",
-    value: 789123,
-    percentageChange: 7.3,
-  },
-  newCustomers: {
-    period: "Last month",
-    value: 456,
-    percentageChange: 12.4,
+  YEAR: {
+    bookingsRevenue: 14820000,
+    totalProfitShare: 4150000,
+    withdrawableAmount: 9470000,
+    withdrawanAmount: 6000000,
+    totalBookings: 5480,
   },
 }
+
+
+// Default fallback (month)
+export const overviewData: OverviewType = overviewDataByPeriod.MONTH

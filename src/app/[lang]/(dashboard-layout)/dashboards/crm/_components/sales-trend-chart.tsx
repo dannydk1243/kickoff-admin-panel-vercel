@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
 import type { ChartConfig } from "@/components/ui/chart"
-import type { SalesTrendType } from "../types"
+import type { BookingsTrendType } from "../types"
 
 import { cn } from "@/lib/utils"
 
@@ -18,79 +18,58 @@ import {
 } from "@/components/ui/chart"
 
 const chartConfig = {
-  lead: {
-    label: "Lead",
-    color: "hsl(var(--chart-1))",
-  },
-  proposal: {
-    label: "Proposal",
+  revenue: {
+    label: "Revenue",
     color: "hsl(var(--chart-2))",
-  },
-  negotiation: {
-    label: "Negotiation",
-    color: "hsl(var(--chart-3))",
-  },
-  closed: {
-    label: "Closed",
-    color: "hsl(var(--chart-4))",
   },
 } satisfies ChartConfig
 
-export function SalesTrendChart({ data }: { data: SalesTrendType }) {
-  const [activeChart, setActiveChart] =
-    useState<keyof typeof chartConfig>("lead")
+export function BookingsTrendChart({ data }: { data: BookingsTrendType }) {
   const isRtl = useIsRtl()
   const radius = useRadius()
 
-  const { monthly, summary } = data
+  const { revenueTrends, summary } = data
+
+  const summaryItems = [
+    { label: "Pending", value: summary.totalPending, color: "hsl(var(--chart-1))" },
+    { label: "Confirmed", value: summary.totalConfirmed, color: "hsl(var(--chart-2))" },
+    { label: "Cancelled", value: summary.totalCancelled, color: "hsl(var(--chart-3))" },
+    { label: "Completed", value: summary.totalCompleted, color: "hsl(var(--chart-4))" },
+  ]
 
   return (
     <>
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-        {Object.entries(summary).map(([key, value]) => {
-          const stage = key
-            .replace("total", "")
-            .toLowerCase() as keyof typeof chartConfig
-
-          return (
-            <Button
-              key={key}
-              variant="outline"
-              className={cn(
-                "size-auto flex-col items-start",
-                activeChart === stage && "bg-accent"
-              )}
-              onClick={() => setActiveChart(stage)}
-            >
-              <div className="flex items-center gap-x-1">
-                <span
-                  style={{
-                    backgroundColor: chartConfig[stage].color,
-                  }}
-                  className="h-2.5 w-2.5 rounded-sm"
-                />
-                <span className="text-sm text-muted-foreground">
-                  {chartConfig[stage].label}
-                </span>
-              </div>
-              <span className="text-2xl font-semibold">
-                {value.toLocaleString()}
+        {summaryItems.map((item) => (
+          <div
+            key={item.label}
+            className="flex flex-col items-start p-3 border rounded-lg bg-background"
+          >
+            <div className="flex items-center gap-x-1">
+              <span
+                style={{ backgroundColor: item.color }}
+                className="h-2.5 w-2.5 rounded-sm"
+              />
+              <span className="text-sm text-muted-foreground">
+                {item.label}
               </span>
-            </Button>
-          )
-        })}
+            </div>
+            <span className="text-2xl font-semibold">
+              {item.value.toLocaleString()}
+            </span>
+          </div>
+        ))}
       </div>
       <ChartContainer config={chartConfig} className="grow aspect-auto w-full">
         <BarChart
           accessibilityLayer
-          key={activeChart}
-          data={monthly}
+          data={revenueTrends}
           margin={{ top: 0, bottom: 0 }}
         >
           <CartesianGrid vertical={false} />
           <XAxis
             reversed={isRtl}
-            dataKey="month"
+            dataKey="label"
             tickLine={false}
             tickMargin={10}
             axisLine={false}
@@ -101,9 +80,9 @@ export function SalesTrendChart({ data }: { data: SalesTrendType }) {
             content={<ChartTooltipContent indicator="dot" />}
           />
           <Bar
-            dataKey={activeChart}
+            dataKey="revenue"
             maxBarSize={44}
-            fill={chartConfig[activeChart].color}
+            fill={chartConfig.revenue.color}
             radius={radius}
           />
         </BarChart>

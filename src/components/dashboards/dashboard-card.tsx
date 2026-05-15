@@ -110,9 +110,9 @@ export function DashboardOverviewCard({
       {...props}
     >
       <article>
-        <div className="flex justify-between p-6">
+        <div className="flex justify-between p-4 pb-2">
           <div>
-            <CardTitle className="inline-flex gap-x-1">
+            <CardTitle className="inline-flex gap-x-1 text-sm">
               <Icon className="size-4" aria-hidden />
               <span>{title}</span>
             </CardTitle>
@@ -120,8 +120,8 @@ export function DashboardOverviewCard({
           </div>
           {action}
         </div>
-        <CardContent className={cn("space-y-1", contentClassName)}>
-          <p className="text-2xl font-semibold break-all">{value}</p>
+        <CardContent className={cn("space-y-1 p-4 pt-0", contentClassName)}>
+          <p className="text-xl font-semibold break-all">{value}</p>
           <PercentageChangeBadge value={data.percentageChange} />
         </CardContent>
       </article>
@@ -164,7 +164,7 @@ export function DashboardOverviewCardV2({
       {...props}
     >
       <article>
-        <div className="flex justify-between p-6">
+        <div className="flex justify-between p-4 pb-2">
           <div className="flex items-center gap-x-2">
             <Badge
               style={{
@@ -186,11 +186,11 @@ export function DashboardOverviewCardV2({
           </div>
           {action}
         </div>
-        <CardContent className={cn("space-y-1", contentClassName)}>
-          <CardTitle className="text-muted-foreground font-normal">
+        <CardContent className={cn("space-y-1 p-4 pt-0", contentClassName)}>
+          <CardTitle className="text-muted-foreground font-normal text-sm">
             {title}
           </CardTitle>
-          <p className="text-2xl font-semibold break-all">{value}</p>
+          <p className="text-xl font-semibold break-all">{value}</p>
         </CardContent>
       </article>
     </Card>
@@ -228,13 +228,13 @@ export function DashboardOverviewCardV3({
       {...props}
     >
       <article>
-        <div className="flex justify-between p-6 pb-3">
+        <div className="flex justify-between p-4 pb-2">
           <div>
-            <CardTitle className="text-muted-foreground font-normal">
+            <CardTitle className="text-muted-foreground font-normal text-sm">
               {title}
             </CardTitle>
             <div className="inline-flex flex-wrap items-baseline gap-x-1">
-              <p className="text-2xl font-semibold break-all">{value}</p>
+              <p className="text-xl font-semibold break-all">{value}</p>
               <PercentageChangeBadge
                 variant="ghost"
                 value={data.percentageChange}
@@ -257,10 +257,19 @@ export function DashboardOverviewCardV3({
   )
 }
 
+interface DashboardCardActionsDropdownProps extends ComponentProps<typeof DropdownMenu> {
+  onWeek?: () => void
+  onMonth?: () => void
+  onYear?: () => void
+}
+
 export function DashboardCardActionsDropdown({
   children,
+  onWeek,
+  onMonth,
+  onYear,
   ...props
-}: ComponentProps<typeof DropdownMenu>) {
+}: DashboardCardActionsDropdownProps) {
   return (
     <DropdownMenu {...props}>
       <DropdownMenuTrigger
@@ -277,10 +286,9 @@ export function DashboardCardActionsDropdown({
           children
         ) : (
           <>
-            {/* These items are just for showcase purposes. Use 'children' prop to add items. */}
-            <DropdownMenuItem>Last week</DropdownMenuItem>
-            <DropdownMenuItem disabled>Last month</DropdownMenuItem>
-            <DropdownMenuItem>Last year</DropdownMenuItem>
+            <DropdownMenuItem onClick={onWeek}>Last week</DropdownMenuItem>
+            <DropdownMenuItem onClick={onMonth}>Last month</DropdownMenuItem>
+            <DropdownMenuItem onClick={onYear}>Last year</DropdownMenuItem>
           </>
         )}
       </DropdownMenuContent>

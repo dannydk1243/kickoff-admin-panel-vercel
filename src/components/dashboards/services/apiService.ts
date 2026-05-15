@@ -475,7 +475,7 @@ export async function updateUserStatus(data: {
 //    formData.append("slotDurationMinutes", "60");
 //    formData.append("offersTraining", data.training);
 
-//    // 🏷 Amenities (array)
+//    // ðŸ· Amenities (array)
 //    data.amenities?.forEach((amenity: any) => {
 //       formData.append("amenities", amenity);
 //    });
@@ -484,10 +484,10 @@ export async function updateUserStatus(data: {
 //       } else {
 //       }
 //    }
-//    // 🖼 Avatar (single file)
+//    // ðŸ–¼ Avatar (single file)
 //    const testFile = new File(["file content"], "test.jpg", { type: "image/jpeg" });
 
-//    // 📎 Attachments (multiple files)
+//    // ðŸ“Ž Attachments (multiple files)
 //    data.courtImages?.forEach((file: any) => {
 //       formData.append("attachments", file);
 //    });
@@ -549,12 +549,12 @@ export async function updateUserStatus(data: {
 //    formData.append("slotDurationMinutes", "60");
 //    formData.append("offersTraining", data.training);
 
-//    // 🏷 Amenities (array)
+//    // ðŸ· Amenities (array)
 //    data.amenities?.forEach((amenity: any) => {
 //       formData.append("amenities", amenity);
 //    });
 
-//    // 📎 Attachments (multiple files)
+//    // ðŸ“Ž Attachments (multiple files)
 //    data.courtImages?.forEach((file: any) => {
 //       formData.append("attachments", file);
 //    });
@@ -1682,6 +1682,127 @@ export async function updateLandingContent(body: any) {
     })
 
     return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return false
+  }
+}
+
+export async function getAllWithdrawals(page: number = 1,
+  limit: number = 15,
+  status: string = "") {
+  try {
+    const statusQuery = status && status !== "ALL" ? `&status=${status}` : "";
+    const res = await API.post(`/withdrawals/history?page=${page}&limit=${limit}${statusQuery}`, {})
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load withdrawals",
+        description: "Unable to fetch withdrawals list",
+      })
+      return null
+    }
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return null
+  }
+}
+
+export async function getMyBeneficiary() {
+  try {
+    const res = await API.post(`/withdrawals/beneficiary-accounts/my`, {})
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load beneficiaries",
+        description: "Unable to fetch beneficiaries list",
+      })
+      return null
+    }
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return null
+  }
+}
+
+export async function addBeneficiary(body: any) {
+  try {
+    const res = await API.post(`/withdrawals/beneficiary-accounts`, body)
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Failed to add beneficiary",
+        description: "Unable to add beneficiary",
+      })
+      return null
+    }
+
+    toast({
+      title: "Success",
+      description: "Beneficiary added successfully.",
+    })
+
+    return res.data
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description:
+        error?.response?.data?.details?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.",
+    })
+    return null
+  }
+}
+
+export async function createWithdrawal(body: any) {
+  try {
+    const res = await API.post(`/withdrawals/amount`, body)
+
+    if (res?.status !== 200 && res?.status !== 201) {
+      toast({
+        variant: "destructive",
+        title: "Withdrawal failed",
+        description: "Unable to process withdrawal request",
+      })
+      return false
+    }
+
+    toast({
+      title: "Success",
+      description: "Withdrawal request sent successfully.",
+    })
+
+    return true
   } catch (error: any) {
     toast({
       variant: "destructive",

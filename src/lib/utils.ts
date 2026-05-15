@@ -104,7 +104,7 @@ export function ratingToPercentage(
 export function formatCurrency(
   value: number,
   locales: LocaleType = "en",
-  currency: string = "USD"
+  currency: string = "SAR"
 ) {
   return new Intl.NumberFormat(locales, {
     style: "currency",
