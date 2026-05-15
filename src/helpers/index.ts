@@ -7,13 +7,13 @@ import API_AXIOS from "./apiHelper"
 
 export const API = {
   // POST request
-    post: async <T = any>(
+  post: async <T = any>(
     endpoint: string,
     data?: any,
     config?: any
   ): Promise<ApiResponse<T>> => {
     try {
-      const accessToken = Cookies.get("accessToken") || Cookies.get("__Secure-accessToken")
+      const accessToken = Cookies.get("accessToken")
       const response: AxiosResponse<T> = await API_AXIOS.post(endpoint, data, {
         ...config,
         headers: {
