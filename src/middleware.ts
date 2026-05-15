@@ -38,10 +38,8 @@ function redirect(pathname: string, request: NextRequest) {
   
   // CRITICAL: Prevent Vercel Edge and browsers from caching this redirect!
   response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
-  response.headers.set('x-middleware-cache', 'no-cache') // Vercel-specific
   response.headers.set('Pragma', 'no-cache')
   response.headers.set('Expires', '0')
-  response.headers.set('Vary', 'Cookie')
   
   return response
 }
@@ -59,11 +57,9 @@ export async function middleware(request: NextRequest) {
   const pathnameWithoutLocale = ensureWithoutPrefix(pathname, `/${lang}`)
   
   // 2. Unified Token Retrieval
-  // Fallback to __Secure- prefixed versions as recommended for Vercel production
-  const accessToken = request.cookies.get("accessToken")?.value || request.cookies.get("__Secure-accessToken")?.value
-  const token = request.cookies.get("token")?.value || request.cookies.get("__Secure-token")?.value
+  const accessToken = request.cookies.get("accessToken")?.value
+  const token = request.cookies.get("token")?.value
   const nextAuthToken = request.cookies.get("__Secure-next-auth.session-token")?.value || request.cookies.get("next-auth.session-token")?.value
-  
   const isAuthenticated = !!accessToken || !!token || !!nextAuthToken
   
   // 3. Handle the Root "/" Redirect
@@ -77,8 +73,6 @@ export async function middleware(request: NextRequest) {
 
     const response = NextResponse.redirect(new URL(destination, request.url))
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
-    response.headers.set('x-middleware-cache', 'no-cache')
-    response.headers.set('Vary', 'Cookie')
     return response
   }
 
@@ -87,7 +81,7 @@ export async function middleware(request: NextRequest) {
   const isGuest = isGuestRoute(pathnameWithoutLocale)
 
   if (isNotPublic) {
-    const adminProfileCookie = request.cookies.get("adminProfile")?.value || request.cookies.get("__Secure-adminProfile")?.value
+    const adminProfileCookie = request.cookies.get("adminProfile")?.value
     let adminProfile: AdminProfile | null = null
 
     if (adminProfileCookie) {
@@ -133,9 +127,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  const response = NextResponse.next()
-  response.headers.set('Vary', 'Cookie')
-  return response
+  return NextResponse.next()
 }
 
 export const config = {
