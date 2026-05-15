@@ -24,66 +24,11 @@ const nextConfig = {
   // See https://nextjs.org/docs/app/building-your-application/routing/redirecting#redirects-in-nextconfigjs
   async redirects() {
     return [
-      // ⚠️ Important:
-      // Always list more specific static paths before dynamic ones like "/:lang"
-      // to prevent Next.js from incorrectly matching static routes as dynamic parameters.
-      // For example, if "/:lang" comes before "/docs", Next.js may treat "docs" as a language.
-      // {
-      //   source: "/docs",
-      //   destination: "/docs/overview/introduction",
-      //   permanent: true,
-      // },
-      {
-        source: '/',
-        destination: process.env.HOME_PATHNAME || '/dashboards/crm',
-        permanent: false, // Use false (307) while testing to avoid browser caching issues
-        has: [
-          {
-            type: 'cookie',
-            key: sessionCookie,
-          },
-        ],
-      },
-      {
-        source: "/:lang/pages",
-        destination: process.env.HOME_PATHNAME || "/dashboards/crm",
-        permanent: true, // Use true for 301 (SEO) or false for 307 (temporary)
-        has: [
-          {
-            type: "cookie",
-            key: "next-auth.session-token",
-          },
-        ],
-      },
-      {
-        source: "/:lang",
-        destination: process.env.HOME_PATHNAME || "/dashboards/crm",
-        permanent: true,
-        has: [
-          {
-            type: "cookie",
-            key: "next-auth.session-token",
-          },
-        ],
-      },
-      // {
-      //   source: "/:lang",
-      //   destination: process.env.HOME_PATHNAME || "/en/dashboards/crm",
-      //   permanent: true,
-      //   has: [
-      //     {
-      //       type: "cookie",
-      //       key: "__Secure-next-auth.session-token",
-      //     },
-      //   ],
-      // },
-      // {
-      //   source: "/:lang/apps/email",
-      //   destination: "/:lang/apps/email/inbox",
-      //   permanent: true,
-      // },
+      // Redirects are now primarily handled in middleware.ts for better auth/locale control.
+      // Add any non-auth static redirects here if needed.
     ]
   },
+
 }
 
 const withMDX = createMDX({
