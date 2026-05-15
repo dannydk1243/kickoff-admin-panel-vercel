@@ -43,12 +43,12 @@ export async function middleware(request: NextRequest) {
   const pathnameWithoutLocale = ensureWithoutPrefix(pathname, `/${locale}`)
   
   // 1. Unified Token Retrieval
-  // Using 'accessToken' as the primary source of truth since your role check depends on it
   const accessToken = request.cookies.get("accessToken")?.value
   const token = request.cookies.get("token")?.value
-  const isAuthenticated = !!accessToken || !!token 
+  const nextAuthToken = request.cookies.get("__Secure-next-auth.session-token")?.value || request.cookies.get("next-auth.session-token")?.value
+  const isAuthenticated = !!accessToken || !!token || !!nextAuthToken
   
-  const lang = locale || getPreferredLocale(request) || "en"
+  const lang = locale || "en"
 
   // 2. Handle the Root "/" Redirect
   if (pathname === "/") {
