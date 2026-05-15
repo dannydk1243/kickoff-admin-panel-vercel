@@ -25,6 +25,7 @@ export async function signInAdmin(data: SignInFormType, redirectPathname: string
          expires: 7,
          secure: true,
          sameSite: "lax",
+         path: "/",
       });
 
       // 3️⃣ Call profile API
@@ -34,11 +35,20 @@ export async function signInAdmin(data: SignInFormType, redirectPathname: string
          throw new Error("Failed to fetch user profile");
       }
 
-      // 4️⃣ Save profile in cookie (stringify if needed)
-      Cookies.set("adminProfile", JSON.stringify(profileRes.data), {
+      // Extract only essential fields to prevent cookie header size limits on Vercel
+      const essentialProfile = {
+         id: profileRes.data._id || profileRes.data.id,
+         role: profileRes.data.role,
+         email: profileRes.data.email,
+         name: profileRes.data.name,
+      };
+
+      // 4️⃣ Save profile in cookie
+      Cookies.set("adminProfile", JSON.stringify(essentialProfile), {
          expires: 7,
          secure: true,
          sameSite: "lax",
+         path: "/",
       });
 
       // 5️⃣ Redirect after everything succeeds
