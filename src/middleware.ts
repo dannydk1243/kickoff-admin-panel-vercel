@@ -34,7 +34,12 @@ function redirect(pathname: string, request: NextRequest) {
   if (hash) resolvedPathname += hash
 
   const redirectUrl = new URL(resolvedPathname, request.url).toString()
-  return NextResponse.redirect(redirectUrl)
+  // FIX (Bug 2): Prevent Vercel Edge from caching redirect responses.
+  // Without this, a sign-in redirect gets cached on an edge node and replays
+  // even after the user is authenticated.
+  const response = NextResponse.redirect(redirectUrl)
+  response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate")
+  return response
 }
 
 export async function middleware(request: NextRequest) {
@@ -48,23 +53,44 @@ export async function middleware(request: NextRequest) {
 
   const lang = locale || "en"
   const pathnameWithoutLocale = ensureWithoutPrefix(pathname, `/${lang}`)
-  
+
+  // FIX (Bug 4): Short-circuit immediately if this is the sign-in page.
+  // Prevents running auth logic (and risking a redirect loop) on the sign-in
+  // route itself, which is especially important on Vercel's edge network.
+  if (pathnameWithoutLocale === "/sign-in") {
+    return NextResponse.next()
+  }
+
   // 2. Unified Token Retrieval
-  const accessToken = request.cookies.get("accessToken")?.value
-  const token = request.cookies.get("token")?.value
-  const nextAuthToken = request.cookies.get("__Secure-next-auth.session-token")?.value || request.cookies.get("next-auth.session-token")?.value
+  // FIX (Bug 1): On Vercel (HTTPS), browsers send cookies with the __Secure-
+  // prefix when they were set with the Secure flag. On localhost (HTTP) the
+  // prefix is absent. Always check both so auth works in both environments.
+  const accessToken =
+    request.cookies.get("__Secure-accessToken")?.value ??
+    request.cookies.get("accessToken")?.value
+
+  const token =
+    request.cookies.get("__Secure-token")?.value ??
+    request.cookies.get("token")?.value
+
+  const nextAuthToken =
+    request.cookies.get("__Secure-next-auth.session-token")?.value ??
+    request.cookies.get("next-auth.session-token")?.value
+
   const isAuthenticated = !!accessToken || !!token || !!nextAuthToken
-  
+
   // 3. Handle the Root "/" Redirect
   if (pathname === "/") {
     const homePath = process.env.HOME_PATHNAME ?? "/dashboards/crm"
     const loginPath = `/${lang}/sign-in`
-    
-    const destination = isAuthenticated 
-      ? ensureLocalizedPathname(homePath, lang) 
+
+    const destination = isAuthenticated
+      ? ensureLocalizedPathname(homePath, lang)
       : loginPath
 
-    return NextResponse.redirect(new URL(destination, request.url))
+    const response = NextResponse.redirect(new URL(destination, request.url))
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate")
+    return response
   }
 
   // 4. Public/Guest Logic
@@ -87,7 +113,12 @@ export async function middleware(request: NextRequest) {
 
     // 🔐 Redirect unauthenticated users
     if (!isAuthenticated && isProtected) {
-      if (!pathname.includes("/sign-in")) {
+      // FIX (Bug 3): The original check used pathname.includes("/sign-in"),
+      // which tests the full localized path (e.g. "/en/analytics") and never
+      // matches "/sign-in". We already short-circuit on the sign-in route above
+      // (Bug 4 fix), so this guard is now a reliable safety net using the
+      // un-prefixed pathname.
+      if (pathnameWithoutLocale !== "/sign-in") {
         return redirect(`/${lang}/sign-in`, request)
       }
     }
@@ -106,7 +137,6 @@ export async function middleware(request: NextRequest) {
         return redirect("/pages/not-found-404", request)
       }
 
-
       if (
         isAuthenticated &&
         !canAccessRoute(pathnameWithoutLocale, role) &&
@@ -118,12 +148,19 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next()
+  // FIX (Bug 2, continued): Mark all pass-through responses as private/
+  // non-cacheable so Vercel's edge never serves a stale authenticated response
+  // to a different user or session.
+  const response = NextResponse.next()
+  response.headers.set("Cache-Control", "private, no-store")
+  return response
 }
 
 export const config = {
+  // FIX (Bug 4): Explicitly exclude the sign-in route from the matcher so
+  // middleware never runs on it, regardless of locale prefix. This removes any
+  // chance of a redirect loop on Vercel where edge nodes have stale state.
   matcher: [
-    "/((?!api|_next|favicon.ico|sitemap.xml|robots.txt|images|docs|pages/unauthorized-401).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|images|docs|.*sign-in.*).*)",
   ],
 }
-
