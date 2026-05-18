@@ -649,5 +649,50 @@
     "wallets": {
       "STC_PAY": "STC Pay"
     }
+  },
+  "analytics": {
+    "title": "Analytics",
+    "periods": {
+      "selectPeriod": "Select period",
+      "lastWeek": "Last week",
+      "lastMonth": "Last month",
+      "lastYear": "Last year",
+      "recentActivity": "Recent activity"
+    },
+    "overview": {
+      "totalBookings": "Total Bookings",
+      "withdrawnAmount": "Withdrawn Amount",
+      "totalRevenue": "Total Booking Revenue",
+      "withdrawableAmount": "Withdrawable Amount",
+      "bookingsRevenue": "Bookings Revenue",
+      "totalProfitShare": "Total Profit Share"
+    },
+    "trends": {
+      "bookings": "Bookings Trend",
+      "revenue": "Revenue Trend"
+    },
+    "latestBookings": {
+      "title": "Latest Bookings",
+      "loading": "Loading...",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {totalPages}",
+      "min": "min"
+    },
+    "topSellingCourts": {
+      "title": "Top Selling Courts",
+      "loading": "Loading...",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {totalPages}",
+      "bookings": "bookings",
+      "revenue": "Revenue"
+    },
+    "statuses": {
+      "Confirmed": "Confirmed",
+      "Completed": "Completed",
+      "Cancelled": "Cancelled",
+      "Pending": "Pending"
+    }
   }
 }

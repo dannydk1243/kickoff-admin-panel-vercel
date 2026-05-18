@@ -24,18 +24,25 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function BookingsTrendChart({ data }: { data: BookingsTrendType }) {
+export function BookingsTrendChart({ data, dictionary }: { data: BookingsTrendType, dictionary?: any }) {
   const isRtl = useIsRtl()
   const radius = useRadius()
 
   const { revenueTrends, summary } = data
 
   const summaryItems = [
-    { label: "Pending", value: summary.totalPending, color: "hsl(var(--chart-1))" },
-    { label: "Confirmed", value: summary.totalConfirmed, color: "hsl(var(--chart-2))" },
-    { label: "Cancelled", value: summary.totalCancelled, color: "hsl(var(--chart-3))" },
-    { label: "Completed", value: summary.totalCompleted, color: "hsl(var(--chart-4))" },
+    { label: dictionary?.analytics?.statuses?.Pending || "Pending", value: summary.totalPending, color: "hsl(var(--chart-1))" },
+    { label: dictionary?.analytics?.statuses?.Confirmed || "Confirmed", value: summary.totalConfirmed, color: "hsl(var(--chart-2))" },
+    { label: dictionary?.analytics?.statuses?.Cancelled || "Cancelled", value: summary.totalCancelled, color: "hsl(var(--chart-3))" },
+    { label: dictionary?.analytics?.statuses?.Completed || "Completed", value: summary.totalCompleted, color: "hsl(var(--chart-4))" },
   ]
+
+  const dynamicChartConfig = {
+    revenue: {
+      label: dictionary?.analytics?.topSellingCourts?.revenue || "Revenue",
+      color: "hsl(var(--chart-2))",
+    },
+  } satisfies ChartConfig
 
   return (
     <>
@@ -60,7 +67,7 @@ export function BookingsTrendChart({ data }: { data: BookingsTrendType }) {
           </div>
         ))}
       </div>
-      <ChartContainer config={chartConfig} className="grow aspect-auto w-full">
+      <ChartContainer config={dynamicChartConfig} className="grow aspect-auto w-full">
         <BarChart
           accessibilityLayer
           data={revenueTrends}
@@ -82,7 +89,7 @@ export function BookingsTrendChart({ data }: { data: BookingsTrendType }) {
           <Bar
             dataKey="revenue"
             maxBarSize={44}
-            fill={chartConfig.revenue.color}
+            fill={dynamicChartConfig.revenue.color}
             radius={radius}
           />
         </BarChart>

@@ -8,15 +8,17 @@ import { PercentageChangeBadge } from "@/components/dashboards/percentage-change
 
 export function RevenueTrendSummary({
   data,
+  dictionary
 }: {
   data: {
     totalRevenue: number
     totalPercentageChange: number
   }
+  dictionary?: any
 }) {
   return (
     <div className="flex flex-col items-start bg-accent text-accent-foreground py-2 px-4 rounded-lg">
-      <h3 className="text-sm text-muted-foreground">Total Revenue</h3>
+      <h3 className="text-sm text-muted-foreground">{dictionary?.analytics?.overview?.totalRevenue || "Total Revenue"}</h3>
       <div className="inline-flex flex-wrap items-baseline gap-x-1">
         <p className="text-2xl font-semibold">
           {formatCurrency(data.totalRevenue)}

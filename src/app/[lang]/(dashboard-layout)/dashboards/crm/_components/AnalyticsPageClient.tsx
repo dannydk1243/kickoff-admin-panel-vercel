@@ -30,7 +30,7 @@ import { leadSourcesDataByPeriod } from "../_data/lead-sources"
 import { latestBookingsData } from "../_data/latest-bookings"
 import { topSellingCourtsDataByPeriod } from "../_data/top-selling-courts"
 
-export function AnalyticsPageClient() {
+export function AnalyticsPageClient({ dictionary, user }: { dictionary: any, user: any }) {
   const [period, setPeriod] = useState<DashboardPeriod>(DashboardPeriod.YEAR)
   const [overviewData, setOverviewData] = useState<any>(null)
   const [bookingsTrendData, setBookingsTrendData] = useState<any>(null)
@@ -47,7 +47,7 @@ export function AnalyticsPageClient() {
         setOverviewData(data)
         setBookingsTrendData(data.bookingTrend)
         setRevenueTrendData(data.bookingTrend)
-        setTopCourts(data.courts)
+        setTopCourts(data)
       }
     } catch (error) {
       console.error("Error loading dashboard data:", error)
@@ -75,19 +75,19 @@ export function AnalyticsPageClient() {
   return (
     <div className="space-y-4 p-4">
       <div className="flex items-center justify-between container">
-        <h2 className="text-2xl font-bold tracking-tight">Analytics</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{dictionary.analytics?.title || "Analytics"}</h2>
         <Select
-          disabled={true}
+
           value={period}
           onValueChange={(value) => handlePeriodChange(value as DashboardPeriod)}
         >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select period" />
+            <SelectValue placeholder={dictionary.analytics?.periods?.selectPeriod || "Select period"} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={DashboardPeriod.WEEK}>Last week</SelectItem>
-            <SelectItem value={DashboardPeriod.MONTH}>Last month</SelectItem>
-            <SelectItem value={DashboardPeriod.YEAR}>Last year</SelectItem>
+            <SelectItem value={DashboardPeriod.WEEK}>{dictionary.analytics?.periods?.lastWeek || "Last week"}</SelectItem>
+            <SelectItem value={DashboardPeriod.MONTH}>{dictionary.analytics?.periods?.lastMonth || "Last month"}</SelectItem>
+            <SelectItem value={DashboardPeriod.YEAR}>{dictionary.analytics?.periods?.lastYear || "Last year"}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -97,6 +97,8 @@ export function AnalyticsPageClient() {
           data={overviewData || fallbackOverview}
           period={period}
           onPeriodChange={handlePeriodChange}
+          dictionary={dictionary}
+          user={user}
         />
 
         <div className="col-span-full grid gap-4 md:grid-cols-4">
@@ -104,16 +106,21 @@ export function AnalyticsPageClient() {
             data={bookingsTrendData || fallbackBookings}
             period={period}
             onPeriodChange={handlePeriodChange}
+            dictionary={dictionary}
           />
-          <RevenueTrend data={revenueTrendData || fallbackRevenue} />
+          <RevenueTrend 
+            data={revenueTrendData || fallbackRevenue} 
+            dictionary={dictionary}
+          />
           {/* <LeadSources data={leadSourcesData || fallbackLeads} /> */}
         </div>
 
-        <LatestBookings />
+        <LatestBookings dictionary={dictionary} />
         <TopSellingCourts
           data={topCourts || fallbackTopCourts}
           period={period}
           onPeriodChange={handlePeriodChange}
+          dictionary={dictionary}
         />
       </section>
     </div>

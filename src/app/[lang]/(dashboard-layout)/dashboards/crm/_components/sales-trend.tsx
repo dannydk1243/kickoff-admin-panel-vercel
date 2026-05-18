@@ -9,18 +9,19 @@ interface BookingsTrendProps {
   data: any
   period: DashboardPeriod
   onPeriodChange: (period: DashboardPeriod) => void
+  dictionary?: any
 }
 
-export function BookingsTrend({ data, period, onPeriodChange }: BookingsTrendProps) {
-  const periodLabel = period === DashboardPeriod.WEEK ? "Last week" : period === DashboardPeriod.YEAR ? "Last year" : "Last month";
+export function BookingsTrend({ data, period, onPeriodChange, dictionary }: BookingsTrendProps) {
+  const periodLabel = period === DashboardPeriod.WEEK ? dictionary?.analytics?.periods?.lastWeek || "Last week" : period === DashboardPeriod.YEAR ? dictionary?.analytics?.periods?.lastYear || "Last year" : dictionary?.analytics?.periods?.lastMonth || "Last month";
 
   return (
     <DashboardCard
-      title="Bookings Trend"
+      title={dictionary?.analytics?.trends?.bookings || "Bookings Trend"}
       period={periodLabel}
       className="col-span-full md:col-span-3"
     >
-      <BookingsTrendChart data={data} />
+      <BookingsTrendChart data={data} dictionary={dictionary} />
     </DashboardCard>
   )
 }

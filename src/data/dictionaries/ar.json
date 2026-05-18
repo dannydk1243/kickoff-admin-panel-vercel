@@ -650,5 +650,50 @@
     "wallets": {
       "STC_PAY": "STC Pay"
     }
+  },
+  "analytics": {
+    "title": "التحليلات",
+    "periods": {
+      "selectPeriod": "اختر الفترة",
+      "lastWeek": "الأسبوع الماضي",
+      "lastMonth": "الشهر الماضي",
+      "lastYear": "العام الماضي",
+      "recentActivity": "النشاط الأخير"
+    },
+    "overview": {
+      "totalBookings": "إجمالي الحجوزات",
+      "withdrawnAmount": "المبلغ المسحوب",
+      "totalRevenue": "إجمالي إيرادات الحجوزات",
+      "withdrawableAmount": "المبلغ القابل للسحب",
+      "bookingsRevenue": "إيرادات الحجوزات",
+      "totalProfitShare": "إجمالي حصة الأرباح"
+    },
+    "trends": {
+      "bookings": "اتجاه الحجوزات",
+      "revenue": "اتجاه الإيرادات"
+    },
+    "latestBookings": {
+      "title": "أحدث الحجوزات",
+      "loading": "جاري التحميل...",
+      "previous": "السابق",
+      "next": "التالي",
+      "pageOf": "صفحة {page} من {totalPages}",
+      "min": "د"
+    },
+    "topSellingCourts": {
+      "title": "الملاعب الأكثر مبيعاً",
+      "loading": "جاري التحميل...",
+      "previous": "السابق",
+      "next": "التالي",
+      "pageOf": "صفحة {page} من {totalPages}",
+      "bookings": "حجوزات",
+      "revenue": "إيرادات"
+    },
+    "statuses": {
+      "Confirmed": "مؤكد",
+      "Completed": "مكتمل",
+      "Cancelled": "ملغى",
+      "Pending": "قيد الانتظار"
+    }
   }
 }

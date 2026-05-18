@@ -9,9 +9,10 @@ export enum DashboardPeriod {
   YEAR = "YEAR",
 }
 
-export async function getDashboardOverview(period: DashboardPeriod = DashboardPeriod.MONTH): Promise<DashboardAnalyticsType | null> {
+export async function getDashboardOverview(period: DashboardPeriod = DashboardPeriod.MONTH, page: number = 1, limit: number = 5): Promise<DashboardAnalyticsType | null> {
   try {
-    const res = await API.post(`bookings/analytics?by=${period}`)
+    let periodString = period == DashboardPeriod.WEEK ? "WEEKLY" : period == DashboardPeriod.MONTH ? "MONTHLY" : "YEARLY"
+    const res = await API.post(`bookings/analytics?by=${periodString}&page=${page}&limit=${limit}`)
     if (res?.status !== 200 && res?.status !== 201) return null
     return res.data
   } catch (error: any) {

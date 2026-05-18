@@ -40,14 +40,22 @@ function ModifiedChartTooltipContent(
 
 export function RevenueTrendChart({
   data,
+  dictionary
 }: {
   data: RevenueTrendItemType[]
+  dictionary?: any
 }) {
   const radius = useRadius()
   const isRtl = useIsRtl()
 
+  const dynamicChartConfig = {
+    revenue: {
+      label: dictionary?.analytics?.topSellingCourts?.revenue || "Revenue",
+    },
+  } satisfies ChartConfig
+
   return (
-    <ChartContainer config={chartConfig} className="aspect-auto grow w-full">
+    <ChartContainer config={dynamicChartConfig} className="aspect-auto grow w-full">
       <BarChart
         accessibilityLayer
         data={data}

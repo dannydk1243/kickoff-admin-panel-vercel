@@ -7,7 +7,7 @@ import { getLatestBookings } from "@/components/dashboards/services/dashboardSer
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
-export function LatestBookings() {
+export function LatestBookings({ dictionary }: { dictionary?: any }) {
   const [data, setData] = useState<any[]>([])
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -27,34 +27,37 @@ export function LatestBookings() {
   }, [page])
 
   return (
-    <DashboardCard title="Latest Bookings" size="lg">
+    <DashboardCard title={dictionary?.analytics?.latestBookings?.title || "Latest Bookings"} size="lg" period={dictionary?.analytics?.periods?.recentActivity || "Recent activity"}>
       <div className="flex flex-col h-full justify-between">
         {loading ? (
           <div className="flex-1 flex items-center justify-center min-h-[300px]">
-            <span className="text-sm text-muted-foreground">Loading...</span>
+            <span className="text-sm text-muted-foreground">{dictionary?.analytics?.latestBookings?.loading || "Loading..."}</span>
           </div>
         ) : (
-          <LatestBookingsList data={data} />
+          <LatestBookingsList data={data} dictionary={dictionary} />
         )}
         <div className="flex items-center justify-between mt-4">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1 || loading}
           >
-            <ChevronLeft className="h-4 w-4 mr-1" /> Previous
+            <ChevronLeft className="h-4 w-4 mr-1" /> {dictionary?.analytics?.latestBookings?.previous || "Previous"}
           </Button>
           <span className="text-sm text-muted-foreground">
-            Page {page} of {totalPages}
+            {dictionary?.analytics?.latestBookings?.pageOf
+                ? dictionary.analytics.latestBookings.pageOf.replace('{page}', page.toString()).replace('{totalPages}', totalPages.toString())
+                : `Page ${page} of ${totalPages}`
+            }
           </span>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages || loading}
           >
-            Next <ChevronRight className="h-4 w-4 ml-1" />
+            {dictionary?.analytics?.latestBookings?.next || "Next"} <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
       </div>

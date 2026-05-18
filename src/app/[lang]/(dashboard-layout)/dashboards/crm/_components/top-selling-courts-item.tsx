@@ -14,10 +14,12 @@ const rankColors = [
 
 export function TopSellingCourtsItem({ 
   court, 
-  rank 
+  rank,
+  dictionary
 }: { 
   court: TopSellingCourtType; 
-  rank: number 
+  rank: number;
+  dictionary?: any;
 }) {
   const isTop3 = rank <= 3
 
@@ -44,7 +46,7 @@ export function TopSellingCourtsItem({
           <div className="flex flex-col items-end gap-0.5 shrink-0">
             <Badge>{formatCurrency(court.revenue)}</Badge>
             <div className="flex items-center gap-x-1 text-xs text-muted-foreground">
-              <span className="text-muted-foreground/60">{court.bookings} bookings</span>
+              <span className="text-muted-foreground/60">{court.bookings} {dictionary?.analytics?.topSellingCourts?.bookings || "bookings"}</span>
             </div>
           </div>
         </CardContent>

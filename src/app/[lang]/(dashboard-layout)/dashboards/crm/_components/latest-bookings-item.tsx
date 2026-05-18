@@ -12,7 +12,7 @@ const statusStyles: Record<BookingStatusType, string> = {
   Pending:    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
 }
 
-export function LatestBookingsItem({ booking }: { booking: LatestBookingType }) {
+export function LatestBookingsItem({ booking, dictionary }: { booking: LatestBookingType, dictionary?: any }) {
   return (
     <li className="flex items-center gap-3 py-2.5 px-4 bg-card border rounded-lg">
       {/* Avatar */}
@@ -24,7 +24,7 @@ export function LatestBookingsItem({ booking }: { booking: LatestBookingType }) 
       {/* Customer + Court */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold truncate">{booking.customerName}</p>
-        <p className="text-xs text-muted-foreground truncate">{booking.courtName} · {booking.duration} min</p>
+        <p className="text-xs text-muted-foreground truncate">{booking.courtName} · {booking.duration} {dictionary?.analytics?.latestBookings?.min || "min"}</p>
       </div>
 
       {/* Date */}
@@ -36,7 +36,7 @@ export function LatestBookingsItem({ booking }: { booking: LatestBookingType }) 
       <div className="flex flex-col items-end gap-1 shrink-0">
         <span className="text-sm font-semibold">{formatCurrency(booking.amount)}</span>
         <Badge className={cn("text-[10px] px-1.5 py-0 border-0", statusStyles[booking.status])}>
-          {booking.status}
+          {dictionary?.analytics?.statuses?.[booking.status] || booking.status}
         </Badge>
       </div>
     </li>
