@@ -78,6 +78,7 @@ export function UserWalletDataTable() {
 
   const updateWalletList = async () => {
     const res = await getAllUserWallet(
+      searchTerm,
       pagination.pageIndex + 1,
       pagination.pageSize,
       selectedStatus
@@ -97,6 +98,7 @@ export function UserWalletDataTable() {
       const limit = pagination.pageSize
 
       const res = await getAllUserWallet(
+        searchTerm,
         page,
         limit,
         selectedStatus
@@ -114,7 +116,7 @@ export function UserWalletDataTable() {
     }
 
     fetchData()
-  }, [pagination.pageIndex, pagination.pageSize, selectedStatus])
+  }, [pagination.pageIndex, pagination.pageSize, selectedStatus, searchTerm])
 
   // React Table
   const table = useReactTable({

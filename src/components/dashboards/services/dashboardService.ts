@@ -57,7 +57,7 @@ export async function getLeadSources(period: DashboardPeriod = DashboardPeriod.M
 
 export async function getLatestBookings(page: number = 1, limit: number = 5) {
   try {
-    const res = await getAllBookings(page, limit, "MATCH", "")
+    const res = await getAllBookings("", page, limit, "MATCH", "")
     if (!res) return null
 
     const mappedBookings = res.bookings.map((b: any) => {

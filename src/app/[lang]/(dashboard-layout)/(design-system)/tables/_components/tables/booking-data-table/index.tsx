@@ -76,8 +76,9 @@ export function BookingDataTable() {
     [handleStatusUpdate]
   )
 
-  const updateAnnouncementsList = async () => {
+  const getAllBookingList = async () => {
     const res = await getAllBookings(
+      searchTerm,
       pagination.pageIndex + 1,
       pagination.pageSize,
       "MATCH",
@@ -98,6 +99,7 @@ export function BookingDataTable() {
       const limit = pagination.pageSize
 
       const res = await getAllBookings(
+        searchTerm,
         page,
         limit,
         "MATCH",
@@ -116,7 +118,7 @@ export function BookingDataTable() {
     }
 
     fetchData()
-  }, [pagination.pageIndex, pagination.pageSize, selectedStatus])
+  }, [pagination.pageIndex, pagination.pageSize, selectedStatus, searchTerm])
 
   // React Table
   const table = useReactTable({
@@ -156,7 +158,7 @@ export function BookingDataTable() {
           setSearchTerm={setSearchTerm}
           selectedStatus={selectedStatus}
           setSelectedStatus={setSelectedStatus}
-          callback={updateAnnouncementsList}
+          callback={getAllBookingList}
           dictionary={dictionary}
         />
       </CardHeader>

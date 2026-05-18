@@ -135,7 +135,7 @@ export function InvoiceTableToolbar<TTable>({
           <DiamondPlus className="h-4 w-4" />
         </Button> */}
 
-        {/* <Input
+        <Input
           placeholder="Search..."
           className="border border-input bg-background hover:bg-accent hover:text-accent-foreground"
           value={inputValue}
@@ -143,7 +143,7 @@ export function InvoiceTableToolbar<TTable>({
           aria-label="Search..."
           spellCheck={false}
           autoComplete="off"
-        /> */}
+        />
 
         {/* Inline Role Select Form */}
         <Form {...form}>

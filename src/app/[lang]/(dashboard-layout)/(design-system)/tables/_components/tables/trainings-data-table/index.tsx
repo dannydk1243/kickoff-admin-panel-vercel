@@ -85,6 +85,7 @@ export function TrainingDataTable() {
       const limit = pagination.pageSize
 
       const res = await getAllBookings(
+        searchTerm,
         page,
         limit,
         "TRAINING",
@@ -103,7 +104,7 @@ export function TrainingDataTable() {
     }
 
     fetchData()
-  }, [pagination.pageIndex, pagination.pageSize, selectedStatus])
+  }, [pagination.pageIndex, pagination.pageSize, selectedStatus, searchTerm])
 
   // React Table
   const table = useReactTable({

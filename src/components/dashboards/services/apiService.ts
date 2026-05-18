@@ -1520,13 +1520,13 @@ export async function sendAnnouncements(body: {}) {
   }
 }
 
-export async function getAllBookings(page: number = 1,
+export async function getAllBookings(searchTerm: string, page: number = 1,
   limit: number = 15,
   type: string = "MATCH",
   status: string = "") {
   try {
     const statusQuery = status && status !== "ALL" ? `&status=${status}` : "";
-    const res = await API.post(`/bookings/all?page=${page}&limit=${limit}&type=${type}&participants=true${statusQuery}`, {})
+    const res = await API.post(`/bookings/all?search=${searchTerm}&page=${page}&limit=${limit}&type=${type}&participants=true${statusQuery}`, {})
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({
@@ -1556,12 +1556,12 @@ export async function getAllBookings(page: number = 1,
   }
 }
 
-export async function getAllUserWallet(page: number = 1,
+export async function getAllUserWallet(searchTerm: string, page: number = 1,
   limit: number = 15,
   status: string = "") {
   try {
     const statusQuery = status && status !== "ALL" ? `&status=${status}` : "";
-    const res = await API.post(`/wallet/all?page=${page}&limit=${limit}${statusQuery}`, {})
+    const res = await API.post(`/wallet/all?search=${searchTerm}&page=${page}&limit=${limit}${statusQuery}`, {})
 
     if (res?.status !== 200 && res?.status !== 201) {
       toast({
