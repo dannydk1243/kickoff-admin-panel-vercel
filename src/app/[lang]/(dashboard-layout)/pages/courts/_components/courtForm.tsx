@@ -6,7 +6,7 @@ import { format } from "date-fns"
 import Cookies from "js-cookie"
 import { DateRange } from "react-day-picker"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
-import { Check, PlusCircle, Trash2, X } from "lucide-react"
+import { Check, ChevronsUpDown, PlusCircle, Trash2, X } from "lucide-react"
 
 import { DictionaryType } from "@/lib/get-dictionary"
 import { useTranslation } from "@/lib/translationContext"
@@ -25,6 +25,19 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
 import { AdvancedCourtCalendar } from "@/components/ui/multi-date-range-picker"
 import {
   Select,
@@ -199,6 +212,8 @@ export function CourtForm({
   const [step, setStep] = useState<"FORM" | "SLOT">("FORM")
   const [courtImages, setCourtImages] = useState<CourtImage[]>([])
   const [allOwnersList, setAllOwnersList] = useState<any>([])
+  const [ownerSearchOpen, setOwnerSearchOpen] = useState(false)
+  const [ownerSearchTerm, setOwnerSearchTerm] = useState("")
   const [editCourtForm, setEditCourtForm] = useState<boolean>(false)
   const [courtImgChangeStatus, setCourtImgChangeStatus] = useState<
     "nothing" | "uploaded" | "deleted"
@@ -292,7 +307,7 @@ export function CourtForm({
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate()
 
-  let adminData = { role: "", _id: "" }
+  let adminData = { role: "", id: "" }
   const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
     name: "offDays", // This must match your schema
@@ -577,32 +592,32 @@ export function CourtForm({
 
   useEffect(() => {
     const value = Cookies.get("adminProfile") ?? ""
-    adminData = JSON.parse(value)
+    const adminData = value ? JSON.parse(value) : {}
 
     // 3. Update your state
     setUserRole(adminData.role)
 
-    const fetchData = async () => {
-      // setLoading(true);
-      const res = await getOnlyAllowedOwners()
+    if (adminData.role === "OWNER") {
+      if (adminData.id) {
+        setSelectedOwner?.(adminData.id)
+      }  
+    }
+  }, [courtId, setSelectedOwner])
 
+  useEffect(() => {
+    if (userRole === "OWNER") return
+
+    const delayDebounceFn = setTimeout(async () => {
+      const res = await getOnlyAllowedOwners(1, 5, ownerSearchTerm)
       if (res?.admins) {
         setAllOwnersList(res.admins)
       } else {
         setAllOwnersList([])
       }
-    }
+    }, 500)
 
-    if (adminData.role === "OWNER") {
-      if (adminData._id) {
-        setSelectedOwner?.(adminData._id)
-      }
-    }
-    // 3. Otherwise, if they are an ADMIN, they need to see the list to pick one
-    else {
-      fetchData()
-    }
-  }, [courtId, userRole, adminData._id, setSelectedOwner])
+    return () => clearTimeout(delayDebounceFn)
+  }, [ownerSearchTerm, userRole])
 
   // Sync owner field changes to external setSelectedOwner
   const ownerValue = watch("owner")
@@ -926,22 +941,58 @@ export function CourtForm({
                       <FormItem>
                         <FormLabel>{courtOwner}*</FormLabel>
                         <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                            disabled={view}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder={dictionary.placeholder.selectOwner} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {allOwnersList?.map((val: any, index: any) => (
-                                <SelectItem value={val?._id} key={index}>
-                                  {val?.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <div className="relative">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={ownerSearchOpen}
+                              disabled={view}
+                              className="w-full justify-between font-normal"
+                              onClick={() => setOwnerSearchOpen(!ownerSearchOpen)}
+                            >
+                              {field.value
+                                ? allOwnersList?.find((val: any) => val?._id === field.value)?.name ?? dictionary.placeholder.selectOwner
+                                : dictionary.placeholder.selectOwner}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                            {ownerSearchOpen && (
+                              <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover text-popover-foreground shadow-md">
+                                <Command shouldFilter={false}>
+                                  <CommandInput 
+                                    placeholder={dictionary.placeholder.selectOwner} 
+                                    value={ownerSearchTerm}
+                                    onValueChange={setOwnerSearchTerm}
+                                  />
+                                  <CommandList>
+                                    <CommandEmpty>No owner found.</CommandEmpty>
+                                    <CommandGroup>
+                                      {allOwnersList?.map((val: any, index: any) => (
+                                        <CommandItem
+                                          key={index}
+                                          value={val?._id}
+                                          onSelect={(currentValue) => {
+                                            field.onChange(currentValue === field.value ? "" : currentValue)
+                                            setOwnerSearchOpen(false)
+                                          }}
+                                        >
+                                          <Check
+                                            className={`mr-2 h-4 w-4 ${field.value === val?._id ? "opacity-100" : "opacity-0"}`}
+                                          />
+                                          <div className="flex flex-col">
+                                            <span>{val?.name}</span>
+                                            {val?.email && (
+                                              <span className="text-xs text-muted-foreground">{val?.email}</span>
+                                            )}
+                                          </div>
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </div>
+                            )}
+                          </div>
                         </FormControl>
                         <FormMessage>{errors.owner?.message}</FormMessage>
                       </FormItem>
